@@ -1,9 +1,9 @@
-# OCLv3 Knowledge Base
+# TBv3 Knowledge Base
 
-**Generated:** 2026-03-20
-**Scope:** 262 issues from the OCL TermBrowser v3 project
-**Source:** [OpenConceptLab/ocl_issues](https://github.com/OpenConceptLab/ocl_issues) GitHub repository
-**Companion data:** `tbv3-raw-archive.json` (full issue bodies + comments), `tbv3-issue-classification.csv` (208-row analysis)
+- **Generated:** 2026-03-20
+- **Scope:** 262 issues from the OCL TermBrowser v3 project
+- **Source:** [OpenConceptLab/ocl_issues](https://github.com/OpenConceptLab/ocl_issues) GitHub repository
+- **Companion data:** `tbv3-raw-archive.json` (full issue bodies + comments), `tbv3-issue-classification.csv` (208-row analysis)
 
 ---
 
