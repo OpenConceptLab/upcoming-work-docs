@@ -838,6 +838,8 @@ Repository creation is in Testing/QA status (#1978, #1615).
 
 Repository editing (#1979) reuses the same form as creation but with a modified header state and pre-populated fields. The form is accessible from the "Edit" action in the repository header menu. The key constraint is that repo type and certain identifiers cannot be changed after creation (#1979). This is also in Testing/QA status.
 
+**Validation Schema Change UX.** One unaddressed UX gap in the repository edit form concerns the validation schema field. The current UX treats changing the validation schema as a synchronous operation -- the user selects a new schema, saves the form, and the change appears immediate. In reality, re-validating all content against a new schema can be a long-running asynchronous operation (20--30 minutes or more for a large source). The edit form should account for this: while a schema change is in progress, the schema field should be unselectable and display a clear in-progress indicator (with an option to cancel the operation). If a schema change fails and the task log is still available, a small note near the schema field should surface the failure inline -- for example, "(Schema change to 'OpenMRS' failed YYYY-MM-DD HH:MM:SS. Click here for report)" -- so the user does not have to hunt for the error in a separate log view. This is related to the broader validation schema errors issue (#962, Marked for Review).
+
 ### Versioning and Release
 
 **Create version** (#1980) generates a snapshot of a repository's content and metadata at a specific moment. The user clicks "Create Version" from the repository page, completes a form, and is returned to the repository with the new version selected. Designs were reviewed and approved with only minor comments (#1980). In Testing/QA.
@@ -915,6 +917,8 @@ The design is dependent on the Searchlight component (#1830) for dropdown resour
 | Import code list | #1998 | Open | No body or comments; no milestone |
 
 The "Add mapping" CTA (#1995) is notable because paynejd explicitly stated it should implement the "quick add mapping" feature for the concept details page, following TBv2's design. This is a priority feature for the OpenMRS community.
+
+**Quick Add Mappings in Collection (#1361).** A related but distinct requirement covers the collection context: from a concept viewed within a collection the user owns, the user should be able to click a button to add a new mapping -- analogous to the quick-add mapping in sources (#1359). The key complication is that collections do not own a source, so any new mapping created this way must have a designated source to live in. The design must therefore prompt the user to select or confirm a target source for the mapping before it can be saved. This issue is Marked for Review, meaning it has not yet been redesigned or specified for v3.
 
 "Clone to repo," "Add to repo," and "Create similar" (#1992, #1993, #1994) are all specified at the title level only with no acceptance criteria, body content, or comments. These represent planned operations that have not yet been designed or discussed.
 
@@ -1253,6 +1257,18 @@ Multi-lingual support in OCL operates at two distinct levels: the language of th
 **UI Internationalization.** The epic for internationalizing the TermBrowser (#1186) envisions user-selectable UI languages, admin-managed translation uploads, and community-contributed translations. The practical first step -- extracting the English language bundle into an external YAML/JSON file (#1471) -- was originally scoped for v2 but deliberately deferred. As @snyaggarwal noted in July 2024: "this is happening as we build v3. So we can close this out." The implication is that v3 is being built with i18n as a structural assumption rather than a retrofit, and tools like Transifex (used within the OpenMRS community) are under consideration for managing translations.
 
 **User Language Preferences.** The effects of a user's language preference on TermBrowser behavior remain under-documented (#1769). The team acknowledges the need to specify what the Language field on the User Profile actually controls -- whether it filters concept display names, changes UI labels, affects search ranking, or all of the above. This question intersects with search preferences (#1770), where the team has yet to define how language selection interacts with search result ordering.
+
+**Search Preferences (#1770).** The broader search preferences requirement asks: what user-configurable settings persist across search sessions, and what behavioral effects do they produce? Key open questions that need resolution:
+
+- **Scope of effects.** Does a search preference affect result ranking only, result filtering, display language, or all three? For example, a user with a French language preference might expect: (a) French names displayed in results, (b) French-named concepts ranked higher, and/or (c) results filtered to only concepts with French names. These are meaningfully different behaviors and the intended combination has not been specified.
+
+- **Multiple selections.** Can a user select multiple preferred languages (e.g., English and French) or multiple preferred vocabularies (e.g., CIEL and SNOMED CT)? If so, how are conflicts resolved -- by union (show anything matching any preference), by ranked order (prefer the first match), or by some other rule? The interaction model for multi-select preferences has not been designed.
+
+- **Preferred vocabularies.** Beyond language, search preferences likely extend to preferred source vocabularies. A user working primarily with CIEL might want CIEL concepts surfaced before equivalent concepts from other sources. This relates to the Walled Garden / Trusted Sources initiative (#1706), but at an individual user level rather than a platform-level curation. It is unresolved whether vocabulary preferences are part of the user profile, the search UI, or both.
+
+- **Persistence and scope.** Are preferences set once in the user profile and applied globally, or can they be adjusted per-session from the search UI itself? The relationship between the User Profile language field (#1769) and any search-time preference controls has not been defined.
+
+These open questions make #1770 a prerequisite dependency for fully specifying both the user profile form and the advanced search behavior (#1607).
 
 **Content-level language handling** surfaces throughout the system. Advanced search requirements (#1607) explicitly mention cross-language use cases: "English user performing an advanced search to only match French names/descriptions -- e.g. working to localize terminology in their own application." The locale selector itself has bugs in v2 (#1681), where searching for common two-letter codes like "es" (Spanish) fails because exact matches are not prioritized over partial matches.
 
