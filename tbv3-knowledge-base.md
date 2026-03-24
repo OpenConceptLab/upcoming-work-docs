@@ -52,7 +52,7 @@ The contributor footprint across the 208 classified issues reveals a tight core 
 |---|---|---|
 | **@paynejd** (Jonathan Payne) | Product owner, architecture, API design | Canonical URL registry design (#1696, #1732), repo type specification (#1687, #1695), diffs/checksums strategy (#1690), throttling requirements (#2121) |
 | **@snyaggarwal** (Sunny Aggarwal) | API & frontend engineering | URL registry implementation (#1732, #1816), $resolveReference (#1747), Keycloak SSO (#1702), throttling implementation (#2121), bulk of oclweb3 feature work |
-| **@jamlung-ri** (James Amlung) | UX research, user stories, QA | User stories for repo type (#1695), diffs (#1690), canonical URL registry; QA testing of SSO flows (#1702); design input on search, hierarchy, org views |
+| **@jamlung-ri** (Joe Amlung) | UX research, user stories, QA | User stories for repo type (#1695), diffs (#1690), canonical URL registry; QA testing of SSO flows (#1702); design input on search, hierarchy, org views |
 | **@paulsonder** (Paul Sonder) | UI/UX design, frontend design specs | Assigned to nearly all Design-labeled issues; search UI (#1694), concept detail views, mapping views, organization and user profile designs |
 | **@bmamlin** (Burke Mamlin) | Clinical domain expertise, FHIR alignment | URL registry review (#1732), global registry population strategy (#1743) |
 | **@rkorytkowski** (Rafal Korytkowski) | Infrastructure, legacy API knowledge | Global registry population (#1743) |
@@ -1174,10 +1174,18 @@ Key features and discussions:
 **Navigation from associations**: The team decided to support "open in same context" for navigating from an association to its from/to concept, keeping the current view intact and potentially using a breadcrumb or persisted header for navigation back to the original concept (#1621). This was confirmed as ready to proceed in March 2025.
 
 **Testing feedback** from Joe (September 2024) included:
-- Three-dot menu on each mapping row with "Open From Concept," "Open To Concept," "Compare Concepts" options
+- Three-dot menu on each mapping row with "Open From Concept," "Open To Concept," "Compare Concepts," and "Retire Mapping" options
 - Sticky map type headers during scrolling within long lists (fixed)
 - Table column spacing adjustments (fixed)
 - Tooltip explanations for defined-in-OCL vs. not-defined indicators (fixed)
+
+**Retire Mapping from Associations panel** (#2131): The three-dot context menu on each mapping row in the Associations panel must include a "Retire Mapping" action. When selected, a text field should appear for the user to enter a retirement reason (replicating the behavior of the standalone mapping details page). This applies to both TBv2 and TBv3. The retirement reason is optional but the confirmation step must always be present.
+
+**Scroll and focus preservation after CRUD** (#2131): After creating, editing, or retiring an association (mapping), the panel must preserve the user's scroll position and return focus to the modified row rather than scrolling back to the top of the page. This is particularly impactful for concepts with many associations (e.g., 440+ mappings), where finding a recently edited item after a scroll-to-top is difficult.
+
+**Scrollbar proliferation on concept detail** (#2131): The concept details page currently renders 4+ scrollbars simultaneously for concepts with large association lists (e.g., PIH:7936). Removing the max-height constraint from the Associations panel eliminates this problem, allowing the panel to expand to its natural height and use only the page-level scrollbar. Trade-off: the "Add Mapping" button moves to the bottom of the panel, so it should be duplicated at the top as well.
+
+**Associations panel loading performance** (#2131): Loading 440 associations for a single concept (PIH:7936) took over 15 seconds in TBv2. Query optimization or database indexing is required, and the same constraint must be addressed in v3. Skeleton loading should be shown while associations load; the panel must not block rendering of other concept detail sections.
 
 Status: Testing/QA.
 
@@ -1307,6 +1315,8 @@ Search is the primary entry point for most OCL interactions and has undergone si
 **Source Properties and Filters.** A major v3 search enhancement (#2174) migrates concept_class and datatype to become source-defined "properties" and exposes them as search filters. The implementation distinguishes between properties (schema definitions), filters (facet controls), and summary display configuration. As @snyaggarwal clarified: "Properties is just schema. Filters control facets. Include_in_summary only controls the default summary display." This allows source administrators to define which properties appear in concept summaries -- for example, CIEL might surface class and datatype, while LOINC surfaces its six component parts (Component, Property, Time, System, Scale, Method).
 
 **Search Result Presentation.** The removal of alternating table background colors (#2120) is a small but telling change -- the v3 search results are being redesigned from scratch rather than inheriting v2 patterns. The search results icon for mapped concepts (#1974) adds visual indicators showing when a concept has mappings, helping users identify relationship-rich concepts at a glance.
+
+**Search Result Highlighting and Fuzzy Match Formatting** (#1937): Users have reported confusion when exact matches and fuzzy matches look identical in search results. The current ElasticSearch-based highlighting bolds entire words even when only a partial match occurs -- for example, "Warburg" is fully highlighted when the query only matched "arburg." The requirement for v3 is to highlight only the actually-matching characters within a word, not the entire word. This distinction helps users quickly assess match quality and understand why a result was returned.
 
 **Advanced Search.** The advanced search MVP (#1607) remains one of the most ambitious search requirements. Compiled requirements include: restricting search to specific fields, searching custom attributes (with dynamic population of attribute keys), cross-language name matching, and finding concepts based on mapping characteristics. Andy Kanter's request -- "I'd love to see where there is not SAME-AS mapping to reference terms that we have a SAME-AS map to CIEL" -- captures the kind of relationship-aware search that distinguishes OCL from simpler terminology browsers.
 
