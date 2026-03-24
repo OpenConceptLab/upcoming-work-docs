@@ -21,7 +21,7 @@
   - **CRMI Compliance** [#2049](https://github.com/OpenConceptLab/ocl_issues/issues/2049) — state: CLOSED | labels: Epic | assigned: 
   - **Batch Validation** [#2050](https://github.com/OpenConceptLab/ocl_issues/issues/2050) — state: CLOSED | labels: Epic | assigned: 
   - **Batch Translation** [#2052](https://github.com/OpenConceptLab/ocl_issues/issues/2052) — state: CLOSED | labels: Epic | assigned: 
-  - **Automated FHIR Resource Validation** [#2053](https://github.com/OpenConceptLab/ocl_issues/issues/2053) — state: OPEN | labels: Epic | assigned: 
+  - **Automated FHIR Resource Validation** [#2053](https://github.com/OpenConceptLab/ocl_issues/issues/2053) — state: OPEN | labels: Epic | assigned:
 
 ---
 
@@ -35,7 +35,7 @@
 ### TermBrowser v3 MVP (2 issues)
 
 - **Template / Repository / ValueSet** [#2027](https://github.com/OpenConceptLab/ocl_issues/issues/2027) — state: OPEN | labels: V3 | assigned: @paulsonder
-- **Template / Repository / CodeSystem** [#2028](https://github.com/OpenConceptLab/ocl_issues/issues/2028) — state: OPEN | labels:  | assigned: 
+- **Template / Repository / CodeSystem** [#2028](https://github.com/OpenConceptLab/ocl_issues/issues/2028) — state: OPEN | labels:  | assigned:
 
 ### No Milestone (40 issues)
 
@@ -78,8 +78,9 @@
 - **Do not import npm hl7.fhir.r4.core 4.0.1 if listed in dependencies** [#2041](https://github.com/OpenConceptLab/ocl_issues/issues/2041) — state: OPEN | labels:  | assigned: @rkorytkowski
 - **Export Metadata as a ConceptMap** [#2093](https://github.com/OpenConceptLab/ocl_issues/issues/2093) — state: OPEN | labels: Priority: Low | assigned: 
 - **Bug: Value Set Compose Statement shows "ValueSet" in the "system" field** [#2114](https://github.com/OpenConceptLab/ocl_issues/issues/2114) — state: OPEN | labels: fhir | assigned: 
-- **Proposal to support download of a concept's mappings as a valueset** [#2281](https://github.com/OpenConceptLab/ocl_issues/issues/2281) — state: OPEN | labels: reviewed/keep | assigned: 
+- **Proposal to support download of a concept's mappings as a valueset** [#2281](https://github.com/OpenConceptLab/ocl_issues/issues/2281) — state: OPEN | labels: reviewed/keep | assigned:
 
 ### Sprint 17 (1 issues)
 
 - **Automatically generate changelog for oclweb2, oclapi2, oclfhir from code commits/PRs** [#828](https://github.com/OpenConceptLab/ocl_issues/issues/828) — state: OPEN | labels: web2, api2, fhir | assigned: @rkorytkowski
+
