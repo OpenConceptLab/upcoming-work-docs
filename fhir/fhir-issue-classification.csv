@@ -1,0 +1,60 @@
+issue_number,title,theme,disposition,priority,subcategory,labels,assignees,milestone,created,updated,in_fhir_project,project_status,has_code_activity,code_repos,era_classification,era_evidence
+444,"Plan how to handle ""implicit value sets"" in FHIR",API,keep,medium,FHIR Foundation,,paynejd,,2020-11-06,2023-07-05,no,n/a,no,,Legacy (pre-2022),Created 2020-11-06
+472,Provide response for naked fhir request,API,close-stale,low,FHIR Operations,discussion-needed,,,2020-11-17,2021-05-21,no,n/a,no,,Legacy (pre-2022),Created 2020-11-17
+582,Ability to filter by codesystem properties,API,close-stale,low,FHIR Operations,,,,2021-02-15,2021-05-21,no,n/a,no,,Legacy (pre-2022),Created 2021-02-15
+583,Ability to perform FHIR operation by Owner and Id,API,review,medium,FHIR Operations,,,,2021-02-15,2021-09-14,no,n/a,no,,Legacy (pre-2022),Created 2021-02-15
+591,Download/View as FHIR,TermBrowser,close-stale,low,FHIR Operations,Epic,jamlung-ri,,2021-02-16,2021-07-30,no,n/a,no,,Legacy (pre-2022),Created 2021-02-16
+632,Implement features to allow configuration of case sensitivity at the source/codesystem level,API,close-stale,low,FHIR Operations,,,,2021-03-09,2021-03-09,no,n/a,no,,Legacy (pre-2022),Created 2021-03-09
+782,Introduce attribute to control how an OCL source is exposed via FHIR,API,keep,high,FHIR Operations,,rkorytkowski,,2021-06-01,2021-09-13,no,n/a,no,,Legacy (pre-2022),Created 2021-06-01
+828,"Automatically generate changelog for oclweb2, oclapi2, oclfhir from code commits/PRs",DevEx,close-outdated,low,FHIR Operations,"web2, api2, fhir",rkorytkowski,Sprint 17,2021-07-02,2022-01-03,no,n/a,yes,oclapi2,Legacy (pre-2022),Created 2021-07-02
+865,FHIR UI in TermBrowser,TermBrowser,close-stale,low,FHIR Operations,Epic,,,2021-08-02,2021-08-02,no,n/a,no,,Legacy (pre-2022),Created 2021-08-02
+869,FHIR/SVCM Support in OCL,API,review,medium,FHIR Operations,"Epic, Project-level Epic",,,2021-08-02,2021-08-05,no,n/a,no,,Legacy (pre-2022),Created 2021-08-02
+974,"FHIR $expand operation should utilize OCL's full text search, not just conceptId",API,keep,high,FHIR Operations,fhir,rkorytkowski,,2021-09-09,2023-02-10,no,n/a,no,,Legacy (pre-2022),Created 2021-09-09
+1166,"NPM Import of Baseline FHIR Content, plus Known FHIR Service Enhancements and Bugs",API,keep,high,Content Import & Export,"Epic, V3, v3-foundation","rkorytkowski, snyaggarwal",,2021-12-20,2025-01-30,no,n/a,yes,oclapi2,Legacy (pre-2022),Created 2021-12-20
+1296,Requirements: Basic expansion matching logic for ValueSet operations,API,keep,high,FHIR Operations,fhir,"bmamlin, rkorytkowski",,2022-05-17,2024-03-12,no,n/a,no,,Foundation Phase (2022-2023),Created 2022-05-17
+1310,Implement recursive real-time expansions,API,keep,high,FHIR Operations,api2,,,2022-05-31,2024-03-12,no,n/a,no,,Foundation Phase (2022-2023),Created 2022-05-31
+1599,CodeSystem POST Bug - Display attribute seems to be required for OCL,API,keep,medium,FHIR Operations,"bug, fhir, intro",rkorytkowski,,2023-06-23,2024-03-05,no,n/a,no,,Foundation Phase (2022-2023),Created 2023-06-23
+1610,"Use canonical URL where possible in the ""system"" field of a ValueSet",API,keep,medium,FHIR Operations,fhir,rkorytkowski,,2023-07-12,2024-01-30,no,n/a,no,,Foundation Phase (2022-2023),Created 2023-07-12
+1695,Repo Type,API,review,medium,FHIR Foundation,"Epic, V3, v3-foundation",paynejd,TermBrowser v3 MVP,2023-11-14,2026-03-18,no,n/a,no,,Foundation Phase (2022-2023),Created 2023-11-14
+1696,Canonical URL Registry,API,keep,high,FHIR Foundation,"Epic, V3, v3-foundation",paynejd,TermBrowser v3 MVP,2023-11-14,2025-02-21,no,n/a,yes,oclweb3,Foundation Phase (2022-2023),Created 2023-11-14
+1726,Repo Configuration and Content Validation - Configuring Lookup values for a Repo - including FHIR properties and filters,API,keep,medium,Validation & Testing,Epic,,,2024-01-04,2024-01-23,no,n/a,no,,Build Phase (2024),Created 2024-01-04
+1744,Permissions for registries and $resolveReference behavior,API,review,medium,FHIR Foundation,"enhancement, discussion-needed, api2",,,2024-01-23,2024-03-12,no,n/a,no,,Build Phase (2024),Created 2024-01-23
+1761,Add FHIR xml support,API,review,low,Validation & Testing,fhir,rkorytkowski,,2024-02-07,2024-03-12,no,n/a,yes,oclapi2,Build Phase (2024),Created 2024-02-07
+1793,Implement basic analytics on OCL FHIR Core utilization,API,close-stale,low,FHIR Operations,"fhir, analytics",,,2024-03-08,2024-03-12,no,n/a,no,,Build Phase (2024),Created 2024-03-08
+1815,FHIR CodeSystem Fixes,API,review,medium,FHIR Operations,,rkorytkowski,,2024-03-19,2024-05-03,no,n/a,yes,oclapi2,Build Phase (2024),Created 2024-03-19
+1823,CodeSystem $lookup Enhancement - displayLanguage Parameter,API,keep,medium,FHIR Operations,fhir,rkorytkowski,,2024-04-16,2024-04-16,no,n/a,no,,Build Phase (2024),Created 2024-04-16
+1833,502 Bad Gateway for Large CodeSystem resources,API,keep,high,FHIR Operations,"bug, fhir","rkorytkowski, snyaggarwal",,2024-05-09,2024-05-28,no,n/a,yes,oclapi2,Build Phase (2024),Created 2024-05-09
+1835,"OCL rejects ""duplicate"" resource imports - ""org_source_unique"" is violated",API,review,medium,FHIR Operations,,rkorytkowski,,2024-05-09,2024-05-21,no,n/a,no,,Build Phase (2024),Created 2024-05-09
+1836,"FHIR ConceptMap fails to import due to ""null"" map_type",API,review,medium,FHIR Operations,"bug, fhir",rkorytkowski,,2024-05-09,2024-05-16,no,n/a,yes,oclapi2,Build Phase (2024),Created 2024-05-09
+1837,Review/finalize $translate operation,API,keep,medium,FHIR Operations,,"rkorytkowski, paynejd, jamlung-ri",,2024-05-15,2024-05-15,no,n/a,no,,Build Phase (2024),Created 2024-05-15
+1839,Add code searchParam for CodeSystem,API,review,medium,FHIR Operations,,rkorytkowski,,2024-05-16,2024-05-21,no,n/a,yes,oclapi2,Build Phase (2024),Created 2024-05-16
+1840,CodeSystem listing should include total,API,review,medium,FHIR Operations,,rkorytkowski,,2024-05-16,2024-05-16,no,n/a,yes,oclapi2,Build Phase (2024),Created 2024-05-16
+1874,"In TB, warn users that underscore not officially supported by FHIR in canonical URL or mnemonic",TermBrowser,keep,low,FHIR Foundation,,snyaggarwal,,2024-07-02,2024-07-02,no,n/a,no,,Build Phase (2024),Created 2024-07-02
+1898,Download the (or one of the) FHIR representation of a repository,TermBrowser,keep,medium,FHIR Operations,,jamlung-ri,,2024-07-16,2024-07-16,no,n/a,no,,Build Phase (2024),Created 2024-07-16
+1910,FHIR baseline content,API,keep,high,FHIR Content & Packaging,Epic,rkorytkowski,,2024-07-30,2024-08-13,no,n/a,no,,Build Phase (2024),Created 2024-07-30
+1915,"OCL support for Publishing terminology the FHIR ecosystem, including Direct IG Building from OCL",API,keep,high,Validation & Testing,Epic,rkorytkowski,,2024-08-09,2025-01-30,no,n/a,no,,Build Phase (2024),Created 2024-08-09
+1919,Support ConceptMap and CodeSystem with the same ID,API,keep,high,FHIR Operations,,rkorytkowski,,2024-09-04,2024-09-09,no,n/a,no,,Build Phase (2024),Created 2024-09-04
+1922,Fix overwriting ConceptMap version,API,keep,medium,FHIR Operations,,rkorytkowski,,2024-09-09,2024-09-09,no,n/a,yes,oclapi2,Build Phase (2024),Created 2024-09-09
+1924,Import r4.core dependency once,API,keep,medium,FHIR Operations,,rkorytkowski,,2024-09-09,2024-09-09,no,n/a,no,,Build Phase (2024),Created 2024-09-09
+1927,CodeSystem Import Bug for Date property,API,keep,medium,FHIR Operations,"bug, fhir",rkorytkowski,,2024-09-12,2024-09-12,no,n/a,no,,Build Phase (2024),Created 2024-09-12
+1929,CodeSystem Import Bug: New line character removed when importing into OCL,API,keep,medium,FHIR Operations,"bug, fhir",rkorytkowski,,2024-09-17,2024-09-22,no,n/a,no,,Build Phase (2024),Created 2024-09-17
+1957,Test load baseline content via NPM import,API,keep,high,Content Import & Export,,rkorytkowski,,2024-10-21,2025-01-24,no,n/a,yes,oclapi2,Build Phase (2024),Created 2024-10-21
+1961,Implement FHIR import validation/comparison process,API,review,medium,Content Import & Export,,,,2024-10-22,2024-10-22,no,n/a,no,,Build Phase (2024),Created 2024-10-22
+2027,Template / Repository / ValueSet,TermBrowser,keep,high,FHIR Operations,V3,paulsonder,TermBrowser v3 MVP,2024-11-27,2025-02-20,no,n/a,no,,Build Phase (2024),Created 2024-11-27
+2028,Template / Repository / CodeSystem,TermBrowser,keep,high,FHIR Operations,,,TermBrowser v3 MVP,2024-11-27,2025-02-20,no,n/a,no,,Build Phase (2024),Created 2024-11-27
+2030,FHIR endpoints must be handled with or without trailing slash,API,keep,medium,FHIR Operations,fhir,rkorytkowski,,2024-11-27,2024-11-27,no,n/a,yes,oclapi2,Build Phase (2024),Created 2024-11-27
+2041,Do not import npm hl7.fhir.r4.core 4.0.1 if listed in dependencies,API,keep,medium,Content Import & Export,,rkorytkowski,,2025-01-23,2025-01-23,no,n/a,yes,oclapi2,Recent (2025+),Created 2025-01-23
+2045,Terminology Packaging Service,API,keep,high,FHIR Content & Packaging,Epic,"paynejd, jamlung-ri",,2025-01-30,2025-01-30,no,n/a,no,,FHIR Core 2025,Part of #2253 OCL FHIR Core 2025 epic
+2046,Automated FHIR Testing Pipeline,Infrastructure,keep,high,Validation & Testing,Epic,"rkorytkowski, jamlung-ri",,2025-01-30,2025-01-30,no,n/a,no,,FHIR Core 2025,Part of #2253 OCL FHIR Core 2025 epic
+2047,Implement FHIR Serialization Library,API,keep,high,Content Import & Export,Epic,rkorytkowski,,2025-01-30,2025-01-30,no,n/a,no,,FHIR Core 2025,Part of #2253 OCL FHIR Core 2025 epic
+2048,FHIR Content Traceability,API,keep,medium,FHIR Content & Packaging,Epic,rkorytkowski,,2025-01-30,2026-03-24,no,n/a,no,,FHIR Core 2025,Part of #2253 OCL FHIR Core 2025 epic
+2049,CRMI Compliance,API,keep,medium,Validation & Testing,Epic,,,2025-01-30,2026-03-24,no,n/a,no,,FHIR Core 2025,Part of #2253 OCL FHIR Core 2025 epic
+2050,Batch Validation,API,keep,medium,Validation & Testing,Epic,,,2025-01-30,2026-03-24,no,n/a,no,,FHIR Core 2025,Part of #2253 OCL FHIR Core 2025 epic
+2052,Batch Translation,API,keep,medium,FHIR Operations,Epic,,,2025-01-30,2026-03-24,no,n/a,no,,FHIR Core 2025,Part of #2253 OCL FHIR Core 2025 epic
+2053,Automated FHIR Resource Validation,API,keep,medium,Validation & Testing,Epic,,,2025-01-30,2025-01-30,no,n/a,no,,FHIR Core 2025,Part of #2253 OCL FHIR Core 2025 epic
+2093,Export Metadata as a ConceptMap,Mapper,keep,low,FHIR Operations,Priority: Low,,,2025-02-18,2025-02-18,no,n/a,no,,Recent (2025+),Created 2025-02-18
+2114,"Bug: Value Set Compose Statement shows ""ValueSet"" in the ""system"" field",API,keep,medium,FHIR Operations,fhir,,,2025-02-19,2025-02-19,no,n/a,no,,Recent (2025+),Created 2025-02-19
+2253,OCL FHIR Core 2025,API,review,high,FHIR Operations,,,,2025-10-23,2025-10-23,no,n/a,no,,Recent (2025+),Created 2025-10-23
+2261,Use $resolveReference to resolve canonical URL to OCL repo version,API,review,medium,FHIR Operations,reviewed/keep,italomacedo,OCL FHIR Service MVP Launch,2025-11-20,2026-03-20,no,n/a,no,,Recent (2025+),Created 2025-11-20
+2262,"Expose OCL source.properties & source.filters through FHIR CodeSystem.property, CodeSystem.filter, and CodeSystem.concept.property",API,review,medium,FHIR Operations,reviewed/keep,snyaggarwal,OCL FHIR Service MVP Launch,2025-11-21,2026-03-20,no,n/a,no,,Recent (2025+),Created 2025-11-21
+2281,Proposal to support download of a concept's mappings as a valueset,API,review,medium,FHIR Operations,reviewed/keep,,,2025-12-18,2026-03-20,no,n/a,no,,Recent (2025+),Created 2025-12-18
