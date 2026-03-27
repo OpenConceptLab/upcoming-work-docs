@@ -7,6 +7,29 @@
 
 ---
 
+## About This File and the Requirements Library
+
+This knowledge base was synthesized from 262 GitHub issues and represents the historical and architectural context of TBv3 as tracked in the issue tracker.
+
+For the **authoritative, actively maintained requirements library** — including data schemas, UI specifications, user workflows, and architecture decisions — see the folder structure alongside this file:
+
+| Folder | Contents |
+|---|---|
+| [`00_context/`](00_context/) | Product vision, user roles, glossary — always load these |
+| [`01_objects/`](01_objects/) | Concept, Mapping, Reference, Repository, Version, Expansion, Concept Proposal schemas |
+| [`02_capabilities/`](02_capabilities/) | User-facing features: search, browse, author, manage references/versions/proposals, compare, validate |
+| [`03_workflows/`](03_workflows/) | End-to-end user journeys: build dictionary, update collection, author source, manage proposals |
+| [`04_surfaces/`](04_surfaces/) | Page and component specs: design system, concept detail, repository page, versions tab |
+| [`05_decisions/`](05_decisions/) | Architecture Decision Records (ADRs) |
+
+See [`tbv3-folder-structure.md`](tbv3-folder-structure.md) for how to navigate the library for different use cases (UI feature, workflow, API, test generation, design review).
+
+For features explicitly deferred to post-v3, see [`tbv3-deferred-features.md`](tbv3-deferred-features.md).
+
+For current priorities and open requirements work, see [`PRIORITIES.md`](PRIORITIES.md) and [`TODO.md`](TODO.md).
+
+---
+
 ## Table of Contents
 
 1. [Executive Summary](#section-1-executive-summary)
