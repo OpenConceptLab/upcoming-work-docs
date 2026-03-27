@@ -4,7 +4,7 @@
 > - Separate documentation (immediate, solid, actionable) from planning (fluid, ambitious, on hold). Features may be MVP-for-v3 or aspirational — document accordingly.
 > - After refining this documentation, supplement the human walkthrough of OCLv3 with some way for Claude to visualize OCLv3 on its own.
 
-_Last updated: 2026-03-27 (cascade spec, in-list reference summary, expansion comparison, concept.md cleanup)_
+_Last updated: 2026-03-27 (cascade spec, in-list reference summary, expansion comparison, concept.md cleanup, inline To Do audit)_
 
 ---
 
@@ -63,6 +63,16 @@ _Recommend handling as part of the dedicated Add Reference / Cascade session abo
 
 ### Repository Configuration and Schema
 
+- [ ] **`DECIDE`** `02_capabilities/configure-repository.md` — **Validation UX for existing repos:** Design how users are guided to fix invalid concepts when they enable a validation schema on a repository with pre-existing content. The current warning message says "does not retroactively validate existing concepts" — but the UX for initiating a retroactive scan (or a bulk-fix report) is unspecified.
+
+### Search and Filter
+
+- [ ] **`VERIFY`** `02_capabilities/search-and-filter.md` — **Repository chip in search results:** Confirm that the Repository column in concept search results shows a chip that includes both the version and owner. Cross-check against `design-system.md` repo chip spec and current v3 implementation.
+
+### Content Gaps
+
+- [ ] **`WRITE`** `03_workflows/author-and-publish-source.md` — **Canonical URL warning for Collections:** The canonical URL section currently specifies a missing-URL warning banner only for Sources. Specify equivalent behavior for Collections (needed for FHIR ValueSet compatibility).
+
 ### Surfaces Review (Joe-Gated — Needs Current v3 Screenshots)
 
 All four surface files need a reconciliation pass against current v3 designs. Joe to provide screenshots or Figma links before these can be completed.
@@ -71,12 +81,15 @@ All four surface files need a reconciliation pass against current v3 designs. Jo
 - [ ] **`VERIFY`** `04_surfaces/repository-page.md` — Review against current v3 implementation.
 - [ ] **`VERIFY`** `04_surfaces/versions-expansions-tab.md` — Review against current v3 implementation.
 - [ ] **`VERIFY`** `04_surfaces/design-system.md` — Full design system review for accuracy and completeness.
+- [ ] **`DECIDE`** `04_surfaces/design-system.md` — **Layout shell open questions (3):** (1) Left nav panel collapse behavior — document the collapsed state and trigger; (2) Right nav collapsible options — not yet specced; (3) Global search bar label — should the label read "searchlite" or something else? Resolve before design review.
 - [ ] **`VERIFY`** `01_objects/repository.md` — Cross-check repository header attributes and version dropdown rules against the current v3 Version design and `04_surfaces/repository-page.md`.
 
 
 ---
 
 ## P3 — Post-v3 or Low Priority
+
+- [ ] **`DECIDE`** `02_capabilities/browse-repository.md` — **Consolidated Concepts/Mappings tab:** Consider whether the Concepts and Mappings tabs in the collection browse view should be combined into a single tab that displays both concurrently (with filtering). Separate enable/disable toggles per type may be relevant.
 
 - [ ] **`CLEANUP`** Workflow docs (`03_workflows/`) — **Remove all "SOW" mentions** throughout and replace with neutral language.
 
@@ -148,15 +161,15 @@ These were flagged inline but are already adequately addressed elsewhere:
 |---|---|---|
 | Dedicated Sessions | 3 | — |
 | P1 | 3 | 8 |
-| P2 | 6 | 26 |
-| P3 | 3 | 3 |
+| P2 | 10 | 26 |
+| P3 | 4 | 3 |
 | Dismissed | — | 3 |
-| **Total active** | **12** | **40** |
+| **Total active** | **17** | **40** |
 
 | Action Type | Open |
 |---|---|
 | SESSION | 3 |
-| DECIDE | 3 |
-| WRITE | 1 |
-| VERIFY | 4 |
+| DECIDE | 6 |
+| WRITE | 2 |
+| VERIFY | 5 |
 | CLEANUP | 1 |

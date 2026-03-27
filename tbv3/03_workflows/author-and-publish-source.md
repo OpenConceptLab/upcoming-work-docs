@@ -32,7 +32,6 @@ A Terminology Publisher (TP) creates and maintains a canonical source of concept
    - Custom Validation Schema (e.g., "OpenMRS" for CIEL)
    - **Canonical URL** — strongly recommended for all sources. Required for FHIR-compatible sources and for registration in OCL's Global Canonical URL Registry. If left blank, a yellow banner is shown on the source page:
      > ⚠️ **No canonical URL set.** This source will not be accessible via FHIR endpoints and cannot be registered in the global registry. [Add a canonical URL →]
-     (To Do: Add a similar warning for Collections too)
    - Default Locale and Supported Locales
    - Hierarchy Meaning (if applicable)
    - Auto-ID Assignment (if auto-assigning concept IDs)

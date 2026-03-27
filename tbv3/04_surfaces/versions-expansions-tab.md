@@ -1,7 +1,5 @@
 # Surface: Versions + Expansions Tab
 
-> **Note:** Joe to review this against the current v3 implementation and designs, especially related to exposing Version Locking information. This doc may need reconciliation with current designs.
-
 ## Scope
 
 Full layout and interaction specification for the **Versions + Expansions** tab on a Collection repository page. This tab is the primary surface for managing version history, expansion state, staleness, and locking.

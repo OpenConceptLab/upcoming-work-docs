@@ -36,7 +36,7 @@ A collection with any unresolved **Error**-level violations cannot be expanded o
 
 ## Validation Rules
 
-> **Scope note:** User-defined validation schemas and per-rule severity overrides are **not in scope for v3 launch**. The v3 validation system uses a fixed set of built-in rules with predefined severity levels. Configurability is documented for post-v3 planning in `tbv3-knowledge-base.md`.
+> **Scope note:** User-defined validation schemas and per-rule severity overrides are **not in scope for v3 launch**. The v3 validation system uses a fixed set of built-in rules with predefined severity levels. Configurability is documented for post-v3 planning in `tbv3-deferred-features.md`.
 
 ### Built-in Rule Categories
 
@@ -72,7 +72,7 @@ A collection with any unresolved **Error**-level violations cannot be expanded o
 
 Rules are defined at two levels:
 - **Repository-level schema**: set in repository settings; applies to all collections/sources in the org that reference this repo
-- **Collection-level schema**: overrides or extends the repository-level schema for a specific collection (To Do: Note that this is a brand new idea - interesting! Actually this whole page is interestingly new.)
+- **Collection-level schema**: overrides or extends the repository-level schema for a specific collection
 
 Predefined schema templates:
 - OpenMRS (concept classes, datatypes, required mappings)
@@ -110,7 +110,7 @@ Predefined schema templates:
 
 ## Validation Report Panel
 
-Accessible from: References tab → "View all errors" banner link; also via a standalone "Validate" action in the collection action menu (⋮). This panel is currently specified for collections only. How validation applies to sources (concept/mapping authoring context) and the surface for a source-level Validation Report Panel are queued for dedicated design work in the TBv3 planning phase — see `tbv3-knowledge-base.md`.
+Accessible from: References tab → "View all errors" banner link; also via a standalone "Validate" action in the collection action menu (⋮). This panel is currently specified for collections only. How validation applies to sources (concept/mapping authoring context) and the surface for a source-level Validation Report Panel are queued for dedicated design work in the TBv3 planning phase — see `tbv3-deferred-features.md`.
 
 **Panel contents:**
 - Filter bar: severity (All / Error / Warning / Info), status (Unresolved / Ignored), reference type

@@ -85,7 +85,6 @@ For each concept (or selection of concepts):
 1. User clicks "Add to Collection" (from search result, concept detail, or hierarchy node)
 2. **Add to Collection dialog** opens:
    - Collection selector: picks the target collection (defaults to last-used if any)
-   (To Do: Create list of all cascade options that OCL can offer, e.g. Source-to-Mappings, Source-to-Concept, Custom, etc.)
    - Cascade option:
      - **None** — adds the concept only
      - **Source-to-Concept cascade** — adds the concept plus all concepts and mappings reachable via that concept's mappings within the same source. For Q-AND-A sets, this captures the question concept, all answer concepts, and the mappings between them. For most CIEL concepts, this also pulls in cross-reference mappings (e.g., SAME-AS SNOMED).

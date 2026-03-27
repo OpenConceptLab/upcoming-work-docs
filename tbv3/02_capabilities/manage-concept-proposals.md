@@ -64,13 +64,13 @@ Identical to the concept creation form (`02_capabilities/author-concept.md`) wit
 - Comment thread (proposer can add comments at any time)
 - Withdraw button (available until Approved or Rejected)
 
-> **Post-v3:** Post-approval actions for the proposer — such as viewing the newly created concept, adding it directly to a collection, or cloning it — are deferred to post-v3. See `tbv3-knowledge-base.md`.
+> **Post-v3:** Post-approval actions for the proposer — such as viewing the newly created concept, adding it directly to a collection, or cloning it — are deferred to post-v3. See `tbv3-deferred-features.md`.
 
 ---
 
 ## Managing Proposals (Source Administrator View)
 
-> **Post-v3:** A public-facing proposal view (allowing non-admins to see, endorse, or upvote existing proposals) is deferred to post-v3. See `tbv3-knowledge-base.md`.
+> **Post-v3:** A public-facing proposal view (allowing non-admins to see, endorse, or upvote existing proposals) is deferred to post-v3. See `tbv3-deferred-features.md`.
 
 ### Entry Point
 - Source repository → "Concept Proposals" tab

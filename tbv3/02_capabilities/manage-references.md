@@ -108,7 +108,7 @@ Transforms change a reference's expression type without changing the content it 
 
 ### Available Transforms (per SOW)
 
-> **Post-v3:** A transform that lets a user update the pinned version of a repo-versioned reference (e.g., from `v2023` to `v2024`) without changing the reference pattern is deferred to post-v3. See `tbv3-knowledge-base.md`.
+> **Post-v3:** A transform that lets a user update the pinned version of a repo-versioned reference (e.g., from `v2023` to `v2024`) without changing the reference pattern is deferred to post-v3. See `tbv3-deferred-features.md`.
 1. **Transform to Unversioned** — Changes a resource-versioned reference to an unversioned reference
    - `/:owner/sources/:source/concepts/:id/:resourceVersion/` → `/:owner/sources/:source/concepts/:id/`
    - Use when: cleaning up deprecated resource-versioned references

@@ -1,5 +1,4 @@
 # Object: Concept
-(To Do: Add hierarchy attributes i.e. parent_concept_URL)
 
 ## Schema
 
@@ -70,7 +69,7 @@ A concept is never hard-deleted if it has been included in any released version.
 
 ### Names (OpenMRS validation schema — applied when OpenMRS schema is enabled on the source)
 
-Per-concept rules: (To Do: Verify these against oclapi2)
+Per-concept rules:
 - Must not have more than one preferred name per locale
 - All names (except short names) must be unique within the concept
 - Must not have more than one short name per locale

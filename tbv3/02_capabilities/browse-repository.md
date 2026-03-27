@@ -71,7 +71,7 @@ See `02_capabilities/manage-references.md` for full reference management spec.
 
 ### Browse Behavior
 - References tab shows the reference definitions (not the resolved expansion content)
-- To see the expanded content, use the Concepts or Mappings tabs (which show expansion results) # To Do: Consider consolidated Concepts/Mappings tab that displays them concurrently. Concepts/mappings views may be separately enabled?
+- To see the expanded content, use the Concepts or Mappings tabs (which show expansion results)
 - Or use the Versions + Expansions tab to browse a specific expansion
 
 ---

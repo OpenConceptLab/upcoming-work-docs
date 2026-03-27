@@ -142,7 +142,7 @@ Dropdown configuration (concept class, datatype, name types, map types) is manag
 - Deleting a value does not remove it from existing concepts; it only removes it as a future option in UI forms
 - If a source has no dropdown config, freeform text entry is allowed in all concept fields
 
-> **Post-v3:** Allowing users to link dropdown values to an existing OCL source or collection (rather than managing values manually) and specifying OCL's default sources for each field are deferred to post-v3. See `tbv3-knowledge-base.md`.
+> **Post-v3:** Allowing users to link dropdown values to an existing OCL source or collection (rather than managing values manually) and specifying OCL's default sources for each field are deferred to post-v3. See `tbv3-deferred-features.md`.
 
 ---
 

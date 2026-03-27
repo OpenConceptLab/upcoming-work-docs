@@ -70,7 +70,7 @@ References in HEAD are mutable. References in released versions are immutable.
 
 ## Business Rules
 
-### Version Consistency (To Do: Check this against the current version locking behavior)
+### Version Consistency
 - When a collection's first unversioned reference to a source (e.g., CIEL) is resolved, the resolved source version becomes the **canonical source version** for that collection
 - All subsequent unversioned references to the same source must resolve to that same canonical version
 - Adding a concept from a different version of the same source triggers a conflict warning (see `02_capabilities/manage-references.md`)

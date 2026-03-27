@@ -73,7 +73,7 @@ Notification content:
 - Each row: Concept chip (name + ID) | Change type (Added / Retired / Modified)
 - "Added" concepts: checkboxes (user can deselect concepts they do NOT want to accept)
 - "Retired" concepts: warnings (user decides how to handle — remove from collection or retain as-is)
-- "Modified" concepts: side-by-side diff of what changed (names, mappings, class, datatype) (To Do: Add in some sort of tailored view of modified concepts that are in the collection already)
+- "Modified" concepts: side-by-side diff of what changed (names, mappings, class, datatype)
 
 **Key design principle:** The user must feel in control. They are not blindly accepting everything — they are reviewing and making informed decisions.
 
@@ -93,7 +93,7 @@ User decisions per change type:
 **For Retired concepts:**
 - Three options per concept (or bulk):
   - **Remove from my collection** — deletes the reference; this concept will not appear in next version
-  - **Keep in my collection** — retains the reference; the concept will appear as "Retired" in the expansion (To Do: Add option for user to lock the reference to a specific CIEL version where the concept is not retired)
+  - **Keep in my collection** — retains the reference; the concept will appear as "Retired" in the expansion
   - **Review later** — flag for follow-up; treated as "Keep" for now but added to a to-do list
 
 **For Modified concepts:**

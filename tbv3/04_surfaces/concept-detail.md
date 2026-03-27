@@ -1,7 +1,5 @@
 # Surface: Concept Detail
 
-> **Note:** Joe to review this against the current v3 implementation and designs. This doc may need reconciliation with current designs.
-
 ## Overview
 
 The Concept Detail view is the most frequently used and highest-value surface in TBv3. It is a **single independent component** that renders in two contexts:

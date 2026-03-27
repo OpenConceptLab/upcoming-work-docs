@@ -59,7 +59,7 @@ For Collections:
 
 **Validation Schema:**
 - Dropdown: None / OpenMRS / FHIR CodeSystem
-- Warning shown when changing schema on a repo with existing content: "Changing the schema does not retroactively validate existing concepts. New and edited concepts will be validated against the new schema." (To Do: Design a way to let users turn on a validation schema and then fix invalid concepts)
+- Warning shown when changing schema on a repo with existing content: "Changing the schema does not retroactively validate existing concepts. New and edited concepts will be validated against the new schema."
 
 **Dropdown Configuration:**
 - Per-field lists for: Concept Class, Datatype, Name Type, Description Type, Map Type, Locale
