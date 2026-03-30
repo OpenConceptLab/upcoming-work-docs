@@ -4,6 +4,39 @@ This file documents features, design ideas, and open questions that are explicit
 
 ---
 
+## Operations Panel
+
+### Operations Panel (FHIR and OCL API Operations UI)
+**Origin:** ocl_issues#1624
+
+A developer-oriented panel that allows users to invoke FHIR and OCL API operations directly from the TermBrowser UI without leaving the page.
+
+**Intended scope (from #1624):**
+- Server selector (defaults to current server)
+- Operation selector supporting:
+  - FHIR: `$translate`, `$lookup`, `$validate-code`
+  - OCL: `$cascade`, `$checksum`
+- Schema-driven input form: each operation's request parameters are defined by a schema; the panel generates the input form dynamically
+- Parameter inputs reuse existing TBv3 selector components (Repository + version, Concept, Mapping, JSON object)
+- Submit button to execute the operation
+- Results display: Raw and JSON views
+- Copy request URL; Copy or Download results
+
+**Post-v3 rationale:** No active design or code activity in oclweb3. Not in MVP scope. The checksum operation is partially referenced in the broader Diffs and Checksums epic (#1690) but the panel UI itself is unspecified and unbuilt.
+
+---
+
+## Search
+
+### Mapping Constraint Search
+**Origin:** `02_capabilities/search-and-filter.md`, ocl_issues#1607
+
+Allow users to filter concepts by mapping constraints — for example, "show concepts that have no SAME-AS mapping to CIEL" or "show concepts mapped to a retired concept in source X." This requires a cross-concept mapping index and cannot be done with the current search API without significant backend work.
+
+Surfaced by Andy Kanter during the v3 planning process. Preserved here for future search planning.
+
+---
+
 ## Validation
 
 ### Content Validation Engine (Schema Rule Engine, Report Panel, Background Scan)

@@ -88,6 +88,44 @@ This capability covers all search entry points: global search (full-page results
 
 ---
 
+## Advanced / Field-Specific Search
+
+These features allow users to scope or restrict their search beyond keyword matching.
+
+### Field-Specific Search
+
+Users can restrict a search query to a single field rather than matching across all fields:
+
+- **Name only** — match only concept names (not descriptions or IDs)
+- **Description only** — match only concept descriptions
+- **ID only** — match only concept IDs/mnemonics
+
+UI: An optional field selector (e.g., a dropdown or toggle adjacent to the search input) that defaults to "All fields". When a field is selected, results only match within that field.
+
+### Custom Attribute (Extra) Search
+
+Users can search within a concept's custom Extra attributes:
+
+- **Within a repository:** The list of searchable Extra attribute keys is dynamically populated from the keys present in that repository's concepts
+- **Global search:** Searching within Extras is scoped to a selected repository context (global Extra search is not indexed across all repositories)
+
+UI: An "Extras" section in the filter panel, listing known keys for the current repo. User selects a key and enters a value to match against.
+
+### Locale-Restricted Matching
+
+Users can restrict search matching to names or descriptions in a specific locale:
+
+- Useful for localization workflows — e.g., an English-speaking user searching only French terms to identify what needs translation
+- Differs from the Locale filter (which filters concepts that *have* a locale) — this restricts which locale's names are *matched against* the query
+
+UI: A "Search in locale" option in the filter panel or adjacent to the search field. Defaults to the user's language preference; can be overridden per search.
+
+### Post-v3: Mapping Constraint Search
+
+_Deferred post-v3._ Allow users to filter concepts by mapping constraints — e.g., "show concepts that have no SAME-AS mapping to CIEL" or "show concepts mapped to a retired concept in source X." This requires cross-concept mapping index support and is not in scope for v3 launch.
+
+---
+
 ## Empty States
 
 | Situation | Message |
