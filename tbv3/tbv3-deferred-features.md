@@ -79,14 +79,16 @@ Allow a repository to define templates for Extra attribute keys — pre-defined 
 
 ---
 
-### Repository Subtypes: ConceptMap and CodeSystem
-**Origin:** `01_objects/repository.md`
+### FHIR Repository Templates and Subtypes
+**Origin:** `01_objects/repository.md`, ocl_issues #2027, #2028, #2029
 
-Two open questions about how FHIR-aligned repository types map to OCL's Source/Collection model:
+FHIR-specific repository creation templates (ValueSet, CodeSystem, ConceptMap) and the underlying FHIR subtype architecture are post-v3. In v3, repository creation uses generic Source and Collection templates only. The FHIR-aligned types remain as collection/source type dropdown values but are not surfaced as distinct creation pathways with pre-filled FHIR metadata.
+
+Two open architecture questions that must be resolved before deep FHIR support is added:
 1. **ConceptMap**: Should it be a Source subtype, a Collection subtype, or valid as both? Currently modeled as a Collection subtype.
 2. **CodeSystem**: Should it be a distinct top-level repo type (separate from Source), or remain a Source subtype? Currently modeled as a Source subtype (equivalent to FHIR CodeSystem).
 
-These decisions have implications for FHIR API conformance and should be revisited before TBv3 introduces deep FHIR support.
+Issues #2027 (ValueSet template), #2028 (CodeSystem template), and #2029 (ConceptMap template) are on the MVP milestone in ocl_issues but are **explicitly deferred** pending this architecture decision. They should be moved to the post-v3 backlog.
 
 ---
 
