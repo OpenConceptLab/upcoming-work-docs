@@ -24,9 +24,9 @@ These items have been explicitly called out as needing focused design time — n
 
 - [ ] **`SESSION`** **Version Consistency / Collection Update Workflows** — The canonical source version locking behavior is deployed but not intelligently communicated to users. Needs design for: how the UI tells the user what it's doing (so version mismatches don't feel like bugs), the pathways offered when a mismatch is encountered, and whether HEAD-resolution during updates applies only to owned sources or also to CIEL. References: [ocl_issues#2236](https://github.com/OpenConceptLab/ocl_issues/issues/2236), [ocl_issues#2312](https://github.com/OpenConceptLab/ocl_issues/issues/2312).
 
-- [ ] **`SESSION`** **Validation (TBv3 Design)** — How validation applies to sources (not just collections) and the Validation Report Panel for sources need dedicated design work before TBv3 planning. See `tbv3-deferred-features.md` for context.
+- [ ] **`SESSION`** **Validation (TBv3 Design)** — Content validation engine (schema rules, report panel, background scan) is post-v3. This session is deferred. Field-level form validation remains in v3 scope and is already implemented. See `tbv3-deferred-features.md`.
 
-- [ ] **`SESSION`** **Compare Resources: Drawer vs. Full-Page Architecture** — The KB spec describes a persistent bottom drawer + queue system for comparisons. oclweb3 uses dedicated full-page routes (`/concepts/compare`, `/mappings/compare`). These are fundamentally different patterns. A decision must be made before the comparison capability spec can be finalized or implemented. See `tbv3-implementation-status.md` for analysis.
+- [x] **`SESSION`** **Compare Resources: Drawer vs. Full-Page Architecture** — **Resolved:** v3 launches with full-page routes (already implemented). Drawer+queue is planned for a subsequent update per ADR-002. `compare-resources.md` updated with v3 implementation note.
 
 - [ ] **`SESSION`** **Searchlite: Live Results vs. Scope Selectors** — The KB spec calls for a live-results dropdown grouped by resource type with Object Chips. oclweb3's Searchlite shows scope selector options (search this repo, global, match) rather than live results. Decision needed on which direction v3 pursues before `search-and-filter.md` can be finalized.
 
@@ -41,7 +41,9 @@ These items have been explicitly called out as needing focused design time — n
 - [ ] **`DECIDE`** `03_workflows/build-concept-dictionary.md` + `02_capabilities/manage-references.md` — **HEAD references / Linked Sources:** OCL currently only allows adding concepts from released source versions. Collection managers who also own the source need a way to reference HEAD content. Decision so far: not MVP, carve out space for it. Two sub-questions remain:
   - [ ] **`DECIDE`** — **Own vs. not-own scope for HEAD-resolution:** Does HEAD-resolution during collection updates apply only to sources the user owns, or also to sources they do not own (e.g., CIEL)? Needed before the Update Collection workflow can be fully specced. (Noted as open in `manage-references.md`.)
 
-- [ ] **`DECIDE`** `02_capabilities/configure-repository.md` — **Dropdown config source:** oclweb3 currently populates concept class/datatype/name type dropdowns from hardcoded OCL global sources (`OCL/Classes`, `OCL/Datatypes`, etc.), not from a repository-specific `dropdown_config`. The KB spec calls for per-repository configuration via a Configure Dropdowns UI. Decide: wire to source `dropdown_config` field, or keep global? This affects the Configure Dropdowns spec and the concept authoring form.
+- [x] **`DECIDE`** `02_capabilities/configure-repository.md` — **Dropdown config source:** **Resolved post-v3.** Dropdown Configuration UI and Concept Templates are deferred. v3 uses OCL global sources for dropdowns. See `tbv3-deferred-features.md`.
+
+- [ ] **`WRITE`** `02_capabilities/manage-concept-proposals.md` + `03_workflows/manage-concept-proposals-workflow.md` — **Concept Proposals oclweb3 implementation spec:** Concept Proposals are in scope for v3 (ADR-006, SOW Tracker 27) but the full UI is a greenfield build in oclweb3. Before dev handoff, review both spec files against the oclweb3 architecture (React Router v5, MUI v5, APIService pattern) to confirm the spec is complete and implementable. Cross-check the Mapper "propose" tab behavior (`Matching.jsx`) to ensure it's compatible with the shared proposals backend.
 
 - [ ] **`DECIDE`** `04_surfaces/concept-detail.md` — **Concept Detail tab structure:** oclweb3 renders Names, Descriptions, Properties, and Associations as collapsible sections within a single metadata tab. The KB spec describes them as distinct named tabs. Decide: match spec or accept current pattern? Affects `04_surfaces/concept-detail.md`.
 
@@ -169,17 +171,17 @@ These were flagged inline but are already adequately addressed elsewhere:
 
 | Priority | Open | Resolved / Deferred |
 |---|---|---|
-| Dedicated Sessions | 6 | — |
-| P1 | 5 | 8 |
-| P2 | 10 | 26 |
+| Dedicated Sessions | 5 | 1 |
+| P1 | 6 | 8 |
+| P2 | 10 | 27 |
 | P3 | 4 | 3 |
 | Dismissed | — | 3 |
-| **Total active** | **22** | **40** |
+| **Total active** | **22** | **42** |
 
 | Action Type | Open |
 |---|---|
-| SESSION | 6 |
-| DECIDE | 8 |
-| WRITE | 2 |
+| SESSION | 5 |
+| DECIDE | 6 |
+| WRITE | 3 |
 | VERIFY | 5 |
 | CLEANUP | 1 |

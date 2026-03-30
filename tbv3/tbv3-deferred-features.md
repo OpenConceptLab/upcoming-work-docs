@@ -6,6 +6,15 @@ This file documents features, design ideas, and open questions that are explicit
 
 ## Validation
 
+### Content Validation Engine (Schema Rule Engine, Report Panel, Background Scan)
+**Origin:** `02_capabilities/validate-content.md`
+
+The full content validation capability — built-in rule categories (Required Properties, Allowed Classes, Allowed Datatypes, Mapping Constraints, Cardinality, Reference Structure), three-level severity model (Error/Warning/Info), Validation Report Panel, background scan of collection references, and error-blocking of version creation/expansion — is post-v3. Field-level form validation (blocking save on missing required fields) is in scope for v3 and already implemented.
+
+This requires a dedicated design session before it can be built. See `validate-content.md` for the full specification, which is preserved here for when the engine is implemented.
+
+---
+
 ### User-Defined Validation Schemas and Per-Rule Severity
 **Origin:** `02_capabilities/validate-content.md`
 
@@ -82,6 +91,15 @@ These decisions have implications for FHIR API conformance and should be revisit
 ---
 
 ## Dropdown Configuration
+
+### Configure Dropdowns UI (Per-Repository Dropdown Management)
+**Origin:** `02_capabilities/configure-repository.md`, `02_capabilities/author-concept.md`
+
+The Configure Dropdowns UI — allowing repository owners to manage per-field dropdown value lists (Concept Class, Datatype, Name Type, Map Type, Locale) with add/edit/delete/reorder controls — is post-v3. In v3, dropdowns are populated from OCL global sources (`OCL/Classes`, `OCL/Datatypes`, etc.) without per-repository customization.
+
+This also defers concept templates (pre-filled form combinations based on a selected template). Both features depend on the same underlying `dropdown_config` field in the source model.
+
+---
 
 ### Link Dropdowns to an OCL Source or Collection
 **Origin:** `02_capabilities/author-concept.md`

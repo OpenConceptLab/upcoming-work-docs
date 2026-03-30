@@ -4,6 +4,8 @@
 
 Creating repositories and configuring their attributes: type, FHIR settings, validation schema, dropdown vocabulary, locale configuration, About page, and access controls.
 
+> **Post-v3 scope note:** The **Dropdown Configuration UI** (per-repository management of Concept Class, Datatype, Name Type, Map Type, Locale value lists) and **Concept Templates** are post-v3. In v3, dropdowns are populated from OCL global sources without per-repository customization. See `tbv3-deferred-features.md`. All other sections of this spec are v3 scope.
+
 ---
 
 ## Creating a Repository

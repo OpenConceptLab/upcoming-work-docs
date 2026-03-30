@@ -2,6 +2,10 @@
 
 ## Scope
 
+> **Post-v3 scope note:** The full content validation engine described in this file — schema rule categories, severity model, Validation Report Panel, background scan of references — is **post-v3**. The content validation engine requires dedicated design work (see Dedicated Sessions in `TODO.md`) before it can be built.
+>
+> **What is in scope for v3:** Field-level form validation in the concept and mapping editors (required fields, format checks, blocking save on errors). This is already implemented in oclweb3 via `FormComponent` and `validators.js`. This file documents the full future validation capability so it is ready when the engine is built.
+
 Real-time and on-demand validation of references, concepts, and mappings against schema rules defined at the repository or collection level. This capability surfaces schema violations inline during authoring and during the reference-addition workflow, preventing invalid content from being committed to expansions or versions.
 
 Applies to: collection references, source concepts, source mappings.

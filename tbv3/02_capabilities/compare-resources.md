@@ -2,7 +2,11 @@
 
 ## Scope
 
-Side-by-side comparison of any two OCL resources: concepts, mappings, repository versions, or expansions. Comparison is non-destructive and non-navigating — it uses a bottom drawer that overlays the current view without replacing it.
+Side-by-side comparison of any two OCL resources: concepts, mappings, repository versions, or expansions.
+
+> **v3 implementation note:** Per ADR-002, the comparison component is placement-agnostic and not tied to any specific container. The v3 launch implementation uses **full-page routes** (`/concepts/compare`, `/mappings/compare`, `/:repo/compare-versions`) — this is already live in oclweb3. The bottom drawer + queue system described in this spec represents the **planned next evolution** and will be built in a subsequent update. All spec detail below is correct and should be used when the drawer is implemented.
+
+This capability spec documents the full drawer+queue design. The "Add to Comparison" entry points and queue system are not yet implemented; when the full drawer pattern is built, they replace the current full-page navigation approach.
 
 ---
 

@@ -439,12 +439,13 @@ Several areas show oclweb3 making deliberate architectural choices that differ f
 5. **Searchlite** — Build live-results dropdown with Object Chips and resource-type grouping
 6. **Concept Detail action menu** — Add Copy URL, Compare; unblock Propose Edit/Retirement once Proposals built
 7. **Inline mapping actions** — Three-dot row menu, retire-in-place, drag-and-drop reorder
-8. **Configure Repository settings tab** — Settings tab + dropdown configuration UI
+8. **Configure Repository settings tab** — Settings tab with general/validation/advanced settings (dropdown configuration UI is post-v3)
+11. **Concept Proposals** — **In scope for v3** (ADR-006; SOW Tracker 27). Greenfield build required — see `02_capabilities/manage-concept-proposals.md` and `03_workflows/manage-concept-proposals-workflow.md`.
 
-### Architectural decisions needed (before building)
-9. **Compare Resources** — Decide: drawer+queue or full-page routes? (currently full-page, spec says drawer)
-10. **Validation engine** — Decide: build content validation engine for v3 or defer to post-v3?
-11. **Concept Proposals** — Confirm post-v3 status; no infrastructure needed now
+### Decided — post-v3 (no action needed for v3 launch)
+9. **Compare Resources drawer+queue** — v3 launches with full-page routes (already implemented per ADR-002); drawer is planned next evolution. Spec preserved in `compare-resources.md`.
+10. **Validation engine** — Content validation engine (schema rules, report panel, background scan) is post-v3. Field-level form validation already in oclweb3 is v3 scope. Full spec preserved in `validate-content.md`.
+12. **Dropdown Configuration UI + Concept Templates** — In v3, dropdowns populated from OCL global sources. Per-repository configuration and templates are post-v3. See `tbv3-deferred-features.md`.
 
 ---
 
