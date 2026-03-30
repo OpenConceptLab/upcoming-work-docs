@@ -4,7 +4,7 @@
 > - Separate documentation (immediate, solid, actionable) from planning (fluid, ambitious, on hold). Features may be MVP-for-v3 or aspirational — document accordingly.
 > - After refining this documentation, supplement the human walkthrough of OCLv3 with some way for Claude to visualize OCLv3 on its own.
 
-_Last updated: 2026-03-27 (cascade spec, in-list reference summary, expansion comparison, concept.md cleanup, inline To Do audit)_
+_Last updated: 2026-03-27 (cascade spec, in-list reference summary, expansion comparison, concept.md cleanup, inline To Do audit, oclweb3 implementation comparison)_
 
 ---
 
@@ -26,6 +26,12 @@ These items have been explicitly called out as needing focused design time — n
 
 - [ ] **`SESSION`** **Validation (TBv3 Design)** — How validation applies to sources (not just collections) and the Validation Report Panel for sources need dedicated design work before TBv3 planning. See `tbv3-deferred-features.md` for context.
 
+- [ ] **`SESSION`** **Compare Resources: Drawer vs. Full-Page Architecture** — The KB spec describes a persistent bottom drawer + queue system for comparisons. oclweb3 uses dedicated full-page routes (`/concepts/compare`, `/mappings/compare`). These are fundamentally different patterns. A decision must be made before the comparison capability spec can be finalized or implemented. See `tbv3-implementation-status.md` for analysis.
+
+- [ ] **`SESSION`** **Searchlite: Live Results vs. Scope Selectors** — The KB spec calls for a live-results dropdown grouped by resource type with Object Chips. oclweb3's Searchlite shows scope selector options (search this repo, global, match) rather than live results. Decision needed on which direction v3 pursues before `search-and-filter.md` can be finalized.
+
+- [ ] **`SESSION`** **oclweb3 Features Not in KB** — Several implemented features in oclweb3 are not documented in the KB: semantic match operation, OCL Mapper propose tab, inverse mapping notation, per-repository saved filters, attribute customization in comparison, auto-assign mapping IDs, `parent_concept_urls`. Each needs to be either added to the KB or explicitly scoped out. See `tbv3-implementation-status.md` Notable Items table.
+
 ---
 
 ## P1 — Resolve Before Dev Handoff
@@ -34,6 +40,10 @@ These items have been explicitly called out as needing focused design time — n
 
 - [ ] **`DECIDE`** `03_workflows/build-concept-dictionary.md` + `02_capabilities/manage-references.md` — **HEAD references / Linked Sources:** OCL currently only allows adding concepts from released source versions. Collection managers who also own the source need a way to reference HEAD content. Decision so far: not MVP, carve out space for it. Two sub-questions remain:
   - [ ] **`DECIDE`** — **Own vs. not-own scope for HEAD-resolution:** Does HEAD-resolution during collection updates apply only to sources the user owns, or also to sources they do not own (e.g., CIEL)? Needed before the Update Collection workflow can be fully specced. (Noted as open in `manage-references.md`.)
+
+- [ ] **`DECIDE`** `02_capabilities/configure-repository.md` — **Dropdown config source:** oclweb3 currently populates concept class/datatype/name type dropdowns from hardcoded OCL global sources (`OCL/Classes`, `OCL/Datatypes`, etc.), not from a repository-specific `dropdown_config`. The KB spec calls for per-repository configuration via a Configure Dropdowns UI. Decide: wire to source `dropdown_config` field, or keep global? This affects the Configure Dropdowns spec and the concept authoring form.
+
+- [ ] **`DECIDE`** `04_surfaces/concept-detail.md` — **Concept Detail tab structure:** oclweb3 renders Names, Descriptions, Properties, and Associations as collapsible sections within a single metadata tab. The KB spec describes them as distinct named tabs. Decide: match spec or accept current pattern? Affects `04_surfaces/concept-detail.md`.
 
 ### Blank / Incomplete Sections
 
@@ -159,17 +169,17 @@ These were flagged inline but are already adequately addressed elsewhere:
 
 | Priority | Open | Resolved / Deferred |
 |---|---|---|
-| Dedicated Sessions | 3 | — |
-| P1 | 3 | 8 |
+| Dedicated Sessions | 6 | — |
+| P1 | 5 | 8 |
 | P2 | 10 | 26 |
 | P3 | 4 | 3 |
 | Dismissed | — | 3 |
-| **Total active** | **17** | **40** |
+| **Total active** | **22** | **40** |
 
 | Action Type | Open |
 |---|---|
-| SESSION | 3 |
-| DECIDE | 6 |
+| SESSION | 6 |
+| DECIDE | 8 |
 | WRITE | 2 |
 | VERIFY | 5 |
 | CLEANUP | 1 |
