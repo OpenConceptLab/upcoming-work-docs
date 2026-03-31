@@ -1,0 +1,1454 @@
+{
+  "1610": {
+    "number": 1610,
+    "title": "Use canonical URL where possible in the \"system\" field of a ValueSet",
+    "state": "OPEN",
+    "body": "The \"system\" field in the ValueSet is using OCL's relative URL, not the ValueSet's canonical URL (e.g. \"system\": \"/orgs/CIEL/ValueSet/CIEL/\") (see here for example: https://fhir.staging.openconceptlab.org/orgs/MER_SMART_Guidelines/ValueSet/art-medications/?version=v3) - In the example, I would expect CIEL's canonical URL \"https://cielterminology.org/\" to appear in the system field.\r\n\r\n![image](https://github.com/OpenConceptLab/ocl_issues/assets/55999682/da32c3de-7e7f-4660-9ffd-8194f1a280f4)\r\n",
+    "createdAt": "2023-07-12T18:05:04Z",
+    "updatedAt": "2026-03-24T16:39:23Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "fhir"
+        },
+        {
+          "name": "reviewed/keep"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": [
+        {
+          "login": "rkorytkowski"
+        }
+      ]
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "jamlung-ri"
+          },
+          "createdAt": "2023-08-11T12:11:52Z",
+          "body": "In the long run, we probably want to use canonical URLs by default, but that's a decision we need to make."
+        }
+      ]
+    }
+  },
+  "2231": {
+    "number": 2231,
+    "title": "Dynamic reference cascade should account for equivalence to avoid false validation errors",
+    "state": "OPEN",
+    "body": "When adding a concept to a source with cascade, we check for equivalence. This means, when considering the addition of any concept X during the cascade, if an existing concept in the source is mapped SAME-AS concept X, we do not add concept X and any mappings for it are adjusted to point the equivalent concept in the source as they are added.\n\nFor example, if the CIEL concept \"Home electricity?\" is being added and the source already has concepts mapped SAME-AS to its \"Yes\" and \"No\" answers, the concept is added with mappings to existing \"Yes\" and \"No\" concepts within the source.\n\nWhen dynamic references are added to a collection, custom validation rules are run against the result of merging the cascaded results with the collection (without considering equivalency and removing duplicates), causing false duplicate name validation errors.\n\nUsing the previous example, when trying to add the CIEL concept \"Home electricity?\" a collection as a dynamic reference, the validation schema is run against the combination of the collection's existing concepts and the cascade results, which includes \"Yes\" and \"No\" in the collection (mapped SAME-AS to CIEL equivalents) _and_ the \"Yes\" and \"No\" from CIEL, resulting in duplicate name errors.\n\nTwo possible solutions:\n\n1. **Add equivalency logic to custom validation**. In the context of adding a dynamic reference to a collection, adapt custom validation to replicate the equivalency logic, so any instances of the same source + code or cases where an existing concept has a SAME-AS mapping to a candidate concept, the candidate and any children would be ignored. This has the downside of needing to ensure the logic for equivalency checking for custom validation is kept aligned with the equivalency checking used when expanding a collection.\n\n2. **Add equivalency checking to cascading of the dynamic references**. Adapt the logic of cascading dynamic references to account for equivalency, so any concepts that already exist in the collection (same source+code or mapped SAME-AS to the candidate concept) are skipped and any mappings to them are adjusted to point to the collection's existing concept. This has the advantage that validation would be run against the outcome of cascading instead of an interim (un-deduplicated) state, but may be more challenging or have performance costs.",
+    "createdAt": "2025-09-03T19:14:37Z",
+    "updatedAt": "2026-03-20T14:14:56Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "api2"
+        },
+        {
+          "name": "reviewed/keep"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": []
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": []
+    }
+  },
+  "1925": {
+    "number": 1925,
+    "title": "Request: Automatically add self-map",
+    "state": "OPEN",
+    "body": "When Ellen creates a concept in her source, she expects that all concepts will have a mapping to itself. This will be the case with CIEL in the future also. \n\nPerhaps this could be a setting in the source, similar to Auto-assign ID?",
+    "createdAt": "2024-09-11T13:19:42Z",
+    "updatedAt": "2026-03-24T20:27:27Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "enhancement"
+        },
+        {
+          "name": "openmrs"
+        },
+        {
+          "name": "api2"
+        },
+        {
+          "name": "reviewed/keep"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": []
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "paynejd"
+          },
+          "createdAt": "2024-09-11T14:19:12Z",
+          "body": "Or.... should it be a feature of the OpenMRS OCL module? I do not have a\r\nstrong opinion, but worth discussing...\r\n\r\nOn Wed, Sep 11, 2024 at 9:20\u202fAM Joseph Amlung ***@***.***>\r\nwrote:\r\n\r\n> When Ellen creates a concept in her source, she expects that all concepts\r\n> will have a mapping to itself. This will be the case with CIEL in the\r\n> future also.\r\n>\r\n> Perhaps this could be a setting in the source, similar to Auto-assign ID?\r\n>\r\n> \u2014\r\n> Reply to this email directly, view it on GitHub\r\n> <https://github.com/OpenConceptLab/ocl_issues/issues/1925>, or unsubscribe\r\n> <https://github.com/notifications/unsubscribe-auth/AAJCOOL4DJFOEYSOZ23LAGTZWA7QJAVCNFSM6AAAAABOA6YHZGVHI2DSMVQWIX3LMV43ASLTON2WKOZSGUYTSNZTGQ2DQMA>\r\n> .\r\n> You are receiving this because you are subscribed to this thread.Message\r\n> ID: ***@***.***>\r\n>\r\n"
+        }
+      ]
+    }
+  },
+  "1868": {
+    "number": 1868,
+    "title": "Enable creating/importing/editing resource in an older repo version",
+    "state": "OPEN",
+    "body": "**Challenge:**\r\nVersion Model for resources and repo works on created_at. created_at is system generated datetime field, and cannot be tempered from outside. Whatever gets created later is the newer version.\r\n\r\n**Tasks**\r\n1. Need to establish a link between versions (linked list). Probably each versioned resource needs to have a URI of the previous\r\n   - `previous_version_uri` -- will this affect standard checksum?\r\n   - `version_order` -- for quick sorting\r\n2. List versions -- Sort on all versions by `version_order` - 0 for initial version higher being newer\r\n3. Latest version -- Sort on all versions by `version_order` and get max.\r\n4. New version creation can have:\r\n   - `new_version.previous_version_uri=existing_latest_version.uri` and `new_version.version_order=existing_latest_version.version_order + 1`\r\n5. In between version creation needs to be created with `previous_version_uri` in payload. (considering the `new_version` is added after a version say `previous_version`. \r\n   - `existing_next_version` is version where `versions.previous_version_uri=pervious_version_uri`\r\n   - `new_version.previous_version_uri=previous_version_uri` and `new_version.version_order=previous_version.version_order + 1`\r\n   - `existing_next_version.previous_version_uri=new_version.uri` and `existing_next_version.version_order=new_version.version_order + 1`\r\n6. `previous_version_uri` and `version_order` cannot be edited from outside.\r\n7. Latest version will have `is_latest_version=true` just like now for resources. For Repo we must add this to make it consistent and faster to lookup.\r\n\r\n",
+    "createdAt": "2024-06-25T08:40:29Z",
+    "updatedAt": "2024-06-25T08:43:42Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "enhancement"
+        },
+        {
+          "name": "api2"
+        },
+        {
+          "name": "medium-difficulty"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": [
+        {
+          "login": "paynejd"
+        },
+        {
+          "login": "snyaggarwal"
+        }
+      ]
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": []
+    }
+  },
+  "1194": {
+    "number": 1194,
+    "title": "Changing an ID for an org, source, collection, etc.",
+    "state": "OPEN",
+    "body": "Currently, there is no process for replacing an ID for any OCL resource. How would we, for example, change this org ID from IHTSDO (which is outdated) to SNOMED-International? The process likely involves creating a new org and reloading the content, but users of that content would be impacted.",
+    "createdAt": "2022-01-31T13:28:40Z",
+    "updatedAt": "2024-03-12T11:47:59Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "enhancement"
+        },
+        {
+          "name": "discussion-needed"
+        },
+        {
+          "name": "api2"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": [
+        {
+          "login": "paynejd"
+        },
+        {
+          "login": "snyaggarwal"
+        },
+        {
+          "login": "jamlung-ri"
+        }
+      ]
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "jamlung-ri"
+          },
+          "createdAt": "2022-02-14T13:26:19Z",
+          "body": "Need to discuss this on a Dev or Arch call."
+        }
+      ]
+    }
+  },
+  "757": {
+    "number": 757,
+    "title": "Implement optional country code support for locales",
+    "state": "OPEN",
+    "body": "We ran into a validation issue importing the PIH dictionary (#732) where some valid Java locales are unknown to OCL. Java locales should be known to OCL. Here is a list of Java 8 locales...\r\n\r\n```bash\r\n$ docker run --rm groovy groovy -e 'println System.getProperty(\"java.version\")'\r\n1.8.0_252\r\n$ docker run --rm groovy groovy -e \\\r\n  'java.text.SimpleDateFormat.availableLocales.each {println \"$it|$it.displayName|$it.displayCountry\"}' \\\r\n  | sort\r\n```\r\n\r\nLocale|Display Name|Country\r\n-|-|-\r\nar_AE|Arabic (United Arab Emirates)|United Arab Emirates\r\nar_BH|Arabic (Bahrain)|Bahrain\r\nar_DZ|Arabic (Algeria)|Algeria\r\nar_EG|Arabic (Egypt)|Egypt\r\nar_IQ|Arabic (Iraq)|Iraq\r\nar_JO|Arabic (Jordan)|Jordan\r\nar_KW|Arabic (Kuwait)|Kuwait\r\nar_LB|Arabic (Lebanon)|Lebanon\r\nar_LY|Arabic (Libya)|Libya\r\nar_MA|Arabic (Morocco)|Morocco\r\nar_OM|Arabic (Oman)|Oman\r\nar_QA|Arabic (Qatar)|Qatar\r\nar_SA|Arabic (Saudi Arabia)|Saudi Arabia\r\nar_SD|Arabic (Sudan)|Sudan\r\nar_SY|Arabic (Syria)|Syria\r\nar_TN|Arabic (Tunisia)|Tunisia\r\nar_YE|Arabic (Yemen)|Yemen\r\nar|Arabic|\r\nbe_BY|Belarusian (Belarus)|Belarus\r\nbe|Belarusian|\r\nbg_BG|Bulgarian (Bulgaria)|Bulgaria\r\nbg|Bulgarian|\r\nca_ES|Catalan (Spain)|Spain\r\nca|Catalan|\r\ncs_CZ|Czech (Czech Republic)|Czech Republic\r\ncs|Czech|\r\nda_DK|Danish (Denmark)|Denmark\r\nda|Danish|\r\nde_AT|German (Austria)|Austria\r\nde_CH|German (Switzerland)|Switzerland\r\nde_DE|German (Germany)|Germany\r\nde_GR|German (Greece)|Greece\r\nde_LU|German (Luxembourg)|Luxembourg\r\nde|German|\r\nel_CY|Greek (Cyprus)|Cyprus\r\nel_GR|Greek (Greece)|Greece\r\nel|Greek|\r\nen_AU|English (Australia)|Australia\r\nen_CA|English (Canada)|Canada\r\nen_GB|English (United Kingdom)|United Kingdom\r\nen_IE|English (Ireland)|Ireland\r\nen_IN|English (India)|India\r\nen_MT|English (Malta)|Malta\r\nen_NZ|English (New Zealand)|New Zealand\r\nen_PH|English (Philippines)|Philippines\r\nen_SG|English (Singapore)|Singapore\r\nen_US|English (United States)|United States\r\nen_ZA|English (South Africa)|South Africa\r\nen|English|\r\nes_AR|Spanish (Argentina)|Argentina\r\nes_BO|Spanish (Bolivia)|Bolivia\r\nes_CL|Spanish (Chile)|Chile\r\nes_CO|Spanish (Colombia)|Colombia\r\nes_CR|Spanish (Costa Rica)|Costa Rica\r\nes_CU|Spanish (Cuba)|Cuba\r\nes_DO|Spanish (Dominican Republic)|Dominican Republic\r\nes_EC|Spanish (Ecuador)|Ecuador\r\nes_ES|Spanish (Spain)|Spain\r\nes_GT|Spanish (Guatemala)|Guatemala\r\nes_HN|Spanish (Honduras)|Honduras\r\nes_MX|Spanish (Mexico)|Mexico\r\nes_NI|Spanish (Nicaragua)|Nicaragua\r\nes_PA|Spanish (Panama)|Panama\r\nes_PE|Spanish (Peru)|Peru\r\nes_PR|Spanish (Puerto Rico)|Puerto Rico\r\nes_PY|Spanish (Paraguay)|Paraguay\r\nes_SV|Spanish (El Salvador)|El Salvador\r\nes_US|Spanish (United States)|United States\r\nes_UY|Spanish (Uruguay)|Uruguay\r\nes_VE|Spanish (Venezuela)|Venezuela\r\nes|Spanish|\r\net_EE|Estonian (Estonia)|Estonia\r\net|Estonian|\r\nfi_FI|Finnish (Finland)|Finland\r\nfi|Finnish|\r\nfr_BE|French (Belgium)|Belgium\r\nfr_CA|French (Canada)|Canada\r\nfr_CH|French (Switzerland)|Switzerland\r\nfr_FR|French (France)|France\r\nfr_LU|French (Luxembourg)|Luxembourg\r\nfr|French|\r\nga_IE|Irish (Ireland)|Ireland\r\nga|Irish|\r\nhi_IN|Hindi (India)|India\r\nhi|Hindi|\r\nhr_HR|Croatian (Croatia)|Croatia\r\nhr|Croatian|\r\nhu_HU|Hungarian (Hungary)|Hungary\r\nhu|Hungarian|\r\nin_ID|Indonesian (Indonesia)|Indonesia\r\nin|Indonesian|\r\nis_IS|Icelandic (Iceland)|Iceland\r\nis|Icelandic|\r\nit_CH|Italian (Switzerland)|Switzerland\r\nit_IT|Italian (Italy)|Italy\r\nit|Italian|\r\niw_IL|Hebrew (Israel)|Israel\r\niw|Hebrew|\r\nja_JP_JP_#u-ca-japanese|Japanese (Japan,JP)|Japan\r\nja_JP|Japanese (Japan)|Japan\r\nja|Japanese|\r\nko_KR|Korean (South Korea)|South Korea\r\nko|Korean|\r\nlt_LT|Lithuanian (Lithuania)|Lithuania\r\nlt|Lithuanian|\r\nlv_LV|Latvian (Latvia)|Latvia\r\nlv|Latvian|\r\nmk_MK|Macedonian (Macedonia)|Macedonia\r\nmk|Macedonian|\r\nms_MY|Malay (Malaysia)|Malaysia\r\nms|Malay|\r\nmt_MT|Maltese (Malta)|Malta\r\nmt|Maltese|\r\nnl_BE|Dutch (Belgium)|Belgium\r\nnl_NL|Dutch (Netherlands)|Netherlands\r\nnl|Dutch|\r\nno_NO_NY|Norwegian (Norway,Nynorsk)|Norway\r\nno_NO|Norwegian (Norway)|Norway\r\nno|Norwegian|\r\npl_PL|Polish (Poland)|Poland\r\npl|Polish|\r\npt_BR|Portuguese (Brazil)|Brazil\r\npt_PT|Portuguese (Portugal)|Portugal\r\npt|Portuguese|\r\nro_RO|Romanian (Romania)|Romania\r\nro|Romanian|\r\nru_RU|Russian (Russia)|Russia\r\nru|Russian|\r\nsk_SK|Slovak (Slovakia)|Slovakia\r\nsk|Slovak|\r\nsl_SI|Slovenian (Slovenia)|Slovenia\r\nsl|Slovenian|\r\nsq_AL|Albanian (Albania)|Albania\r\nsq|Albanian|\r\nsr_BA_#Latn|Serbian (Latin,Bosnia and Herzegovina)|Bosnia and Herzegovina\r\nsr_BA|Serbian (Bosnia and Herzegovina)|Bosnia and Herzegovina\r\nsr_CS|Serbian (Serbia and Montenegro)|Serbia and Montenegro\r\nsr_ME_#Latn|Serbian (Latin,Montenegro)|Montenegro\r\nsr_ME|Serbian (Montenegro)|Montenegro\r\nsr_RS_#Latn|Serbian (Latin,Serbia)|Serbia\r\nsr_RS|Serbian (Serbia)|Serbia\r\nsr__#Latn|Serbian (Latin)|\r\nsr|Serbian|\r\nsv_SE|Swedish (Sweden)|Sweden\r\nsv|Swedish|\r\nth_TH_TH_#u-nu-thai|Thai (Thailand,TH)|Thailand\r\nth_TH|Thai (Thailand)|Thailand\r\nth|Thai|\r\ntr_TR|Turkish (Turkey)|Turkey\r\ntr|Turkish|\r\nuk_UA|Ukrainian (Ukraine)|Ukraine\r\nuk|Ukrainian|\r\nvi_VN|Vietnamese (Vietnam)|Vietnam\r\nvi|Vietnamese|\r\nzh_CN|Chinese (China)|China\r\nzh_HK|Chinese (Hong Kong)|Hong Kong\r\nzh_SG|Chinese (Singapore)|Singapore\r\nzh_TW|Chinese (Taiwan)|Taiwan\r\nzh|Chinese|",
+    "createdAt": "2021-05-14T13:43:30Z",
+    "updatedAt": "2024-03-12T11:51:38Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "openmrs"
+        },
+        {
+          "name": "api2"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": [
+        {
+          "login": "paynejd"
+        }
+      ]
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2021-05-14T15:35:54Z",
+          "body": "There are over 1700 locale names within OCL's Locale concepts. Comparing Java locales to those names...\r\n```bash\r\n$ http -b 'https://api.openconceptlab.org/orgs/OCL/sources/Locales/concepts/?verbose=true&limit=1000' \\\r\n  | jq -r '.[].names[].name' | sort -u > ocl_locale_list_prod.txt\r\n$ docker run --rm groovy groovy -e   'java.text.SimpleDateFormat.availableLocales.each {println it}'   \\\r\n  | sort > java_locale_list.txt\r\n$ comm -23 java_locale_list.txt ocl_locale_list_prod.txt\r\n```\r\nyields 117 possible Java locales that aren't represented in OCL:\r\n```\r\nar_AE\r\nar_BH\r\nar_DZ\r\nar_EG\r\nar_IQ\r\nar_JO\r\nar_KW\r\nar_LB\r\nar_LY\r\nar_MA\r\nar_OM\r\nar_QA\r\nar_SA\r\nar_SD\r\nar_SY\r\nar_TN\r\nar_YE\r\nbe_BY\r\nbg_BG\r\nca_ES\r\ncs_CZ\r\nda_DK\r\nde_AT\r\nde_CH\r\nde_DE\r\nde_GR\r\nde_LU\r\nel_CY\r\nel_GR\r\nen_AU\r\nen_CA\r\nen_GB\r\nen_IE\r\nen_IN\r\nen_MT\r\nen_NZ\r\nen_PH\r\nen_SG\r\nen_US\r\nen_ZA\r\nes_AR\r\nes_BO\r\nes_CL\r\nes_CO\r\nes_CR\r\nes_CU\r\nes_DO\r\nes_EC\r\nes_ES\r\nes_GT\r\nes_HN\r\nes_MX\r\nes_NI\r\nes_PA\r\nes_PE\r\nes_PR\r\nes_PY\r\nes_SV\r\nes_US\r\nes_UY\r\nes_VE\r\net_EE\r\nfi_FI\r\nfr_BE\r\nfr_CA\r\nfr_CH\r\nfr_FR\r\nfr_LU\r\nga_IE\r\nhi_IN\r\nhr_HR\r\nhu_HU\r\nin\r\nin_ID\r\nis_IS\r\nit_CH\r\nit_IT\r\niw\r\niw_IL\r\nja_JP\r\nja_JP_JP_#u-ca-japanese\r\nko_KR\r\nlt_LT\r\nlv_LV\r\nmk_MK\r\nms_MY\r\nmt_MT\r\nnl_BE\r\nnl_NL\r\nno_NO\r\nno_NO_NY\r\npl_PL\r\npt_BR\r\npt_PT\r\nro_RO\r\nru_RU\r\nsk_SK\r\nsl_SI\r\nsq_AL\r\nsr_BA\r\nsr_BA_#Latn\r\nsr_CS\r\nsr_ME\r\nsr_ME_#Latn\r\nsr_RS\r\nsr_RS_#Latn\r\nsr__#Latn\r\nsv_SE\r\nth_TH\r\nth_TH_TH_#u-nu-thai\r\ntr_TR\r\nuk_UA\r\nvi_VN\r\nzh_CN\r\nzh_HK\r\nzh_SG\r\nzh_TW\r\n```\r\n@paynejd, we'll need to decide how you want to introduce these locale names into OCL (e.g., synonyms, new entries, or a combination)."
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2021-05-20T00:18:36Z",
+          "body": "It looks like Java locales are derived from [Unicode's Common Locale Data Repository (CLDR)](http://cldr.unicode.org/index). Their [download page](http://cldr.unicode.org/index/downloads) points to a GitHub repo with [CLDR json data](https://github.com/unicode-org/cldr-json#cldr-json). Java locales appear to be derived from [CLDR locale names](https://github.com/unicode-org/cldr-json/tree/master/cldr-json/cldr-localenames-modern/main).\r\n\r\nA good summary of locales in Java is available in [Internationalization: Understanding Locale in the Java Platform](https://www.oracle.com/technical-resources/articles/javase/locale.html). From that article:\r\n\r\n> If you want to know what `Locale` objects you can create, the answer is simple: You can create any locale you'd like.\r\n\r\nIn this case, perhaps we should just focus on supporting the locales that are needed right now \u2013 Indonesian (`in`) and British English (`en_GB`) and not try to support all possible Java locales."
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2021-05-27T04:39:37Z",
+          "body": "Best Current Practice 47 for language tags ([BCP 47](https://www.ietf.org/rfc/bcp-index.txt)) is [RFC 5646](https://datatracker.ietf.org/doc/html/rfc5646), which uses hyphens to separate language and region codes. Because Java's `Locale` is ancient, it uses underscores instead of hyphens. Nice summary [here](https://softwareengineering.stackexchange.com/a/367706).\r\n\r\nPer [Wikipedia's ISO 639-1 listing](https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes), the \"in\" representation for Indonesian language was replaced with \"id\" in 1989 ([ref](http://xml.coverpages.org/iso639a.html)). But this \"in\" designation still exists in Java (as listed above).\r\n\r\nSo, I've proposed adding \"id\" as a synonym for Indonesian language with type \"ISO 639-1 Non-preferred\". **NOTE: this is the first case of non-preferred for ISO 639-1. Previously, the only \"non-preferred\" language types were ISO 639-2 Non-preferred.**\r\n\r\nI added an entry for British English as \"en-GB\" (following IETF BCP 47) and added synonyms \"en-GB\" and \"en_GB\". **NOTE: this introduces two new locale name types \"IETF BCP 47\" and \"Java Locale\".**\r\n\r\nI created [oclapi2 PR-9](https://github.com/OpenConceptLab/oclapi2/pull/9) for these proposed changes."
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2021-05-27T06:30:02Z",
+          "body": "@bmamlin @paynejd en_GB and ind are available on QA, Demo and Staging"
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2021-05-27T21:38:40Z",
+          "body": "Thanks @snyaggarwal.\r\n\r\nFYI \u2013 for Indonesian, we need the legacy name \"in\" as name type \"ISO 639-1 Non-preferred\" as well. I manually added this to [staging](https://app.staging.openconceptlab.org/#/orgs/OCL/sources/Locales/concepts/ind/) before turning on the OpenMRS Custom Validation schema for the updated PIH dictionary."
+        },
+        {
+          "author": {
+            "login": "paynejd"
+          },
+          "createdAt": "2022-10-19T12:51:43Z",
+          "body": "see #1312 #1364"
+        }
+      ]
+    }
+  },
+  "1706": {
+    "number": 1706,
+    "title": "Walled Garden and Trusted Sources",
+    "state": "OPEN",
+    "body": "Overall, the goal is for users to be exposed primarily to content that is most relevant to them, allowing them to see more Reference Content like CIEL and LOINC, and less of all the other stuff that everyone is doing (unless that is the intended goal of the user to see other example content).\n\nIt is unclear if this will be part of V3 quite yet or to what extent.\n\nExisting documentation here: https://docs.google.com/document/d/1zrQOQBC868uRdrZA-mhzvNzsepVYFhHrMDuJU7mKRjY/edit#heading=h.wl2btr79egq1\n\nRelated to Canonical URLs work.",
+    "createdAt": "2023-12-04T20:41:49Z",
+    "updatedAt": "2024-03-15T18:18:23Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "Epic"
+        },
+        {
+          "name": "V3"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": []
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": []
+    }
+  },
+  "1891": {
+    "number": 1891,
+    "title": "Freeze large resources upon deletion request",
+    "state": "OPEN",
+    "body": "Deleting a large repo or org is pretty confusing for a user. There is no \"Processing\" flag. Content is not \"frozen\". They can continue to interact with the content while it is being processed asynchronously without any indication that it is being deleted.\n\nIdeas for how we handle this:\n- Implement \"Frozen\" flag -- content that is frozen can only be viewed; the flag should be visible to users\n- When requesting a delete, OCL first \"freezes\" the content (assuming that this is a quick process?), and then kick off the deletion process\n\nThe idea is that \"Freezing\" content will be useful for other purposes: Loading a large repo; processing a large version; evaluating a large expansion; etc.\n\nFinally, if I request a delete in TBv3, the UI should immediately respond, display a flag, etc.\n",
+    "createdAt": "2024-07-16T15:42:00Z",
+    "updatedAt": "2024-07-20T12:37:10Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "V3"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": []
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "jamlung-ri"
+          },
+          "createdAt": "2024-07-17T14:40:49Z",
+          "body": "Thanks @paynejd , this feels valuable for v3 for sure. Currently, I imagine that it's not super common to do large deletes right now, so I could imagine this development waiting for the v3 CodeSystem Author persona work. That said, if this is a low effort change, then I do think it's possible to put it into OCLv2 since the Frozen flag seems pretty simple from a UI perspective. I'll defer to you and @snyaggarwal though."
+        }
+      ]
+    }
+  },
+  "1970": {
+    "number": 1970,
+    "title": "Mobile-ready screens for V3",
+    "state": "OPEN",
+    "body": "OCLv3 is currently not mobile ready, but many people will access v3 first on their phone. \n\n@snyaggarwal How possible will it be to optimize some screens for mobile by the start of OHIE24? We would want to prioritize anonymous dashboard, searchlight, search results, and concept details",
+    "createdAt": "2024-11-06T16:14:57Z",
+    "updatedAt": "2024-11-07T05:56:39Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "V3"
+        },
+        {
+          "name": "OHIE Must-Haves"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": [
+        {
+          "login": "snyaggarwal"
+        }
+      ]
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "paulsonder"
+          },
+          "createdAt": "2024-11-06T17:28:20Z",
+          "body": "Some design notes...\r\n\r\n- M3 components such as the navigation, drawers etc are mobile ready in terms of having references. \r\n- Some custom components **do not** have mobile designs yet as these were not prioritised in requirements. I think we can put together a reference of how things like Searchlight, Data tables, Repo headers and Detail views behave, but this will not be ready for next week."
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-11-07T05:56:38Z",
+          "body": "search results with tables are not mobile friendly."
+        }
+      ]
+    }
+  },
+  "1867": {
+    "number": 1867,
+    "title": "Create independent script for standard and smart checksums for concepts and mappings",
+    "state": "OPEN",
+    "body": "We want a script that can be run outside of the OCL core services. The script can be either python or javascript -- python might be easier for the moment. It must have the logic required to generate standard and smart checksums for concepts or mappings. The user should not need to know which fields should be included for standard/smart checksums -- this needs to be embedded in the script.\n\nThe initial goal is to enable @bmamlin to create checksums for CIEL resources outside of OCL to support validation workflows.\n\nAlso see #1691\n",
+    "createdAt": "2024-06-24T20:01:48Z",
+    "updatedAt": "2024-12-02T02:47:42Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "api2"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": [
+        {
+          "login": "snyaggarwal"
+        }
+      ]
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-06-24T20:05:36Z",
+          "body": "Thanks @paynejd. A small python script that calculates checksum for a concept or a mapping would be very helpful. At this point, I'm [missing something](https://github.com/OpenConceptLab/ocl_issues/issues/1691#issuecomment-2081538642) in my little toy python script."
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-06-28T02:04:57Z",
+          "body": "@snyaggarwal, if you could provide me with the structure of the JSON sent to the JSum algorithm for a CIEL concept (like [this one](https://api.openconceptlab.org/orgs/CIEL/sources/CIEL/concepts/1/)), it would help me troubleshoot my script."
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-06-28T05:04:17Z",
+          "body": "@bmamlin For standard checksum -- \r\n```json\r\n{'concept_class': 'Diagnosis', 'datatype': 'N/A', 'external_id': '1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA', 'names': [{'locale': 'en', 'locale_preferred': True, 'name': 'Anemia due to blood loss', 'name_type': 'FULLY_SPECIFIED'}, {'locale': 'es', 'locale_preferred': True, 'name': 'Anemia por p\u00e9rdida de sangre', 'name_type': 'FULLY_SPECIFIED'}, {'locale': 'en', 'locale_preferred': False, 'name': 'Anemia, blood loss', 'name_type': None}, {'locale': 'fr', 'locale_preferred': True, 'name': 'An\u00e9mie secondaire \u00e0 une h\u00e9morragie', 'name_type': 'FULLY_SPECIFIED'}, {'locale': 'ur', 'locale_preferred': True, 'name': '\u062e\u0648\u0646 \u06a9\u06cc \u06a9\u0645\u06cc\u060c \u062e\u0648\u0646 \u0628\u06c1\u0646\u06d2 \u06a9\u06cc \u0648\u062c\u06c1 \u0633\u06d2', 'name_type': 'FULLY_SPECIFIED'}], 'descriptions': [{'locale': 'en', 'locale_preferred': False, 'description': 'Anemia due to bleeding or a hemorrhagic process.', 'description_type': None}, {'locale': 'ur', 'locale_preferred': False, 'description': '\u062e\u0648\u0646 \u0628\u06c1\u0646\u06d2 \u06a9\u06cc \u0648\u062c\u06c1 \u0633\u06d2 \u062e\u0648\u0646 \u06a9\u06cc \u06a9\u0645\u06cc', 'description_type': None}], 'parent_concept_urls': [], 'child_concept_urls': []}\r\n```"
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-07-10T02:05:30Z",
+          "body": "Tasks:\r\n- [ ] Create a python script in ocldev and reuse in API for checksum generation\r\n- [ ] Create a JS script and convert it to a NPM package and publish\r\n- [x] Both Python and JS script should generate close to identical output\r\n- [x] Both scripts should accept args like resource type, checksum type and data"
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-07-10T03:25:36Z",
+          "body": "> @bmamlin For standard checksum --\r\n> \r\n> ```\r\n> {...}\r\n> ```\r\n\r\nOkay. That explains why I wasn't having any luck generating matching checksums from a CIEL import file. It's a bit more complicated than simply including or omitting properties by key. For example,\r\n* `locale` is included on names & descriptions, but not for the concept itself\r\n* `external_id` is included for the concept itself, but not for names & descriptions\r\n* `child_concept_urls` and `parent_concept_urls` properties are included (not something I have outside of OCL)\r\n\r\nAny chance we could exclude hierarchy properties (child & parent concept URLs) from the checksums? If not, maybe the needs for checksums for internal OCL needs may not fully align with the utility of checksums for validating content outside of OCL."
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-07-10T07:18:18Z",
+          "body": "@bmamlin For standard checksum, we use everything that user can add/edit from TB/API.\r\n- `external_id` was missed for names/descriptions, I have added it, will be regenerating checksums\r\n- `child_concept_urls` and `parent_concept_urls` are considered but ignored if they are empty so its same as not providing them if its are not there."
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-07-12T13:24:21Z",
+          "body": "@snyaggarwal I tried running [checksum.py](https://github.com/OpenConceptLab/ocldev/blob/master/ocldev/checksum.py) on the anemia concept I described [here](https://github.com/OpenConceptLab/ocl_issues/issues/1691#issuecomment-2081538642). That concept contains a standard checksum of `06a4e830339e7aa104bea061b604522d`, but the script generates a standard checksum of `29e35e12ed7ffd0be9851ff9849fca5d`. I figured something might have changed with the concept or the algorithm recently, so I fetched an updated version of the concept from https://api.openconceptlab.org/orgs/CIEL/sources/CIEL/concepts/1/. The standard checksum (as of writing this comment) is now showing as `6ac645e6a34ea315d0ecc2ce46200f02`:\r\n\r\n<details><summary>Anemia json</summary>\r\n\r\n```json\r\n{\r\n    \"checksums\": {\r\n        \"smart\": \"b05def9dd9cb057b83b7be3bbb80ddfd\",\r\n        \"standard\": \"6ac645e6a34ea315d0ecc2ce46200f02\"\r\n    },\r\n    \"concept_class\": \"Diagnosis\",\r\n    \"created_by\": \"ocladmin\",\r\n    \"created_on\": \"2021-03-29T03:51:26.315620Z\",\r\n    \"datatype\": \"N/A\",\r\n    \"descriptions\": [\r\n        {\r\n            \"checksum\": \"07fb9df8e68e00e49c742b40774dfb0a\",\r\n            \"description\": \"Anemia due to bleeding or a hemorrhagic process.\",\r\n            \"description_type\": null,\r\n            \"external_id\": \"1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\",\r\n            \"locale\": \"en\",\r\n            \"locale_preferred\": false,\r\n            \"type\": \"ConceptDescription\",\r\n            \"uuid\": \"1713876\"\r\n        },\r\n        {\r\n            \"checksum\": \"d186b390bb5721a253a17ff9df704f68\",\r\n            \"description\": \"\u062e\u0648\u0646 \u0628\u06c1\u0646\u06d2 \u06a9\u06cc \u0648\u062c\u06c1 \u0633\u06d2 \u062e\u0648\u0646 \u06a9\u06cc \u06a9\u0645\u06cc\",\r\n            \"description_type\": null,\r\n            \"external_id\": \"18132FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\",\r\n            \"locale\": \"ur\",\r\n            \"locale_preferred\": false,\r\n            \"type\": \"ConceptDescription\",\r\n            \"uuid\": \"1713877\"\r\n        }\r\n    ],\r\n    \"display_locale\": \"en\",\r\n    \"display_name\": \"Anemia due to blood loss\",\r\n    \"external_id\": \"1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\r\n    \"extras\": {},\r\n    \"id\": \"1\",\r\n    \"latest_source_version\": null,\r\n    \"names\": [\r\n        {\r\n            \"checksum\": \"b948c7063be4179b3a2acd2ac5ba97e8\",\r\n            \"external_id\": \"1BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\r\n            \"locale\": \"en\",\r\n            \"locale_preferred\": true,\r\n            \"name\": \"Anemia due to blood loss\",\r\n            \"name_type\": \"FULLY_SPECIFIED\",\r\n            \"type\": \"ConceptName\",\r\n            \"uuid\": \"18618771\"\r\n        },\r\n        {\r\n            \"checksum\": \"48d198a148c14cffe0a0bbb9cbcda88a\",\r\n            \"external_id\": \"80825BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\r\n            \"locale\": \"es\",\r\n            \"locale_preferred\": true,\r\n            \"name\": \"Anemia por p\u00e9rdida de sangre\",\r\n            \"name_type\": \"FULLY_SPECIFIED\",\r\n            \"type\": \"ConceptName\",\r\n            \"uuid\": \"18618772\"\r\n        },\r\n        {\r\n            \"checksum\": \"3af4d5d71c7bfa570a35d32cb1426503\",\r\n            \"external_id\": \"87939BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\r\n            \"locale\": \"en\",\r\n            \"locale_preferred\": false,\r\n            \"name\": \"Anemia, blood loss\",\r\n            \"name_type\": null,\r\n            \"type\": \"ConceptName\",\r\n            \"uuid\": \"18618773\"\r\n        },\r\n        {\r\n            \"checksum\": \"6fefdbf2ba50a65e0d1abb343ec88869\",\r\n            \"external_id\": \"106367BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\r\n            \"locale\": \"fr\",\r\n            \"locale_preferred\": true,\r\n            \"name\": \"An\u00e9mie secondaire \u00e0 une h\u00e9morragie\",\r\n            \"name_type\": \"FULLY_SPECIFIED\",\r\n            \"type\": \"ConceptName\",\r\n            \"uuid\": \"18618774\"\r\n        },\r\n        {\r\n            \"checksum\": \"b043b5fa4d049d82846bf6e1c2e0a902\",\r\n            \"external_id\": \"139759BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\r\n            \"locale\": \"ur\",\r\n            \"locale_preferred\": true,\r\n            \"name\": \"\u062e\u0648\u0646 \u06a9\u06cc \u06a9\u0645\u06cc\u060c \u062e\u0648\u0646 \u0628\u06c1\u0646\u06d2 \u06a9\u06cc \u0648\u062c\u06c1 \u0633\u06d2\",\r\n            \"name_type\": \"FULLY_SPECIFIED\",\r\n            \"type\": \"ConceptName\",\r\n            \"uuid\": \"18618775\"\r\n        }\r\n    ],\r\n    \"owner\": \"CIEL\",\r\n    \"owner_type\": \"Organization\",\r\n    \"owner_url\": \"/orgs/CIEL/\",\r\n    \"public_can_view\": true,\r\n    \"retired\": false,\r\n    \"source\": \"CIEL\",\r\n    \"type\": \"Concept\",\r\n    \"update_comment\": null,\r\n    \"updated_by\": \"ocladmin\",\r\n    \"updated_on\": \"2024-06-27T18:09:49.023038Z\",\r\n    \"url\": \"/orgs/CIEL/sources/CIEL/concepts/1/\",\r\n    \"uuid\": \"1295\",\r\n    \"version\": \"1295\",\r\n    \"version_url\": \"/orgs/CIEL/sources/CIEL/concepts/1/5625175/\",\r\n    \"versioned_object_id\": 1295,\r\n    \"versions_url\": \"/orgs/CIEL/sources/CIEL/concepts/1/versions/\"\r\n}\r\n```\r\n</details>\r\n\r\nWhen I send this content to checksum.py, I still get the different checksum:\r\n\r\n```bash\r\n$ python3 checksum.py -r concept -c standard -d '{\"uuid\": \"1295\",\"extras\": {},\"checksums\": {\"smart\": \"b05def9dd9cb057b83b7be3bbb80ddfd\",\"standard\": \"6ac645e6a34ea315d0ecc2ce46200f02\"},\"id\": \"1\",\"external_id\": \"1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"concept_class\": \"Diagnosis\",\"datatype\": \"N/A\",\"url\": \"/orgs/CIEL/sources/CIEL/concepts/1/\",\"retired\": false,\"source\": \"CIEL\",\"owner\": \"CIEL\",\"owner_type\": \"Organization\",\"owner_url\": \"/orgs/CIEL/\",\"display_name\": \"Anemia due to blood loss\",\"display_locale\": \"en\",\"names\": [{\"uuid\": \"18618771\",\"name\": \"Anemia due to blood loss\",\"external_id\": \"1BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\"type\": \"ConceptName\",\"locale\": \"en\",\"locale_preferred\": true,\"name_type\": \"FULLY_SPECIFIED\",\"checksum\": \"b948c7063be4179b3a2acd2ac5ba97e8\"},{\"uuid\": \"18618772\",\"name\": \"Anemia por p\u00e9rdida de sangre\",\"external_id\": \"80825BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\"type\": \"ConceptName\",\"locale\": \"es\",\"locale_preferred\": true,\"name_type\": \"FULLY_SPECIFIED\",\"checksum\": \"48d198a148c14cffe0a0bbb9cbcda88a\"},{\"uuid\": \"18618773\",\"name\": \"Anemia, blood loss\",\"external_id\": \"87939BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\"type\": \"ConceptName\",\"locale\": \"en\",\"locale_preferred\": false,\"name_type\": null,\"checksum\": \"3af4d5d71c7bfa570a35d32cb1426503\"},{\"uuid\": \"18618774\",\"name\": \"An\u00e9mie secondaire \u00e0 une h\u00e9morragie\",\"external_id\": \"106367BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\"type\": \"ConceptName\",\"locale\": \"fr\",\"locale_preferred\": true,\"name_type\": \"FULLY_SPECIFIED\",\"checksum\": \"6fefdbf2ba50a65e0d1abb343ec88869\"},{\"uuid\": \"18618775\",\"name\": \"\u062e\u0648\u0646 \u06a9\u06cc \u06a9\u0645\u06cc\u060c \u062e\u0648\u0646 \u0628\u06c1\u0646\u06d2 \u06a9\u06cc \u0648\u062c\u06c1 \u0633\u06d2\",\"external_id\": \"139759BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\"type\": \"ConceptName\",\"locale\": \"ur\",\"locale_preferred\": true,\"name_type\": \"FULLY_SPECIFIED\",\"checksum\": \"b043b5fa4d049d82846bf6e1c2e0a902\"}],\"descriptions\": [{\"uuid\": \"1713876\",\"description\": \"Anemia due to bleeding or a hemorrhagic process.\",\"external_id\": \"1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\",\"type\": \"ConceptDescription\",\"locale\": \"en\",\"locale_preferred\": false,\"description_type\": null,\"checksum\": \"07fb9df8e68e00e49c742b40774dfb0a\"},{\"uuid\": \"1713877\",\"description\": \"\u062e\u0648\u0646 \u0628\u06c1\u0646\u06d2 \u06a9\u06cc \u0648\u062c\u06c1 \u0633\u06d2 \u062e\u0648\u0646 \u06a9\u06cc \u06a9\u0645\u06cc\",\"external_id\": \"18132FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\",\"type\": \"ConceptDescription\",\"locale\": \"ur\",\"locale_preferred\": false,\"description_type\": null,\"checksum\": \"d186b390bb5721a253a17ff9df704f68\"}],\"created_on\": \"2021-03-29T03:51:26.315620Z\",\"updated_on\": \"2024-06-27T18:09:49.023038Z\",\"versions_url\": \"/orgs/CIEL/sources/CIEL/concepts/1/versions/\",\"version\": \"1295\",\"type\": \"Concept\",\"update_comment\": null,\"version_url\": \"/orgs/CIEL/sources/CIEL/concepts/1/5625175/\",\"updated_by\": \"ocladmin\",\"created_by\": \"ocladmin\",\"public_can_view\": true,\"versioned_object_id\": 1295,\"latest_source_version\": null}'\r\n\r\n\r\nStandard Checksum: 29e35e12ed7ffd0be9851ff9849fca5d\r\n```\r\n\r\nAm I doing something wrong?"
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-07-15T04:53:34Z",
+          "body": "@bmamlin Can you try it now?"
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-07-19T13:56:17Z",
+          "body": "#### tl;dr\r\n\r\n* Clients will need to add `local_preferred: false` to each description unless we refactor checksum.py to ignore `locale_preferred: false` on descriptions.\r\n* Clients will need to convert `name_type: \"\"` to `name_type: null` on all synonyms before calculating the checksum\r\n\r\n#### The gory details...\r\n\r\nOk. I have resources in the form generated by [ocl_omrs](https://github.com/OpenConceptLab/ocl_omrs) like this:\r\n\r\n```\r\n{\"retired\": false, \"datatype\": \"N/A\", \"type\": \"Concept\", \"concept_class\": \"Diagnosis\", \"source\": \"CIEL\", \"extras\": {}, \"names\": [{\"locale\": \"en\", \"external_id\": \"1BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": true, \"name\": \"Anemia due to blood loss\", \"name_type\": \"FULLY_SPECIFIED\"}, {\"locale\": \"es\", \"external_id\": \"80825BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": true, \"name\": \"Anemia por p\\u00e9rdida de sangre\", \"name_type\": \"FULLY_SPECIFIED\"}, {\"locale\": \"en\", \"external_id\": \"87939BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": false, \"name\": \"Anemia, blood loss\", \"name_type\": \"\"}, {\"locale\": \"fr\", \"external_id\": \"106367BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": true, \"name\": \"An\\u00e9mie secondaire \\u00e0 une h\\u00e9morragie\", \"name_type\": \"FULLY_SPECIFIED\"}, {\"locale\": \"ur\", \"external_id\": \"139759BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": true, \"name\": \"\\u062e\\u0648\\u0646 \\u06a9\\u06cc \\u06a9\\u0645\\u06cc\\u060c \\u062e\\u0648\\u0646 \\u0628\\u06c1\\u0646\\u06d2 \\u06a9\\u06cc \\u0648\\u062c\\u06c1 \\u0633\\u06d2\", \"name_type\": \"FULLY_SPECIFIED\"}], \"owner\": \"CIEL\", \"owner_type\": \"Organization\", \"external_id\": \"1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\", \"id\": \"1\", \"descriptions\": [{\"locale\": \"en\", \"external_id\": \"1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\", \"description\": \"Anemia due to bleeding or a hemorrhagic process.\"}, {\"locale\": \"ur\", \"external_id\": \"18132FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\", \"description\": \"\\u062e\\u0648\\u0646 \\u0628\\u06c1\\u0646\\u06d2 \\u06a9\\u06cc \\u0648\\u062c\\u06c1 \\u0633\\u06d2 \\u062e\\u0648\\u0646 \\u06a9\\u06cc \\u06a9\\u0645\\u06cc\"}]}\r\n```\r\n\r\nIf I pass this directly to checksum.py hoping to get the standard checksum `a5418633fafb1b1e2b5e400579cd9743` to match the value at [/orgs/CIEL/sources/CIEL/concepts/1/](https://api.openconceptlab.org/orgs/CIEL/sources/CIEL/concepts/1/), I get the wrong checksum:\r\n\r\n```bash\r\npython3 checksum.py -r concept -c standard -d '{\"retired\": false, \"datatype\": \"N/A\", \"type\": \"Concept\", \"concept_class\": \"Diagnosis\", \"source\": \"CIEL\", \"extras\": {}, \"names\": [{\"locale\": \"en\", \"external_id\": \"1BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": true, \"name\": \"Anemia due to blood loss\", \"name_type\": \"FULLY_SPECIFIED\"}, {\"locale\": \"es\", \"external_id\": \"80825BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": true, \"name\": \"Anemia por p\\u00e9rdida de sangre\", \"name_type\": \"FULLY_SPECIFIED\"}, {\"locale\": \"en\", \"external_id\": \"87939BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": false, \"name\": \"Anemia, blood loss\", \"name_type\": \"\"}, {\"locale\": \"fr\", \"external_id\": \"106367BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": true, \"name\": \"An\\u00e9mie secondaire \\u00e0 une h\\u00e9morragie\", \"name_type\": \"FULLY_SPECIFIED\"}, {\"locale\": \"ur\", \"external_id\": \"139759BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": true, \"name\": \"\\u062e\\u0648\\u0646 \\u06a9\\u06cc \\u06a9\\u0645\\u06cc\\u060c \\u062e\\u0648\\u0646 \\u0628\\u06c1\\u0646\\u06d2 \\u06a9\\u06cc \\u0648\\u062c\\u06c1 \\u0633\\u06d2\", \"name_type\": \"FULLY_SPECIFIED\"}], \"owner\": \"CIEL\", \"owner_type\": \"Organization\", \"external_id\": \"1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\", \"id\": \"1\", \"descriptions\": [{\"locale\": \"en\", \"external_id\": \"1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\", \"description\": \"Anemia due to bleeding or a hemorrhagic process.\"}, {\"locale\": \"ur\", \"external_id\": \"18132FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\", \"description\": \"\\u062e\\u0648\\u0646 \\u0628\\u06c1\\u0646\\u06d2 \\u06a9\\u06cc \\u0648\\u062c\\u06c1 \\u0633\\u06d2 \\u062e\\u0648\\u0646 \\u06a9\\u06cc \\u06a9\\u0645\\u06cc\"}]}'\r\n\r\n\r\nStandard Checksum: c61fb9ce5d33c7649e6209b890de57c8\r\n```\r\n\r\nInitially, I thought it might be the unicode encodings, since the value I passed from the API has the descriptions, etc. in decoded form. So, I tried using\r\n\r\n```python\r\nimport json\r\njson.dumps(json.loads('...'), ensure_ascii=False)\r\n```\r\n\r\nto get a version with string decoded. But this didn't help, since I still get the wrong checksum:\r\n\r\n```bash\r\npython3 checksum.py -r concept -c standard -d '{\"retired\": false, \"datatype\": \"N/A\", \"type\": \"Concept\", \"concept_class\": \"Diagnosis\", \"source\": \"CIEL\", \"extras\": {}, \"names\": [{\"locale\": \"en\", \"external_id\": \"1BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": true, \"name\": \"Anemia due to blood loss\", \"name_type\": \"FULLY_SPECIFIED\"}, {\"locale\": \"es\", \"external_id\": \"80825BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": true, \"name\": \"Anemia por p\u00e9rdida de sangre\", \"name_type\": \"FULLY_SPECIFIED\"}, {\"locale\": \"en\", \"external_id\": \"87939BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": false, \"name\": \"Anemia, blood loss\", \"name_type\": \"\"}, {\"locale\": \"fr\", \"external_id\": \"106367BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": true, \"name\": \"An\u00e9mie secondaire \u00e0 une h\u00e9morragie\", \"name_type\": \"FULLY_SPECIFIED\"}, {\"locale\": \"ur\", \"external_id\": \"139759BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": true, \"name\": \"\u062e\u0648\u0646 \u06a9\u06cc \u06a9\u0645\u06cc\u060c \u062e\u0648\u0646 \u0628\u06c1\u0646\u06d2 \u06a9\u06cc \u0648\u062c\u06c1 \u0633\u06d2\", \"name_type\": \"FULLY_SPECIFIED\"}], \"owner\": \"CIEL\", \"owner_type\": \"Organization\", \"external_id\": \"1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\", \"id\": \"1\", \"descriptions\": [{\"locale\": \"en\", \"external_id\": \"1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\", \"description\": \"Anemia due to bleeding or a hemorrhagic process.\"}, {\"locale\": \"ur\", \"external_id\": \"18132FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\", \"description\": \"\u062e\u0648\u0646 \u0628\u06c1\u0646\u06d2 \u06a9\u06cc \u0648\u062c\u06c1 \u0633\u06d2 \u062e\u0648\u0646 \u06a9\u06cc \u06a9\u0645\u06cc\"}]}'\r\n\r\n\r\nStandard Checksum: c61fb9ce5d33c7649e6209b890de57c8\r\n```\r\n\r\nSo, looking at differences between what I've got to import and what is in the API, here's what I find:\r\n\r\n1. These properties are in OCL but not in my resource from ocl_omrs. Are they all being ignored by checksum.py?\r\n\r\n```json\r\n    \"checksums\": {\r\n        \"smart\": \"d7df0aff8162d36c47af2f1cca381c9c\",\r\n        \"standard\": \"a5418633fafb1b1e2b5e400579cd9743\"\r\n    },\r\n    \"created_by\": \"ocladmin\",\r\n    \"created_on\": \"2021-03-29T03:51:26.315620Z\",\r\n    \"display_locale\": \"en\",\r\n    \"display_name\": \"Anemia due to blood loss\",\r\n    \"latest_source_version\": null,\r\n    \"owner_url\": \"/orgs/CIEL/\",\r\n    \"public_can_view\": true,\r\n    \"update_comment\": null,\r\n    \"updated_by\": \"ocladmin\",\r\n    \"updated_on\": \"2024-06-27T18:09:49.023038Z\",\r\n    \"url\": \"/orgs/CIEL/sources/CIEL/concepts/1/\",\r\n    \"uuid\": \"1295\",\r\n    \"version\": \"1295\",\r\n    \"version_url\": \"/orgs/CIEL/sources/CIEL/concepts/1/5625175/\",\r\n    \"versioned_object_id\": 1295,\r\n    \"versions_url\": \"/orgs/CIEL/sources/CIEL/concepts/1/versions/\"\r\n```\r\n\r\nYes. I stripped all of these out from the version from OCL API and still get the correct UUID.\r\n\r\n2. These properties on descriptions aren't in what I'm importing. Are these ignored by checksum.py?\r\n\r\n```json\r\n            \"checksum\": \"d186b390bb5721a253a17ff9df704f68\",\r\n            \"description_type\": null,\r\n            \"locale_preferred\": false,\r\n            \"type\": \"ConceptDescription\",\r\n            \"uuid\": \"1713877\"\r\n```\r\n\r\nNo. I can strip all of these out except `\"local_preferred\": false`. If I remove `locale_preferred`, the checksum changes.\r\n\r\n3. These properties in names aren't in what I'm importing. Are these ignored by checksum.py?\r\n\r\n```json\r\n            \"checksum\": \"b043b5fa4d049d82846bf6e1c2e0a902\",\r\n            \"type\": \"ConceptName\",\r\n            \"uuid\": \"18618775\"\r\n```\r\n\r\nYes. I stripped these out from the version from OCL API and still get the correct UUID.\r\n\r\n4. Lastly, for synonyms, ocl_omrs uses `\"name_type\": \"\"` where the OCL API uses `\"name_type\": null`. Will checksum.py treat these the same (i.e., ignore both)?\r\n\r\nNo. If I change `name_type` from `null` to `\"\"`, then checksum changes.\r\n\r\nFinally, I took the last version from OCL API that was still generating the correct checksum (with several of the above properties removed) and then used `print(json.dumps(json.loads('...')))` to encode the UTF-8 characters the same way I get them from `ocl_omrs` and, sending this form to checksum.py, I still get the correct checksum:\r\n\r\n```bash\r\npython3 checksum.py -r concept -c standard -d '{\"id\": \"1\", \"external_id\": \"1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\", \"concept_class\": \"Diagnosis\", \"datatype\": \"N/A\", \"url\": \"/orgs/CIEL/sources/CIEL/concepts/1/\", \"retired\": false, \"source\": \"CIEL\", \"owner\": \"CIEL\", \"owner_type\": \"Organization\", \"owner_url\": \"/orgs/CIEL/\", \"names\": [{\"name\": \"Anemia due to blood loss\", \"external_id\": \"1BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale\": \"en\", \"locale_preferred\": true, \"name_type\": \"FULLY_SPECIFIED\"}, {\"uuid\": \"18618772\", \"name\": \"Anemia por p\\u00e9rdida de sangre\", \"external_id\": \"80825BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"type\": \"ConceptName\", \"locale\": \"es\", \"locale_preferred\": true, \"name_type\": \"FULLY_SPECIFIED\", \"checksum\": \"48d198a148c14cffe0a0bbb9cbcda88a\"}, {\"uuid\": \"18618773\", \"name\": \"Anemia, blood loss\", \"external_id\": \"87939BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"type\": \"ConceptName\", \"locale\": \"en\", \"locale_preferred\": false, \"name_type\": null, \"checksum\": \"3af4d5d71c7bfa570a35d32cb1426503\"}, {\"uuid\": \"18618774\", \"name\": \"An\\u00e9mie secondaire \\u00e0 une h\\u00e9morragie\", \"external_id\": \"106367BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"type\": \"ConceptName\", \"locale\": \"fr\", \"locale_preferred\": true, \"name_type\": \"FULLY_SPECIFIED\", \"checksum\": \"6fefdbf2ba50a65e0d1abb343ec88869\"}, {\"uuid\": \"18618775\", \"name\": \"\\u062e\\u0648\\u0646 \\u06a9\\u06cc \\u06a9\\u0645\\u06cc\\u060c \\u062e\\u0648\\u0646 \\u0628\\u06c1\\u0646\\u06d2 \\u06a9\\u06cc \\u0648\\u062c\\u06c1 \\u0633\\u06d2\", \"external_id\": \"139759BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"type\": \"ConceptName\", \"locale\": \"ur\", \"locale_preferred\": true, \"name_type\": \"FULLY_SPECIFIED\", \"checksum\": \"b043b5fa4d049d82846bf6e1c2e0a902\"}], \"descriptions\": [{\"uuid\": \"1713876\", \"description\": \"Anemia due to bleeding or a hemorrhagic process.\", \"external_id\": \"1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\", \"type\": \"ConceptDescription\", \"locale\": \"en\", \"locale_preferred\": false, \"description_type\": null, \"checksum\": \"07fb9df8e68e00e49c742b40774dfb0a\"}, {\"description\": \"\\u062e\\u0648\\u0646 \\u0628\\u06c1\\u0646\\u06d2 \\u06a9\\u06cc \\u0648\\u062c\\u06c1 \\u0633\\u06d2 \\u062e\\u0648\\u0646 \\u06a9\\u06cc \\u06a9\\u0645\\u06cc\", \"external_id\": \"18132FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\", \"locale\": \"ur\", \"locale_preferred\": false}]}'\r\n\r\n\r\nStandard Checksum: a5418633fafb1b1e2b5e400579cd9743\r\n```\r\n\r\nSo, at least I don't need to worry about encoding/decoding UTF-8 string. \ud83d\ude42 "
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-07-22T03:25:42Z",
+          "body": "@bmamlin I have checked in the changes to ignore \"name_type\", \"description_type\" and \"locale_preferred\" when they are empty/false"
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-07-24T14:40:47Z",
+          "body": "Thanks @snyaggarwal. I grabbed the updated version of checksum.py and ran it on the concept from ocl_omrs \u2013 only changing `name_type` value from `\"\"` to `null`:\r\n\r\n```bash\r\n$ python3 checksum.py -r concept -c standard -d '{\"retired\": false, \"datatype\": \"N/A\", \"type\": \"Concept\", \"concept_class\": \"Diagnosis\", \"source\": \"CIEL\", \"extras\": {}, \"names\": [{\"locale\": \"en\", \"external_id\": \"1BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": true, \"name\": \"Anemia due to blood loss\", \"name_type\": \"FULLY_SPECIFIED\"}, {\"locale\": \"es\", \"external_id\": \"80825BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": true, \"name\": \"Anemia por p\\u00e9rdida de sangre\", \"name_type\": \"FULLY_SPECIFIED\"}, {\"locale\": \"en\", \"external_id\": \"87939BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": false, \"name\": \"Anemia, blood loss\", \"name_type\": null}, {\"locale\": \"fr\", \"external_id\": \"106367BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": true, \"name\": \"An\\u00e9mie secondaire \\u00e0 une h\\u00e9morragie\", \"name_type\": \"FULLY_SPECIFIED\"}, {\"locale\": \"ur\", \"external_id\": \"139759BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\", \"locale_preferred\": true, \"name\": \"\\u062e\\u0648\\u0646 \\u06a9\\u06cc \\u06a9\\u0645\\u06cc\\u060c \\u062e\\u0648\\u0646 \\u0628\\u06c1\\u0646\\u06d2 \\u06a9\\u06cc \\u0648\\u062c\\u06c1 \\u0633\\u06d2\", \"name_type\": \"FULLY_SPECIFIED\"}], \"owner\": \"CIEL\", \"owner_type\": \"Organization\", \"external_id\": \"1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\", \"id\": \"1\", \"descriptions\": [{\"locale\": \"en\", \"external_id\": \"1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\", \"description\": \"Anemia due to bleeding or a hemorrhagic process.\"}, {\"locale\": \"ur\", \"external_id\": \"18132FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\", \"description\": \"\\u062e\\u0648\\u0646 \\u0628\\u06c1\\u0646\\u06d2 \\u06a9\\u06cc \\u0648\\u062c\\u06c1 \\u0633\\u06d2 \\u062e\\u0648\\u0646 \\u06a9\\u06cc \\u06a9\\u0645\\u06cc\"}]}'\r\n\r\n\r\nStandard Checksum: 5c385a3e0e77013830e6c5e6f92f681f\r\n```\r\n\r\nWhen I run the new checksum.py against [CIEL concept 1 from API](https://api.openconceptlab.org/orgs/CIEL/sources/CIEL/concepts/1/)), I get the same checksum!\r\n\r\n```bash\r\n$ python3 checksum.py -r concept -c standard -d '{\"uuid\": \"1295\",\"extras\": {},\"checksums\": {\"smart\": \"d7df0aff8162d36c47af2f1cca381c9c\",\"standard\": \"a5418633fafb1b1e2b5e400579cd9743\"},\"id\": \"1\",\"external_id\": \"1AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA\",\"concept_class\": \"Diagnosis\",\"datatype\": \"N/A\",\"url\": \"/orgs/CIEL/sources/CIEL/concepts/1/\",\"retired\": false,\"source\": \"CIEL\",\"owner\": \"CIEL\",\"owner_type\": \"Organization\",\"owner_url\": \"/orgs/CIEL/\",\"display_name\": \"Anemia due to blood loss\",\"display_locale\": \"en\",\"names\": [{\"uuid\": \"18618771\",\"name\": \"Anemia due to blood loss\",\"external_id\": \"1BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\"type\": \"ConceptName\",\"locale\": \"en\",\"locale_preferred\": true,\"name_type\": \"FULLY_SPECIFIED\",\"checksum\": \"b948c7063be4179b3a2acd2ac5ba97e8\"},{\"uuid\": \"18618772\",\"name\": \"Anemia por p\u00e9rdida de sangre\",\"external_id\": \"80825BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\"type\": \"ConceptName\",\"locale\": \"es\",\"locale_preferred\": true,\"name_type\": \"FULLY_SPECIFIED\",\"checksum\": \"48d198a148c14cffe0a0bbb9cbcda88a\"},{\"uuid\": \"18618773\",\"name\": \"Anemia, blood loss\",\"external_id\": \"87939BBBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\"type\": \"ConceptName\",\"locale\": \"en\",\"locale_preferred\": false,\"name_type\": null,\"checksum\": \"3af4d5d71c7bfa570a35d32cb1426503\"},{\"uuid\": \"18618774\",\"name\": \"An\u00e9mie secondaire \u00e0 une h\u00e9morragie\",\"external_id\": \"106367BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\"type\": \"ConceptName\",\"locale\": \"fr\",\"locale_preferred\": true,\"name_type\": \"FULLY_SPECIFIED\",\"checksum\": \"6fefdbf2ba50a65e0d1abb343ec88869\"},{\"uuid\": \"18618775\",\"name\": \"\u062e\u0648\u0646 \u06a9\u06cc \u06a9\u0645\u06cc\u060c \u062e\u0648\u0646 \u0628\u06c1\u0646\u06d2 \u06a9\u06cc \u0648\u062c\u06c1 \u0633\u06d2\",\"external_id\": \"139759BBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\"type\": \"ConceptName\",\"locale\": \"ur\",\"locale_preferred\": true,\"name_type\": \"FULLY_SPECIFIED\",\"checksum\": \"b043b5fa4d049d82846bf6e1c2e0a902\"}],\"descriptions\": [{\"uuid\": \"1713876\",\"description\": \"Anemia due to bleeding or a hemorrhagic process.\",\"external_id\": \"1FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\",\"type\": \"ConceptDescription\",\"locale\": \"en\",\"locale_preferred\": false,\"description_type\": null,\"checksum\": \"07fb9df8e68e00e49c742b40774dfb0a\"},{\"uuid\": \"1713877\",\"description\": \"\u062e\u0648\u0646 \u0628\u06c1\u0646\u06d2 \u06a9\u06cc \u0648\u062c\u06c1 \u0633\u06d2 \u062e\u0648\u0646 \u06a9\u06cc \u06a9\u0645\u06cc\",\"external_id\": \"18132FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF\",\"type\": \"ConceptDescription\",\"locale\": \"ur\",\"locale_preferred\": false,\"description_type\": null,\"checksum\": \"d186b390bb5721a253a17ff9df704f68\"}],\"created_on\": \"2021-03-29T03:51:26.315620Z\",\"updated_on\": \"2024-06-27T18:09:49.023038Z\",\"versions_url\": \"/orgs/CIEL/sources/CIEL/concepts/1/versions/\",\"version\": \"1295\",\"type\": \"Concept\",\"update_comment\": null,\"version_url\": \"/orgs/CIEL/sources/CIEL/concepts/1/5625175/\",\"updated_by\": \"ocladmin\",\"created_by\": \"ocladmin\",\"public_can_view\": true,\"versioned_object_id\": 1295,\"latest_source_version\": null}'\r\n\r\n\r\nStandard Checksum: 5c385a3e0e77013830e6c5e6f92f681f\r\n```\r\n\r\nThat looks promising!\r\n\r\n@snyaggarwal, can I assume that this change to the checksum algorithm hasn't made it to production yet, so the current standard checksum listed at https://api.openconceptlab.org/orgs/CIEL/sources/CIEL/concepts/1/ of `a5418633fafb1b1e2b5e400579cd9743` is no longer correct and will eventually become `5c385a3e0e77013830e6c5e6f92f681f`?"
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-07-26T04:01:50Z",
+          "body": "@bmamlin Yes thats correct"
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-07-26T14:00:08Z",
+          "body": "Here's the one-liner bash command I'm using to compare calculated checksum vs. OCL's checksum for standard checksum:\r\n\r\n```bash\r\njson=$(http -b https://api.openconceptlab.org/orgs/CIEL/sources/CIEL/concepts/1/); echo $json | jq -r .checksums.standard && python3 checksum.py -r concept -c standard -d \"$json\"\r\nf8fa9e34e02a44d064c29e48204982fe\r\n\r\n\r\nStandard Checksum: 5c385a3e0e77013830e6c5e6f92f681f\r\n```\r\n\r\nI'll wait until those match on staging & production before I proceed."
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-08-01T04:52:50Z",
+          "body": "@bmamlin This is deployed on Staging.\r\nI ran the same command (using curl) and got the expected result\r\n\r\n```\r\njson=$(curl https://api.staging.openconceptlab.org/orgs/CIEL/sources/CIEL/concepts/1/); echo $json | jq -r .checksums.standard && python3 checksum.py -r concept -c standard -d \"$json\"\r\n\r\n5c385a3e0e77013830e6c5e6f92f681f\r\n\r\n\r\nStandard Checksum: 5c385a3e0e77013830e6c5e6f92f681f\r\n```\r\n"
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-08-02T17:21:50Z",
+          "body": "Progress! Thank you!\r\n\r\nI tried the first mapping in CIEL. It looks like this:\r\n\r\n```json\r\n{\r\n    \"external_id\": \"70279ABBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\r\n    \"from_concept_url\": \"/orgs/CIEL/sources/CIEL/concepts/1/\",\r\n    \"map_type\": \"SAME-AS\",\r\n    \"owner\": \"CIEL\",\r\n    \"owner_type\": \"Organization\",\r\n    \"retired\": false,\r\n    \"source\": \"CIEL\",\r\n    \"to_concept_code\": \"413532003\",\r\n    \"to_source_url\": \"/orgs/IHTSDO/sources/SNOMED-CT/\",\r\n    \"type\": \"Mapping\"\r\n}\r\n```\r\n\r\nHere's its checksum:\r\n\r\n```bash\r\npython3 checksum.py -r mapping -c standard -d '{\"retired\":false,\"from_concept_url\":\"/orgs/CIEL/sources/CIEL/concepts/1/\",\"type\":\"Mapping\",\"source\":\"CIEL\",\"to_source_url\":\"/orgs/IHTSDO/sources/SNOMED-CT/\",\"owner\":\"CIEL\",\"map_type\":\"SAME-AS\",\"owner_type\":\"Organization\",\"external_id\":\"70279ABBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\"to_concept_code\":\"413532003\"}'\r\n\r\n\r\nStandard Checksum: 228397eb928100bf0a4188713716c787\r\n```\r\n\r\nThis doesn't match the checksum on Staging:\r\n\r\n```bash\r\njson=$(http -b https://api.staging.openconceptlab.org/orgs/CIEL/sources/CIEL/mappings/840577/); echo $json | jq -r .checksums.standard && python3 checksum.py -r mapping -c standard -d \"$json\"\r\n03a9204bd627547429d7669810bf3c9b\r\n\r\n\r\nStandard Checksum: 03a9204bd627547429d7669810bf3c9b\r\n```\r\n\r\nFrom my forensics, it looks like the difference is because what I get from CIEL lacks these two properties:\r\n\r\n```json\r\n    \"from_concept_code\": \"1\",\r\n    \"from_source_url\": \"/orgs/CIEL/sources/CIEL/\"\r\n```\r\n\r\nDo we need to adjust the [ocl_omrs](https://github.com/OpenConceptLab/ocl_omrs) tool to populate these properties (I assume they are just parts of the `from_concept_url`)? Or do we need the standard checksum to depend on them? They do seem like fundamental info... but are there contexts in which the `from_concept_code` and `from_source_url` aren't aligned with `from_concept_url`? Is it possible/legal to import a mapping that has these two properties and _doesn't_ have `from_concept_url`? If so, maybe this requires a bit more discussion."
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-08-05T02:27:27Z",
+          "body": "@bmamlin Well thats a good question. technically you are right that `from_concept_url` is enough to figure out `from_concept_code` and `from_source_url`. In order to accommodate mappings with concepts that don't exist in OCL we use all three values (from_concept_code/url and from_source_url). \r\n@paynejd If the from_concept_url is populated should we ignore `from_concept_code` and `from_source_url` in checksums?"
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-08-05T02:30:22Z",
+          "body": "@bmamlin And yes you are right that if you add \"from_concept_code\" and \"from_source_url\" in the checksum script input the checksum matches:\r\n\r\n```\r\npython3 checksum.py -r mapping -c standard -d '{\"retired\":false,\"from_concept_url\":\"/orgs/CIEL/sources/CIEL/concepts/1/\",\"type\":\"Mapping\",\"source\":\"CIEL\",\"to_source_url\":\"/orgs/IHTSDO/sources/SNOMED-CT/\",\"owner\":\"CIEL\",\"map_type\":\"SAME-AS\",\"owner_type\":\"Organization\",\"external_id\":\"70279ABBBBBBBBBBBBBBBBBBBBBBBBBBBBBB\",\"to_concept_code\":\"413532003\", \"from_concept_code\": \"1\",\"from_source_url\": \"/orgs/CIEL/sources/CIEL/\"}'\r\n\r\nStandard Checksum: 03a9204bd627547429d7669810bf3c9b\r\n```\r\n"
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-08-05T14:21:49Z",
+          "body": "> In order to accommodate mappings with concepts that don't exist in OCL we use all three values (from_concept_code/url and from_source_url).\r\n\r\nIt makes the checksum algorithm slightly more complicated, but perhaps \u2013 assuming the concept url is only used for content stored within OCL and is deterministically constructed from the source url and code \u2013 the most robust approach might be for the checksum algorithm to use `from_source_url` and `from_concept_code` in its calculation, leaving `from_concept_url` out of the checksum and only using it to derive the other two properties when needed. It would be nice to have an approach where the client (outside of OCL) doesn't need to know whether or not content is present in OCL to calculate the checksum."
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-08-20T05:01:20Z",
+          "body": "@bmamlin Can you please try the script to confirm this change of expanding to/from_concept_url to to/from_source_url and to/from_concept_code when only to/from_concept_url is provided?"
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-08-29T03:06:47Z",
+          "body": "@bmamlin The script in ocldev was updated that considers the parsed mapping payload for checksums. Can you please try it out"
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-08-30T15:46:31Z",
+          "body": "Ok. Making good progress. I've run comparisons for CIEL v2024-07-26 concepts (between what I got from Andy and what's in OCL) using checksums. Checksums worked so well, they identified dozens of differences that all turned out to be minor issues with CIEL itself. One problem was related to marking Spanish translations as full specified names that inadvertently created duplicate name entries. The most common problem turned out to be an error in my SQL validation queries that missed duplicate names if name type was `null`. Ignoring all of the CIEL-related issues that we'll work on fixing now, I'm able to successfully match 57,186 concept checksums!\r\n\r\nWhile Andy works on fixing the duplicate names we've now identified, I'll move on to comparing checksums for mappings."
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-09-27T16:25:46Z",
+          "body": "@snyaggarwal, I've started testing checksums for mappings. The first issue I ran into is for `sort_weight`. This property is both a first-class property _and_ an extra property in OCL:\r\n\r\n```json\r\n{\r\n  \"extras\": {\r\n    \"sort_weight\": 7381\r\n  },\r\n  \"sort_weight\": 7381\r\n}\r\n```\r\n\r\nIn my JSON import files for CIEL, `sort_weight` is only a first-class property (not an extra). Since `extras` are included in the checksum calculation, the checksums differ. Would excluding an extra property if named `sort_weight` from the checksum be too hacky?"
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-09-30T02:23:14Z",
+          "body": "`sort_weight` is a direct field in Mapping (in OCL). I think we should ignore it from extras. But yes I agree its a bit hackish\r\n@paynejd What do you think?"
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-10-07T05:29:45Z",
+          "body": "@bmamlin @paynejd I checked the code and on import if `extras` are not provided in the import script then it copies from last version of concept/mapping.\r\nAlso I checked the counts of mappings that has `extras.sort_weight`:\r\nTotal Mapping Versions -- 286877\r\nCIEL Mapping Versions -- 262689\r\n\r\n\r\n"
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-11-01T13:55:47Z",
+          "body": "@snyaggarwal, I have removed all the `extras.sort_weight` entries for CIEL mappings on Staging & Production.\r\n\r\nAs I was running through mappings to compare checksums, I ran into an issue with [/orgs/CIEL/sources/CIEL/mappings/8743547/](https://api.openconceptlab.org/orgs/CIEL/sources/CIEL/mappings/8743547/). OCL says its standard UUID should be `949711a1ac4d321f0f59c163428f439a`; however, when I run it through [checksum.py](https://github.com/OpenConceptLab/ocldev/blob/master/ocldev/checksum.py), it suggests the standard UUID should be `8b702f3bfd4c263c4d72a3812956d3cf`. **Do the checksums on Production need to be re-calculated?**\r\n\r\n```bash\r\npython3 checksum.py -r mapping -c standard -d '{\"extras\":{},\"checksums\":{\"smart\":\"2f2773325f28cc8fd52b3c9e1ea2d711\",\"standard\":\"949711a1ac4d321f0f59c163428f439a\"},\"external_id\":\"9068e6bf-cfe3-4cdb-a5a4-e92306875f8b\",\"retired\":false,\"map_type\":\"NARROWER-THAN\",\"source\":\"CIEL\",\"owner\":\"CIEL\",\"owner_type\":\"Organization\",\"from_concept_code\":\"5044\",\"from_concept_name\":null,\"from_concept_url\":\"/orgs/CIEL/sources/CIEL/concepts/5044/\",\"to_concept_code\":\"1C62.3Y/1B21.Z\",\"to_concept_name\":null,\"to_concept_url\":null,\"from_source_owner\":\"CIEL\",\"from_source_owner_type\":\"Organization\",\"from_source_url\":\"/orgs/CIEL/sources/CIEL/\",\"from_source_name\":\"CIEL\",\"to_source_owner\":\"WHO\",\"to_source_owner_type\":\"Organization\",\"to_source_url\":\"/orgs/WHO/sources/ICD-11-WHO/\",\"to_source_name\":\"ICD-11-WHO\",\"url\":\"/orgs/CIEL/sources/CIEL/mappings/8743547/\",\"version\":\"8743547\",\"id\":\"8743547\",\"versioned_object_id\":8743547,\"versioned_object_url\":\"/orgs/CIEL/sources/CIEL/mappings/8743547/\",\"is_latest_version\":false,\"update_comment\":null,\"version_url\":\"/orgs/CIEL/sources/CIEL/mappings/8743547/8743553/\",\"uuid\":\"8743547\",\"version_created_on\":\"2024-10-18T18:39:04.333283Z\",\"from_source_version\":null,\"to_source_version\":null,\"from_concept_name_resolved\":\"HIV staging - mycobacterium avium complex\",\"type\":\"Mapping\",\"sort_weight\":null,\"version_updated_on\":\"2024-10-18T18:39:05.028100Z\",\"version_updated_by\":\"ocladmin\",\"latest_source_version\":null,\"created_on\":\"2024-10-18T18:39:04.333283Z\",\"updated_on\":\"2024-10-18T18:39:05.028100Z\",\"created_by\":\"ocladmin\",\"updated_by\":\"ocladmin\",\"public_can_view\":true}'\r\n\r\nStandard Checksum: 8b702f3bfd4c263c4d72a3812956d3cf\r\n\r\n```"
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-11-04T05:40:00Z",
+          "body": "@bmamlin This was because of `/` in concept ID in to/from concept in mapping. I have added the fix in the checksum algo to decode it before generating the checksum.\r\nI will recalculate checksums on all mappings where the to/from concept has code encoded characters."
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-11-04T07:18:43Z",
+          "body": "@bmamlin This is now fixed on Production"
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-11-04T10:38:36Z",
+          "body": "Thanks @snyaggarwal. Could you regenerate the export for CIEL HEAD on production? I tried deleting the HEAD export in order to regenerate its export, but the DELETE request times out."
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-11-04T11:50:44Z",
+          "body": "@bmamlin Retriggered HEAD export "
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-11-05T02:01:54Z",
+          "body": "Ok. Looks like there are some more examples of where characters in `to_concept_code` are being handled differently on the server side. Within CIEL, I've found these:\r\n\r\n* `%09`\r\n* `%26`\r\n* `%2B`\r\n* `%2C`\r\n* `%40`\r\n\r\nThere are just under 200 mappings affected.\r\n\r\n<details><summary>Click for list</summary>\r\n\r\n* **ID - code**\r\n* 7814962 - CA0Y&XA9AZ1\r\n* 7591452 - 2C25.Z&XS9R\r\n* 6567906 - NE11&XS25\r\n* 6033236 - 1B12.3&XA0NE9\r\n* 8298586 - 6A60.0&XS25\r\n* 7602249 - MA15.0&XT16\r\n* 8310447 - 6A60.0&XS0T\r\n* 8310622 - 6A60.0&XS5W\r\n* 3996312 - 2C6Z&XA0US1\r\n* 8805589 - FA36.Z&XA7L41\r\n* 7631116 - MA15.0&XN5PZ\r\n* 7853190 - MA15.0&XN5PZ\r\n* 6601298 - ND54&XJ44E\r\n* 7859578 - 6C4G.6&XM8JY6\r\n* 7870001 - DA08.0&XA5B71\r\n* 3925540 - 2B33.0&XS0J\r\n* 7883535 - MA15.0&XN1P6\r\n* 8834731 - FA36.Z&XA64C3\r\n* 3943311 - 1D00.2&XN7HC\r\n* 6637207 - PH56&XM0TV9\r\n* 6959235 - JB42.1&JA00.09\r\n* 8372170 - 6A60.1&XS25\r\n* 7698843 - MA15.0&XN71D\r\n* 6978961 - 1F02.0&1C80\r\n* 7937711 - FA2Z&XA4U90\r\n* 7937755 - FA2Z&XA7L41\r\n* 7937791 - FA2Z&XA4U90\r\n* 6986950 - NE60&XM7YK9\r\n* 1373335 - DC50.1Y&XN3PW\r\n* 8399321 - MD90.1&XT6Z\r\n* 8654244 - 1A08&XN5TR\r\n* 8654261 - 1A08&XN322\r\n* 8654278 - 1A08&XN1K5\r\n* 7953627 - FA27.2&XA4U90\r\n* 7955105 - FA27.2&XA7L41\r\n* 7955153 - FA27.2&XA4U90\r\n* 149217 - NC32.Z&XJ7YM\r\n* 8907033 - 5B81.01&XS2B\r\n* 8919122 - BC41.Y&XA8FJ7\r\n* 8921129 - FA36.Z&XA8RL1\r\n* 8923701 - FA36.Z&XA7L41\r\n* 8928861 - MA01.0&XA7N26\r\n* 8737090 - FA36.Z&XA4XS4\r\n* 8752063 - FA36.Z&XA62V5\r\n* 8766442 - FA36.Z&XA69H4\r\n* 8766779 - FA36.Z&XA0CH1\r\n* 8766807 - FA36.Z&XA86T5\r\n* 8766829 - FA36.Z&XA4U90\r\n* 8766850 - FA36.Z&XA05J7\r\n* 8766876 - FA36.Z&XA1TL5\r\n* 8766894 - FA36.Z&XA4EJ6\r\n* 8766914 - FA36.Z&XA62V5\r\n* 8766935 - FA36.Z&XA69U6\r\n* 7790391 - EH90.Z&XA4TQ2\r\n* 6858769 - NA80.6&XA55T2\r\n* 219125 - NC32.Z&XJ44E\r\n* 7807881 - FA2Z&XA4U90\r\n* 7807931 - FA2Z&XA7L41\r\n* 7807959 - FA2Z&XA4U90\r\n* 7812440 - FA26.2&XA4U90\r\n* 7812481 - FA26.2&XA7L41\r\n* 7812500 - FA26.2&XA4U90\r\n* 7812569 - FA26.2&XA4U90\r\n* 7812605 - FA26.2&XA7L41\r\n* 7812634 - FA26.2&XA4U90\r\n* 8808620 - MA01.0&XA5XT7\r\n* 1422071 - FA92.0Y&XA9ZW8\r\n* 8826885 - MA01.0&XA90B2\r\n* 8829310 - PF15.Y&XM8WE9\r\n* 7832382 - FA12.3&XA4U90/1F90.Z\r\n* 7832422 - FA12.3&XA7L41/1F90.Z\r\n* 7832451 - FA12.3&XA4U90/1F90.Z\r\n* 8833256 - FA36.Z&XA27P3\r\n* 7838051 - FA27.Y&XA4U90\r\n* 7838087 - FA27.Y&XA7L41\r\n* 7838116 - FA27.Y&XA4U90\r\n* 8841594 - CA05.2&XE3GX\r\n* 8842046 - BD1Z&XT5R\r\n* 2462593 - DA60.Y&XT5R/ME24.3Z\r\n* 8858518 - BD90.0&XA10P2\r\n* 8858542 - BD90.0&XA0Z86\r\n* 8858568 - BD90.0&XA52C3\r\n* 8858591 - BD90.0&XA23Z9\r\n* 280972 - 1B70.Z&XA9FF8\r\n* 6082713 - 1A00&XN62R\r\n* 7873669 - EH90.Z&XA2UC8\r\n* 2882250 - 1B1Z&MG52.Z\r\n* 8137323 - 7A0Z&XB5F\r\n* 8145687 - BD71.Y&XA46B9\r\n* 6639981 - 2B70&XA0TN5\r\n* 6641183 - 2E63.0Z&XA3FR3\r\n* 8907073 - 6A7Z&XS5W\r\n* 8157899 - CA0J.Y&XA43C9\r\n* 7896443 - EH90.Z&XA67V4\r\n* 7897021 - EH90.Z&XA3VA7\r\n* 7897041 - EH90.Z&XA9FF8\r\n* 7897057 - EH90.Z&XA5HK0\r\n* 7897083 - EH90.Z&XA9ET2\r\n* 8160369 - DC10.02, JA65.0\r\n* 7898887 - LA13.Z&XK9J\r\n* 7898924 - LA13.Z&XK9J\r\n* 7899698 - MA15.0&XN6LP\r\n* 7647280 - MA15.0&XN5KC\r\n* 6654719 - NB51.Z&XA7QV2\r\n* 8167744 - FA92.Z&XA7MS2\r\n* 8931231 - 1F45&XS25\r\n* 262292 - A17.0+\r\n* 6440928 - 3A9Z&XS25\r\n* 4121504 - KB04&XS5W\r\n* 4121516 - KB04&XS0T\r\n* 4121527 - KB04&XS25\r\n* 8944379 - 5B52&XS25\r\n* 8944386 - 5B52&XS0T\r\n* 8944450 - 1C62.Z/1E5Z&amp;XN0GA\r\n* 2721411 - MG3Z&XS2E\r\n* 8950039 - BA00.Z&XS5W\r\n* 8950045 - BA00.Z&XS0T\r\n* 8950051 - BA00.Z&XS25\r\n* 330895 - 1380@5\r\n* 334714 - 1380@3\r\n* 334953 - 1380@2\r\n* 330410 - 1380@4\r\n* 319587 - 1380@7\r\n* 332420 - 1380@6\r\n* 333607 - 1380@9\r\n* 331861 - 1380@0\r\n* 321359 - RA01.1/CA07.0&XN109\r\n* 332585 - MA14.1&XN109\r\n* 333484 - NC12.3&XJ44E\r\n* 326439 - NC12.3&XJ7YM\r\n* 956589 - 1A95.1&XA78U5\r\n* 1000621 - 1A95.1&XA1LK7\r\n* 2514944 - 69725-0\r\n* 2733951 - MA01.0&XA5HU6\r\n* 4912878 - QF00&XA47V8\r\n* 5437481 - DB93.1&DB99.7\r\n* 5735256 - BD40/QF00&XA47V8\r\n* 6728818 - CA40.Z&XS25\r\n* 6728870 - KA65.0&XK9J\r\n* 6728880 - KA65.0&XK8G\r\n* 6728892 - KA65.0&XK9K\r\n* 7041261 - 1F00.0Y&XT8W\r\n* 7471911 - 1E31&XN4TT\r\n* 7965285 - QE82.Z&XE1Q8\r\n* 8463764 - 6B03&XA8EC5\r\n* 8727834 - 6C40.1&XS5W\r\n* 8727848 - 6C40.1&XS0T\r\n* 8727864 - 6C40.1&XS25\r\n* 8727888 - 6C41.Z&XS0T\r\n* 8727896 - 6C41.Z&XS25\r\n* 8727910 - 6C4B.Z&XS5W\r\n* 8727924 - 6C4B.Z&XS0T\r\n* 8728044 - 6C4B.Z&XS25\r\n* 8728056 - 6C43.Z&XS5W\r\n* 8728070 - 6C43.Z&XS0T\r\n* 8728076 - 6C43.Z&XS25\r\n* 8728096 - 6C4A.1&XS5W\r\n* 8728104 - 6C4A.1&XS0T\r\n* 8728116 - 6C4A.1&XS25\r\n* 8728128 - 6C44.Z&XS5W\r\n* 8728140 - 6C44.Z&XS0T\r\n* 8728152 - 6C44.Z&XS25\r\n* 8728166 - 6C46.Z&XS5W\r\n* 8728174 - 6C46.Z&XS0T\r\n* 8728190 - 6C46.Z&XS25\r\n* 8728202 - 6C45.Z&XS0T\r\n* 8728212 - 6C45.Z&XS25\r\n* 8728222 - 6C4Z&XS5W\r\n* 8728240 - 6C4Z&XS0T\r\n* 8728248 - 6C4Z&XS25\r\n* 8728276 - 6C49.Z&XS5W\r\n* 8728294 - 6C49.Z&XS0T\r\n* 8728310 - 6C49.Z&XS25\r\n* 8728316 - FB32.Y&XA47J0\r\n* 8728602 - QC42.Y&XN2GM\r\n</details>\r\n\r\nI'm hoping you might be able to cover these with a line or two of code.\r\n\r\nWhen you get the fix to production, please trigger a new export of HEAD for CIEL and I'll verify. With these fixes, we may reach 100% match on checksums for CIEL content! \ud83d\ude42 "
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-11-05T02:56:20Z",
+          "body": "@bmamlin I have recomputed these mappings checksum and triggered the HEAD export"
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-11-05T08:44:23Z",
+          "body": "Woohoo! A big step forward. All checksums for CIEL concepts & mappings now match (comparing the v2024-10-18 import to HEAD with the legacy extras removed)!"
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-11-06T23:00:51Z",
+          "body": "@snyaggarwal the next step will be to fetch checksums from the API instead of using an export. Looking at concepts, I can see checksums in `GET /orgs/CIEL/sources/CIEL/HEAD/concepts/?limit=1000` (repeating ~60 times to cover all pages). Is this the most efficient call to get checksums? Is there an opposite of verbose if all I need is enough to identify the resources (ID for concepts, source & target properties for mappings) and checksums? I'm assuming 1000 is the max I can get per page, since setting `limit=1001` returns 25. \ud83d\ude42 "
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-11-07T05:47:03Z",
+          "body": "@bmamlin There is `?brief=true` which returns very minimal information with checksums. And yes the limit is 1000 max"
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-11-07T19:29:32Z",
+          "body": "Ok. Concept IDs should work for identifying concepts. Mapping IDs for OpenMRS don't really exist outside of OCL. Even the external ID (UUID for OpenMRS) for mappings isn't reliably maintained. So, I need to identify mappings by from_source + from_code + mapping_type + to_source + to_code.\r\n\r\nThis is an example from a CIEL import:\r\n\r\n```json\r\n{\r\n    \"type\": \"Mapping\",\r\n    \"map_type\": \"CONCEPT-SET\",\r\n    \"to_concept_url\": \"/orgs/CIEL/sources/CIEL/concepts/162441/\",\r\n    \"owner\": \"CIEL\",\r\n    \"source\": \"CIEL\",\r\n    \"retired\": false,\r\n    \"sort_weight\": 46.0,\r\n    \"from_concept_url\": \"/orgs/CIEL/sources/CIEL/concepts/162350/\",\r\n    \"owner_type\": \"Organization\",\r\n    \"external_id\": \"1739AEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE\"\r\n}\r\n```\r\n\r\nAnd here's what I get from OCL `brief=true`:\r\n\r\n```json\r\n{\r\n    \"checksums\":\r\n    {\r\n        \"smart\": \"2a058ca4e76812f4576612b32448e926\",\r\n        \"standard\": \"40ac0f1fd365b59e402051f44de3ded1\"\r\n    },\r\n    \"id\": \"325779\",\r\n    \"type\": \"Mapping\",\r\n    \"map_type\": \"CONCEPT-SET\",\r\n    \"url\": \"/orgs/CIEL/sources/CIEL/mappings/325779/\",\r\n    \"version_url\": \"/orgs/CIEL/sources/CIEL/mappings/325779/8976779/\",\r\n    \"to_concept_code\": \"162441\",\r\n    \"to_concept_url\": \"/orgs/CIEL/sources/CIEL/concepts/162441/\",\r\n    \"cascade_target_concept_code\": \"162441\",\r\n    \"cascade_target_concept_url\": \"/orgs/CIEL/sources/CIEL/concepts/162441/\",\r\n    \"cascade_target_source_owner\": \"CIEL\",\r\n    \"cascade_target_source_name\": \"CIEL\",\r\n    \"cascade_target_concept_name\": \"Oral gel\",\r\n    \"retired\": false,\r\n    \"sort_weight\": 46.0,\r\n    \"from_concept_code\": \"162350\"\r\n}\r\n```\r\n\r\nI can use your code from checksum.py to parse/normalize mappings:\r\n\r\n```python\r\ndef get_mapping_fields(self, data):\r\n    to_concept_code = getvalue(data, 'to_concept_code', None)\r\n    to_concept_url = getvalue(data, 'to_concept_url', None)\r\n    to_source_url = getvalue(data, 'to_source_url', None)\r\n    to_source_version = getvalue(data, 'to_source_version', None)\r\n    from_concept_code = getvalue(data, 'from_concept_code', None)\r\n    from_concept_url = getvalue(data, 'from_concept_url', None)\r\n    from_source_url = getvalue(data, 'from_source_url', None)\r\n    from_source_version = getvalue(data, 'from_source_version', None)\r\n\r\n    def expand_concept_url(concept_url, concept_code, source_url, source_version):\r\n        if concept_url and (not concept_code or not source_url):\r\n            url_parts = concept_url.split('/concepts/')  # /orgs/{org}/sources/{source}(/concepts/){concept}/\r\n            if not concept_code:\r\n                concept_code = url_parts[1].split('/')[0]\r\n            if not source_url:\r\n                source_url = url_parts[0] + '/'\r\n                if source_url.count('/') == 6:  # /orgs/{org}/sources/{source}/{source_version}/\r\n                    source_version = source_url.split('/')[-1]\r\n                    source_url = '/'.join(source_url.split('/')[:-1])\r\n        return concept_code, source_url, source_version\r\n    to_concept_code, to_source_url, to_source_version = expand_concept_url(\r\n        to_concept_url, to_concept_code, to_source_url, to_source_version)\r\n    from_concept_code, from_source_url, from_source_version = expand_concept_url(\r\n        from_concept_url, from_concept_code, from_source_url, from_source_version)\r\n```\r\n\r\nHowever, looking at the content of `brief=true` for mappings, I don't see any reference to the \"from\" source. Any chance that's an oversight?"
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-11-08T02:14:48Z",
+          "body": "@bmamlin Added \"from_concept_url\" in the brief response. Will be deploying this soon"
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-11-08T08:04:07Z",
+          "body": "@bmamlin this is now deployed on prod"
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-11-22T04:57:42Z",
+          "body": "@snyaggarwal, I was able to validate all CIEL concepts via checksum. It took about 2.5 minutes to fetch concept checksums.\r\n\r\nI've yet been able to fetch mapping checksums. Using `/orgs/CIEL/sources/CIEL/HEAD/mappings/?brief=true&limit=1000`, there are 234 pages to fetch. It takes almost 2 hours to get 200 pages. My last attempt fetched 208 pages before crashing with a 502 error.\r\n\r\nAny chance we could come up with a more efficient way to fetch checksums? I was kind of hoping I could get checksums (with `id` for concepts and `from url`+`map type`+`to url` for mappings) in 1-2 calls that return in seconds. \ud83d\ude42 "
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-11-22T06:24:09Z",
+          "body": "@bmamlin Why not use export files?"
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-11-22T13:10:20Z",
+          "body": "> @bmamlin Why not use export files?\r\n\r\nI was hoping that, since they are calculated at the time concepts & mappings are stored, that there might be a way to get a dump of checksums for a source in minutes instead of 6-8 hours (the time it takes to generate a new export)."
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2024-12-02T02:47:40Z",
+          "body": "@bmamlin I have added a new behavior `?brief=true&checksums=true&limit=20000`\r\n- This can return a maximum of 20k results in a few seconds. \r\n- For Mappings its going to return from/to-url and map_type only.\r\n\r\nThis is deployed on QA and Staging."
+        }
+      ]
+    }
+  },
+  "2057": {
+    "number": 2057,
+    "title": "Collection Importing via Version Export",
+    "state": "OPEN",
+    "body": "While sources are able to successfully be transported between two OCL servers using export.json files, collection versions are not working in that way. When we try, OCL returns an error `\"errors\": {  \"collection\": \"Version Head not found.\"   }`\n\nA user should be able to use a collection version export JSON file from OCL to recreate that collection in another OCL server. Collection versions currently include references, so the MVP of this would be to create the collection (if needed) and then import the references from the collection version JSON. \n\nCollection version JSON files do NOT include an expansion, but we can ignore that for now and just do an autoexpand.\n\nA next stage for this might be to be responsive to the concepts and mappings in the collection version JSON, but that probably requires more discussion.",
+    "createdAt": "2025-02-07T13:28:41Z",
+    "updatedAt": "2025-02-26T18:19:29Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "enhancement"
+        },
+        {
+          "name": "bulk-import"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": [
+        {
+          "login": "snyaggarwal"
+        }
+      ]
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "jamlung-ri"
+          },
+          "createdAt": "2025-02-26T18:19:28Z",
+          "body": "@snyaggarwal Wanted to bump this ticket since we have a user who is depending on it. \n\n@paynejd Wanted to bring this to your attention. Can we figure out how quickly we might be able to tackle this?"
+        }
+      ]
+    }
+  },
+  "2128": {
+    "number": 2128,
+    "title": "Navigate terms using arrow keys",
+    "state": "OPEN",
+    "body": "Add arrow keys support for users to quickly navigate through the results and decisions. Through the test I did with a end user, this would help greatly to use the UI. \n\nPossible keys:\n- Up arrow: previous term\n- Down arrow: next term\n- Right arrow: open side panel for selected term\n- Left arrow: close side panel\n- Enter: approve the suggested matching term \n- Esc: reject  the suggested matching term \n\n@snyaggarwal, what do you think? ",
+    "createdAt": "2025-03-13T18:33:54Z",
+    "updatedAt": "2025-10-23T13:13:48Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "Priority: Low"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": [
+        {
+          "login": "michaelbontyes"
+        }
+      ]
+    },
+    "milestone": {
+      "title": "OCL Mapper MVP"
+    },
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2025-03-17T02:07:24Z",
+          "body": "@michaelbontyes this makes sense."
+        }
+      ]
+    }
+  },
+  "878": {
+    "number": 878,
+    "title": "Name_type Standardization",
+    "state": "OPEN",
+    "body": "Standardize the format of the name_type attribute in OCL. \n\nFor example, we are seeing name_type attributes that are \"Fully Specified\" ([link](https://api.qa.openconceptlab.org/orgs/PEPFAR-Test10b/sources/MER/concepts/p1OMag94BGr/?verbose=true)) and name_type attributes that are \"FULLY_SPECIFIED\" ([link](https://api.openconceptlab.org/orgs/OMRSCOVIDSquad/collections/OMRSCOVIDVaccination/concepts/166356/?verbose=true)). \n\nNote that OpenMRS Dictionary Manager will be slightly affected by it, so we should coordinate with that team when we start to implement these changes.\n![image.png](https://images.zenhubusercontent.com/5df114a3d094b314eeec671c/c68cc5a5-339b-4d35-8ef6-29b524389514)",
+    "createdAt": "2021-08-04T16:04:25Z",
+    "updatedAt": "2023-09-26T11:50:36Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "enhancement"
+        },
+        {
+          "name": "affects-ocl-client"
+        },
+        {
+          "name": "api2"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": [
+        {
+          "login": "paynejd"
+        },
+        {
+          "login": "snyaggarwal"
+        }
+      ]
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "jamlung-ri"
+          },
+          "createdAt": "2021-08-05T12:55:33Z",
+          "body": "@snyaggarwal I believe the OpenMRS team is primarily using Staging and Prod environments, so we'll want to communicate with them before this change gets pushed to those envs. Are you wanting to push this out ASAP, or will it wait a little before we push this change to them?"
+        },
+        {
+          "author": {
+            "login": "jamlung-ri"
+          },
+          "createdAt": "2021-08-05T12:56:54Z",
+          "body": "Also, does this change only affect existing names, or will it affect new concepts too? If there's anything that the OpenMRS team will need to change themselves, I want to make sure they're aware."
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2021-08-05T12:59:57Z",
+          "body": "@jamlung-ri it affects existing and new concepts and it only affects the display of the name_type -- No need to change the import script or any type of input. The code should be able to standardize from the input given. \r\nAlso, I am done with these changes and it's on a separate branch (pull request). Will ask for a review and second opinion (may be showcase) before merging and promoting this to any env. "
+        },
+        {
+          "author": {
+            "login": "paynejd"
+          },
+          "createdAt": "2021-08-10T12:40:08Z",
+          "body": "@paynejd to verify how this will impact existing integration scripts and we will discuss again on our next architecture call"
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2021-08-13T12:51:50Z",
+          "body": "We discussed on the 2021-08-13 architecture call and I suggested we start by standardizing any code that's importing or creating imports to use the standard name types and then enforce those standard name types in the custom validation schema.\r\n\r\nFor the record, the three standard [OpenMRS Concept Name Types](https://github.com/openmrs/openmrs-core/blob/master/api/src/main/java/org/openmrs/api/ConceptNameType.java#L37-L39) are all capitals with underscores:\r\n* \"FULLY_SPECIFIED\"\r\n* \"SHORT\"\r\n* \"INDEX_TERM\""
+        },
+        {
+          "author": {
+            "login": "jamlung-ri"
+          },
+          "createdAt": "2021-08-13T14:16:35Z",
+          "body": "Moving to next sprint. We are also working on this in the [OCL Architecture notes](https://docs.google.com/document/d/157ChmfmYLGLEg_fO4cE7oMqtGpL4PchUkEhNfUUMxdo/edit#)."
+        },
+        {
+          "author": {
+            "login": "lnball"
+          },
+          "createdAt": "2023-08-21T12:31:57Z",
+          "body": "This thread/ticket is from 2 years ago and not new news for the team.\r\n\r\nI just added a Spanish name (Capsula) to an existing concept (Capsule) in OCL.  It appears as \"Fully-Specified\" instead of (UPPER CASE) \"FULLY_SPECIFIED\"?  Also it has a '-' (dash) instead of '_' (underscore).  We should be consistent and it shouldn't be a problem with the export into OpenMRS.\r\n\r\n![image](https://github.com/OpenConceptLab/ocl_issues/assets/1164849/85ea20c8-d560-4f29-beda-557d3a5727ed)\r\n"
+        },
+        {
+          "author": {
+            "login": "paynejd"
+          },
+          "createdAt": "2023-09-26T11:50:36Z",
+          "body": "Note that name types are also presented differently in the filters panel than they are actually stored. For example, `FULLY SPECIFIED` in the filters panel is actually `FULLY_SPECIFIED` (with an underscore). This inconsistency can be confusing.\r\n\r\n<img width=\"277\" alt=\"image\" src=\"https://github.com/OpenConceptLab/ocl_issues/assets/1189689/4188beda-da3e-4d6b-81f3-43aed276e808\">\r\n"
+        }
+      ]
+    }
+  },
+  "1763": {
+    "number": 1763,
+    "title": "Concept tracing information - Modification indicators",
+    "state": "OPEN",
+    "body": "A user needs to be aware if the concept in a repo/collection that they are viewing is \"original\" (i.e. is the same as the source concept) or \"modified\" (i.e. its details, mappings, etc. differ from the source concept). \n\nIn TBv2, this only manifests when the mappings of a concept differ from its original source vs. what is being displayed on the concept from the context of a collection. \n\nComplexities from this [OCL Arch Call](https://docs.google.com/document/d/157ChmfmYLGLEg_fO4cE7oMqtGpL4PchUkEhNfUUMxdo/edit#bookmark=id.pbgpc2ccacvm):\n\n- Demo concepts: [MSF concept](https://app.openconceptlab.org/#/orgs/MSF/sources/MSF/concepts/1290/) (original from source) vs. [MSF-OCB concept](https://app.openconceptlab.org/#/orgs/MSF-OCB/collections/Trauma/HEAD/expansions/autoexpand-HEAD/concepts/1290/) (modified mappings in collection) (see screenshots below)\n- Test case - when I add the concept from the MSF-OCB collection, I expect to see the concept and mappings from the MSF-OCB collection. Currently OCL points directly back to the original MSF source\u2019s mappings though.\n- Complexities:\n     - There\u2019s a balance to strike between the dictionary management/auto-expand perspective vs. the traditional TS/FHIR/non-auto-expand perspective\n     - When viewing the Concepts tab in the context of a collection/valueset, OCL currently displays:\n     - Left: Codes/mappings from their codesystems/sources\n          - If you check concept on the left and \u201cadd it to a collection\u201d, the reference points to the source, not the collection\n     - Right: Concept from collection context (cascaded within context), and the link at the top of the details pane is to the source\n         - Header and attributes are populated from source viewpoint\n         - Display name can be set in a reference/valueset \u2013 not clear if the TB shows the display name from the ValueSet, or if it only shows the info from the underlying source; but we know that the TB doesn\u2019t handle context or any other types of modifications that a user might eventually be able to make to a concept within a reference\n         - \u201cAssociations\u201d section cascades from collection viewpoint\n\n\nOriginal MSF Concept:\n<img width=\"740\" src=\"https://api.zenhub.com/attachedFiles/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBL0ZJQXc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--55dbc07bf7c3fd2b1516556bb2827fafc140e08b/image.png\" alt=\"image.png\" />\n\n\n\"Modified\" MSF Concept:\n<img width=\"1721\" src=\"https://api.zenhub.com/attachedFiles/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBL0pJQXc9PSIsImV4cCI6bnVsbCwicHVyIjoiYmxvYl9pZCJ9fQ==--3eea7477d821f027259573fe87b16eeec03eb230/image.png\" alt=\"image.png\" />\n\n",
+    "createdAt": "2024-02-09T20:28:33Z",
+    "updatedAt": "2024-02-09T20:43:24Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "Design"
+        },
+        {
+          "name": "V3"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": [
+        {
+          "login": "jamlung-ri"
+        },
+        {
+          "login": "paulsonder"
+        }
+      ]
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "jamlung-ri"
+          },
+          "createdAt": "2024-02-09T20:34:37Z",
+          "body": "Current behavior in TBv2:\r\n1. I select the concept from the collection, which has changed the mappings from the original source concept\r\n2. I click \"Add to Collection\"\r\n3. The \"Add References to Collection\" interface appears, but in the API Details section, the reference being added is to the original source concept, not the collection concept (which would use the reference `/orgs/MSF-OCB/collections/Trauma/concepts/1290/`).\r\n![image](https://github.com/OpenConceptLab/ocl_issues/assets/55999682/ef34ebb1-a59a-4d5d-abb7-344567927010)\r\n"
+        },
+        {
+          "author": {
+            "login": "jamlung-ri"
+          },
+          "createdAt": "2024-02-09T20:43:23Z",
+          "body": "Current API behavior:\r\n\r\nUsing this API call:\r\n```\r\nPUT /users/jamlung/collections/omrs-squad3/references/\r\n{\r\n  \"data\": {\r\n    \"expressions\": [\r\n      \"/orgs/MSF-OCB/collections/Trauma/concepts/1290/\"\r\n    ]\r\n  },\r\n  \"cascade\": {\r\n    \"method\": \"sourcemappings\",\r\n    \"cascade_levels\": \"*\",\r\n    \"map_types\": \"Q-AND-A,CONCEPT-SET\",\r\n    \"return_map_types\": \"*\"\r\n  }\r\n}\r\n```\r\n\r\nYields these results:\r\n```\r\n{\"resourceType\":\"Bundle\",\"type\":\"searchset\",\"meta\":{\"lastUpdated\":\"2024-02-06T12:59:50.023147Z\"},\"total\":14,\"entry\":[{\"checksums\":null,\"id\":\"1290\",\"type\":\"Concept\",\"url\":\"/orgs/MSF/sources/MSF/concepts/1290/3319661/\",\"version_url\":\"/orgs/MSF/sources/MSF/concepts/1290/3319661/\",\"retired\":false},{\"checksums\":null,\"id\":\"1383\",\"type\":\"Concept\",\"url\":\"/orgs/MSF/sources/MSF/concepts/1383/3319860/\",\"version_url\":\"/orgs/MSF/sources/MSF/concepts/1383/3319860/\",\"retired\":false},{\"checksums\":null,\"id\":\"1417\",\"type\":\"Concept\",\"url\":\"/orgs/MSF/sources/MSF/concepts/1417/3319934/\",\"version_url\":\"/orgs/MSF/sources/MSF/concepts/1417/3319934/\",\"retired\":false},{\"checksums\":null,\"id\":\"164407\",\"type\":\"Concept\",\"url\":\"/orgs/CIEL/sources/CIEL/concepts/164407/4379597/\",\"version_url\":\"/orgs/CIEL/sources/CIEL/concepts/164407/4379597/\",\"retired\":false},{\"checksums\":null,\"id\":\"10064\",\"type\":\"Mapping\",\"map_type\":\"Q-AND-A\",\"url\":\"/orgs/MSF-OCB/sources/MSFOCB/mappings/10064/\",\"version_url\":\"/orgs/MSF-OCB/sources/MSFOCB/mappings/10064/6494566/\",\"to_concept_code\":\"164407\",\"to_concept_url\":\"/orgs/CIEL/sources/CIEL/concepts/164407/\",\"cascade_target_concept_code\":\"164407\",\"cascade_target_concept_url\":\"/orgs/CIEL/sources/CIEL/concepts/164407/\",\"cascade_target_source_owner\":\"MSF\",\"cascade_target_source_name\":\"MSF\",\"cascade_target_concept_name\":\"Other health facility\",\"retired\":false,\"sort_weight\":null,\"from_concept_code\":\"1290\"},{\"checksums\":null,\"id\":\"3643\",\"type\":\"Mapping\",\"map_type\":\"Q-AND-A\",\"url\":\"/orgs/MSF/sources/MSF/mappings/3643/5478613/\",\"version_url\":\"/orgs/MSF/sources/MSF/mappings/3643/5478613/\",\"to_concept_code\":\"1417\",\"to_concept_url\":\"/orgs/MSF/sources/MSF/concepts/1417/\",\"cascade_target_concept_code\":\"1417\",\"cascade_target_concept_url\":\"/orgs/MSF/sources/MSF/concepts/1417/\",\"cascade_target_source_owner\":\"MSF\",\"cascade_target_source_name\":\"MSF\",\"cascade_target_concept_name\":\"Self-referral\",\"retired\":false,\"sort_weight\":null,\"from_concept_code\":\"1290\"},{\"checksums\":null,\"id\":\"6513\",\"type\":\"Mapping\",\"map_type\":\"Q-AND-A\",\"url\":\"/orgs/MSF/sources/MSF/mappings/6513/\",\"version_url\":\"/orgs/MSF/sources/MSF/mappings/6513/6494525/\",\"to_concept_code\":\"1383\",\"to_concept_url\":\"/orgs/MSF/sources/MSF/concepts/1383/\",\"cascade_target_concept_code\":\"1383\",\"cascade_target_concept_url\":\"/orgs/MSF/sources/MSF/concepts/1383/\",\"cascade_target_source_owner\":\"MSF\",\"cascade_target_source_name\":\"MSF\",\"cascade_target_concept_name\":\"Emergency department\",\"retired\":false,\"sort_weight\":null,\"from_concept_code\":\"1290\"},{\"checksums\":null,\"id\":\"1644\",\"type\":\"Mapping\",\"map_type\":\"SAME-AS\",\"url\":\"/orgs/MSF/sources/MSF/mappings/1644/5193907/\",\"version_url\":\"/orgs/MSF/sources/MSF/mappings/1644/5193907/\",\"to_concept_code\":\"225728007\",\"to_concept_url\":null,\"cascade_target_concept_code\":\"225728007\",\"cascade_target_concept_url\":null,\"cascade_target_source_owner\":\"IHTSDO\",\"cascade_target_source_name\":\"SNOMED-CT\",\"cascade_target_concept_name\":null,\"retired\":false,\"sort_weight\":null,\"from_concept_code\":\"1383\"},{\"checksums\":null,\"id\":\"1821\",\"type\":\"Mapping\",\"map_type\":\"SAME-AS\",\"url\":\"/orgs/MSF/sources/MSF/mappings/1821/5194066/\",\"version_url\":\"/orgs/MSF/sources/MSF/mappings/1821/5194066/\",\"to_concept_code\":\"160551\",\"to_concept_url\":\"/orgs/CIEL/sources/CIEL/concepts/160551/\",\"cascade_target_concept_code\":\"160551\",\"cascade_target_concept_url\":\"/orgs/CIEL/sources/CIEL/concepts/160551/\",\"cascade_target_source_owner\":\"CIEL\",\"cascade_target_source_name\":\"CIEL\",\"cascade_target_concept_name\":\"Self-referral\",\"retired\":false,\"sort_weight\":null,\"from_concept_code\":\"1417\"},{\"checksums\":null,\"id\":\"1358\",\"type\":\"Mapping\",\"map_type\":\"SAME-AS\",\"url\":\"/orgs/MSF/sources/MSF/mappings/1358/\",\"version_url\":\"/orgs/MSF/sources/MSF/mappings/1358/5193647/\",\"to_concept_code\":\"164408\",\"to_concept_url\":\"/orgs/CIEL/sources/CIEL/concepts/164408/\",\"cascade_target_concept_code\":\"164408\",\"cascade_target_concept_url\":\"/orgs/CIEL/sources/CIEL/concepts/164408/\",\"cascade_target_source_owner\":\"CIEL\",\"cascade_target_source_name\":\"CIEL\",\"cascade_target_concept_name\":\"Source of initial patient referral\",\"retired\":false,\"sort_weight\":null,\"from_concept_code\":\"1290\"},{\"checksums\":null,\"id\":\"328178\",\"type\":\"Mapping\",\"map_type\":\"SAME-AS\",\"url\":\"/orgs/CIEL/sources/CIEL/mappings/328178/6154368/\",\"version_url\":\"/orgs/CIEL/sources/CIEL/mappings/328178/6154368/\",\"to_concept_code\":\"4563007\",\"to_concept_url\":null,\"cascade_target_concept_code\":\"4563007\",\"cascade_target_concept_url\":null,\"cascade_target_source_owner\":\"IHTSDO\",\"cascade_target_source_name\":\"SNOMED-CT\",\"cascade_target_concept_name\":null,\"retired\":false,\"sort_weight\":null,\"from_concept_code\":\"164407\"},{\"checksums\":null,\"id\":\"1269612\",\"type\":\"Mapping\",\"map_type\":\"SAME-AS\",\"url\":\"/orgs/CIEL/sources/CIEL/mappings/1269612/6453898/\",\"version_url\":\"/orgs/CIEL/sources/CIEL/mappings/1269612/6453898/\",\"to_concept_code\":\"164407\",\"to_concept_url\":\"/orgs/CIEL/sources/CIEL/concepts/164407/\",\"cascade_target_concept_code\":\"164407\",\"cascade_target_concept_url\":\"/orgs/CIEL/sources/CIEL/concepts/164407/\",\"cascade_target_source_owner\":\"CIEL\",\"cascade_target_source_name\":\"CIEL\",\"cascade_target_concept_name\":\"Other health facility\",\"retired\":false,\"sort_weight\":null,\"from_concept_code\":\"164407\"},{\"checksums\":null,\"id\":\"1641\",\"type\":\"Mapping\",\"map_type\":\"SAME-AS\",\"url\":\"/orgs/MSF/sources/MSF/mappings/1641/\",\"version_url\":\"/orgs/MSF/sources/MSF/mappings/1641/5193905/\",\"to_concept_code\":\"160473\",\"to_concept_url\":\"/orgs/CIEL/sources/CIEL/concepts/160473/\",\"cascade_target_concept_code\":\"160473\",\"cascade_target_concept_url\":\"/orgs/CIEL/sources/CIEL/concepts/160473/\",\"cascade_target_source_owner\":\"CIEL\",\"cascade_target_source_name\":\"CIEL\",\"cascade_target_concept_name\":\"Emergency department\",\"retired\":false,\"sort_weight\":null,\"from_concept_code\":\"1383\"},{\"checksums\":null,\"id\":\"1823\",\"type\":\"Mapping\",\"map_type\":\"SAME-AS\",\"url\":\"/orgs/MSF/sources/MSF/mappings/1823/\",\"version_url\":\"/orgs/MSF/sources/MSF/mappings/1823/5194068/\",\"to_concept_code\":\"306098008\",\"to_concept_url\":null,\"cascade_target_concept_code\":\"306098008\",\"cascade_target_concept_url\":null,\"cascade_target_source_owner\":\"IHTSDO\",\"cascade_target_source_name\":\"SNOMED-CT\",\"cascade_target_concept_name\":null,\"retired\":false,\"sort_weight\":null,\"from_concept_code\":\"1417\"}],\"requested_url\":\"/orgs/MSF-OCB/collections/Trauma/v2024-01-16/concepts/1290/$cascade/?method=sourcetoconcepts&mapTypes=&excludeMapTypes=&returnMapTypes=*&cascadeHierarchy=true&cascadeMappings=true&includeRetired=false&cascadeLevels=*&reverse=false&view=flat&omitIfExistsIn=&equivalencyMapType=&q=1290&isTable=true&isList=false&page=1\",\"repo_version_url\":\"/orgs/MSF-OCB/collections/Trauma/v2024-01-16/\"}\r\n```\r\n\r\nScreenshot in TB (which shows all 14 mappings, not just the 4 expected mappings):\r\n![image](https://github.com/OpenConceptLab/ocl_issues/assets/55999682/b3883ae9-649c-49fb-9f31-ec605467743d)\r\n\r\n\r\n"
+        }
+      ]
+    }
+  },
+  "1357": {
+    "number": 1357,
+    "title": "Expose hard DELETE of concept/mapping for standard users",
+    "state": "OPEN",
+    "body": "Hard delete of concepts/mappings was implemented for admins only in #564. We want to be careful about how we expose this behavior to users, but we will eventually need to make this available. Let's use this ticket to track the issue.\n\n@snyaggarwal Was hard delete implemented for concept/mapping versions?\n\n## Concept/mapping -- previously implemented\n```\nDELETE /orgs/MyOrg/sources/MySource/concepts/:id/?hardDelete=true\nDELETE /orgs/MyOrg/sources/MySource/mappings/:id/?hardDelete=true\n```\n\n## Concept/mapping versions -- ??\n```\nDELETE /orgs/MyOrg/sources/MySource/concepts/:id/:version/?hardDelete=true\nDELETE /orgs/MyOrg/sources/MySource/mappings/:id/:version/?hardDelete=true\n```",
+    "createdAt": "2022-10-04T10:43:36Z",
+    "updatedAt": "2024-03-12T11:50:14Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "api2"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": []
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": []
+    }
+  },
+  "2266": {
+    "number": 2266,
+    "title": "Simplified CSV output that combines concepts and mappings",
+    "state": "OPEN",
+    "body": "OCL's export formats (Concepts CSV, Mappings CSV, and Export JSON) do not meet user requirements of having a full representation of a repository in a concept-focused way, particularly without limiting the number of resources to 1000.\n\nWe are exploring a new format that transforms OCL's export JSON into a concept-anchored CSV (meaning, each row is one concept, and those concepts' mappings are displayed in the same row).\n\nA Python notebook to illustrate this work is here: https://colab.research.google.com/drive/1TH8j-95F1D19dgFpbMwhD1_A2eYRepGU?usp=sharing\n\n\nPotential goals:\n\n> In an ideal world, a new csv format would solve these problems simultaneously:\n>  * Export format from OCL\n>  * Compatible as an input dataset for OCL Mapper\n>  * Compatible with OCL's bulk import format\n>  * Very human-readable (Unlike the JSON format)\n>  * Comprehensive??? JSON represents 100% of concept metadata -- should this?\n>  * Enable representation of collection references? ",
+    "createdAt": "2025-11-25T13:52:07Z",
+    "updatedAt": "2026-03-20T14:14:49Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "reviewed/keep"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": []
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "jamlung-ri"
+          },
+          "createdAt": "2025-11-25T13:53:01Z",
+          "body": "Here is a comma-separated syntax for mappings that is backwards compatible with the format used in the concept prevalence study, extensible to more metadata, parseable with a single regular expression, and still human readable. Position of map-type (optional) implies directionality. Looking for feedback.\n\n```\nGeneric syntax:\n[\\[<direct-map-type>\\] ]<source-reference>:<concept-code>[ \"<name>[ \\[<locale>\\]]\"][\\ [<inverse-map-type>\\]]\n\nExamples:\nSNOMED-CT:1292929349\nCIEL:1234 \"name\"\nCIEL:1234 \"part 1, part 2 [optional-locale]\"\nICD10:A01.1 name-with-no-quote\n[NARROWER-THAN] ICD-10:AO1.1 \"name\"\n[NARROWER-THAN] ICD-10:AO1.1 \"name [en]\"\n\nReal example for CIEL 146641:\n[NARROWER-THAN] ICD-10:AO1.1, [SAME-AS] ICD-11-WHO:NE02&XA99N3, [SAME-AS] IMO-ProblemIT:22793, [SAME-AS] CIEL:146641 \"Burn of uterus [en]\", [SAME-AS] SNOMED-CT:22388002, [SAME-AS] ICD-10-WHO:T28.3\n```\n\nNotes:\n* Location of the map-type implies directionality of the mapping, so this would be valid for inverse maps: <source-reference>:<concept-code>[ \"<name>[ \\[<locale>\\]]\"][ \\[<inverse-map-type>\\]]\n* This format would support multiple source reference approaches:\n    * Relative URL: /orgs/CIEL/sources/CIEL/\n    * Canonical URL:  http://loinc.org/\n    * Short-codes: ICD-10-WHO -- use of short-codes would generally require a source mapping table"
+        },
+        {
+          "author": {
+            "login": "paynejd"
+          },
+          "createdAt": "2025-11-25T13:59:10Z",
+          "body": "cc @bmamlin"
+        },
+        {
+          "author": {
+            "login": "paynejd"
+          },
+          "createdAt": "2025-11-25T16:48:06Z",
+          "body": "Questions from @bmamlin:\n- How are special characters handled/escaped in names (brackets, commas, quotes)?\n- Are single quotes valid or only double quotes?\n- Assuming order of mappings doesn\u2019t matter (is not defined).\n\n"
+        }
+      ]
+    }
+  },
+  "2281": {
+    "number": 2281,
+    "title": "Proposal to support download of a concept's mappings as a valueset",
+    "state": "OPEN",
+    "body": "***THIS TICKET IS NOT READY FOR DEVELOPMENT YET***\n\nThanks to @delcroip for suggesting this feature\n\n**Use Case:**\nCIEL:116128 has many mappings: https://app.openconceptlab.org/#/orgs/CIEL/sources/CIEL/concepts/116128/. I want an endpoint to download those mappings (optionally with filtering, e.g. only SAME-AS) as a ValueSet that I can easily refer back to.\n\n**MVP Proposal**\n- Implement a new OCL API endpoint with optional filtering (e.g. map-types, repo/source), e.g.: https://api.openconceptlab.org/orgs/CIEL/sources/CIEL/concepts/116128/$getMappingsAsValueSet?mapTypes=SAME-AS,NARROWER-THAN,BROADER-THAN. This is a custom OCL API format -- we expect long-term that we would want a compliant FHIR method to request this, likely via an $expand request with a novel compose statement.\n- Return a minimalist FHIR-compliant ValueSet response of a concept\u2019s mappings:\n```\n{\n  \"name\": \"Mappings for CIEL:116128\",\n  \"url\": \"https://api.openconceptlab.org/orgs/CIEL/sources/CIEL/concepts/116128/$getMappingsAsValueSet?mapTypes=SAME-AS,NARROWER-THAN,BROADER-THAN\",\n  expansion: {\n    contains: []\n  }\n}\n```",
+    "createdAt": "2025-12-18T14:41:27Z",
+    "updatedAt": "2026-03-24T16:39:30Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "reviewed/keep"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": []
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "delcroip"
+          },
+          "createdAt": "2025-12-19T08:29:38Z",
+          "body": "That should work well, but I'm unsure about including parameters in the canonical URL, as FHIR generally discourages them.\nI'd prefer a clean pattern like:\n\nhttps://api.openconceptlab.org/orgs/CIEL/sources/CIEL/concepts/116128/ValueSetMaps/SAME-AS\n\n(or with multiple types: /ValueSetMaps/SAME-AS,NARROWER-THAN,BROADER-THAN)\n\nI explored alternatives like fake filter properties, but they aren't as solid as your approach."
+        }
+      ]
+    }
+  },
+  "2176": {
+    "number": 2176,
+    "title": "Source properties and filters (part 4)",
+    "state": "OPEN",
+    "body": "This ticket is still being defined...\n\n- **MVP Round 4**\n  - Generate/Retrieve a Profile for a source that defines the schema (based on the properties)\n  - Support for FHIR\u2019s predefined Concept Properties CodeSystem to help with consistency across codesystems: https://build.fhir.org/codesystem.html#defined-props \n  - Method to store property/filter definitions (e.g. http://loinc.org/property/COMPONENT)",
+    "createdAt": "2025-05-14T17:18:28Z",
+    "updatedAt": "2026-03-24T16:54:44Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "reviewed/keep"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": []
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": []
+    }
+  },
+  "2175": {
+    "number": 2175,
+    "title": "Enforce source properties as schema",
+    "state": "OPEN",
+    "body": "- **MVP Round 3: Enforce properties as schema**\n  - Enforce defined properties as a schema for extra attributes in the API\n    - Option: Admin controls whether other extra attributes can still be defined\n  - Use source properties as a schema to assist users when managing concepts in the TermBrowser\n  - Document differences in OCL capabilities and intended/expected FHIR spec -- e.g. what can OCL automatically do even without an explicit property/filter definition (like full text search), what can OCL not do (or do differently) than FHIR expects (e.g. `is_a`)\n\nNote: this requires that a property can be bound to a valueset and validated, which means likely requires more than is available in a property definition alone (e.g. structure definition, profile, etc.)",
+    "createdAt": "2025-05-14T17:17:48Z",
+    "updatedAt": "2026-03-24T16:54:12Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "reviewed/keep"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": []
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "paynejd"
+          },
+          "createdAt": "2026-03-24T16:50:33Z",
+          "body": "deferred to future work"
+        }
+      ]
+    }
+  },
+  "2159": {
+    "number": 2159,
+    "title": "Source properties and filters",
+    "state": "OPEN",
+    "body": "## Overview\nSource properties and filters is a core capability that OCL is missing that is required for a fully functional FHIR service, and would also provide a lot of value even without a HAPI FHIR Plain Server integration.\n\nNote that even though the requirement is coming from the FHIR spec, we are implementing this as a core OCL capability that will be available in the OCL API for `source` repositories.\n\n## Specification\nFrom the perspective of FHIR, properties and filters are defined in the CodeSystem specification: https://build.fhir.org/codesystem.html\n\nRequired ValueSet bindings:\n* **property-type**\n  * R4B (https://hl7.org/fhir/R4B/valueset-concept-property-type.html): code, Coding, string, integer, boolean, dateTime, decimal\n   * R6 (https://build.fhir.org/valueset-concept-property-type.html): same as above\n* **filter-operator**\n  * R4B (https://hl7.org/fhir/R4B/valueset-filter-operator.html): =, is-a, descendent-of, is-not-a, regex, in, not-in, generalizes, exists\n  * R6 (https://build.fhir.org/valueset-filter-operator.html): all of the above, plus\u2026 child-of, descendent-leaf\n\n## OCL current state\n- **Extras**: OCL implements a source.concept.extras attribute, which is a simple dictionary of key-value pairs.\n- **Schema-less**: Extra values are \u201cschema-less\u201d. They may be of any datatype, and it is up to the user/client to validate/enforce datatypes and to determine which are optional or required.\n- **Filtering**: OCL supports filtering by any extra attribute if the user knows in advance the extra attribute key that they want to filter \u2013 Currently, there is no way to get information about attributes that are in use, which can be used for filtering, and the datatypes of those filters, etc. without traversing the entire CodeSystem/source.\n- **Filter Operations**: Not all of the filter operations defined in FHIR (and used commonly by FHIR CodeSystems) are exposed by OCL (Note: OCL uses ElasticSearch, which means that all FHIR filter capabilities are available under the hood \u2013 we just need to expose them)\n\n## Sequencing:\n- **MVP: Read and save source properties and filters** (but not yet enforce as schema)\n  - Implement full representation/CRUD of `source.properties` and `source.filters` attributes in the OCL API and expose CRUD in the TermBrowser\n  - CRUD in the native OCL FHIR CodeSystem serializers (note, that this is not at the field level, only at the CodeSystem level)\n  - View properties and filters in TBv2 and TBv3 when viewing repositories (as OCL sources) --- not implementing CRUD in TB yet\n- **MVP Round 2: Expose in TB search**\n  - Migrate class and datatype to become properties (e.g. could copy for now so that there are no breaking changes)\n  - Expose source properties and filters for repo-level search in the TermBrowser search interface (including, shifting class/datatype to become properties in the TermBrowser)\n  - Implement API ability for a CodeSystem/Source admin to define which properties should be included in the summary of a concept and brought to the top when requesting the list of properties (e.g. CIEL: class and datatype; LOINC: the 6 LOINC parts... Component, Property, Time, System, Scale, Method -- plus Units)\n- **MVP Round 3: Enforce properties as schema**\n  - Enforce defined properties as a schema for extra attributes in the API\n    - Option: Admin controls whether other extra attributes can still be defined\n  - Use source properties as a schema to assist users when managing concepts in the TermBrowser\n  - Document differences in OCL capabilities and intended/expected FHIR spec -- e.g. what can OCL automatically do even without an explicit property/filter definition (like full text search), what can OCL not do (or do differently) than FHIR expects (e.g. `is_a`)\n- **MVP Round 4**\n  - Generate/Retrieve a Profile for a source that defines the schema (based on the properties)\n  - Support for FHIR\u2019s predefined Concept Properties CodeSystem to help with consistency across codesystems: https://build.fhir.org/codesystem.html#defined-props \n  - Method to store property/filter definitions (e.g. http://loinc.org/property/COMPONENT)",
+    "createdAt": "2025-05-09T18:56:32Z",
+    "updatedAt": "2026-03-24T16:54:32Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "enhancement"
+        },
+        {
+          "name": "api2"
+        },
+        {
+          "name": "reviewed/keep"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": []
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2025-05-12T07:29:55Z",
+          "body": "@paynejd do we have example request for filter like \"is-a\"?"
+        },
+        {
+          "author": {
+            "login": "paynejd"
+          },
+          "createdAt": "2025-05-12T14:02:25Z",
+          "body": "@snyaggarwal the `is_a` filter is a subsumption query. OCL does not currently have this capability, though `$cascade` is the basis for supporting it. Let's leave `is_a` for round 2. We can pull together examples and documentation in the meantime."
+        },
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2025-05-13T14:18:18Z",
+          "body": "##### Notes \n1. I feel it's better to use new fields like `properties` and `filters`. ES provides better search support on a fixed schema\n\n\n### MVP Round 1 (24 points)\n1. `source.properties` -- `ArrayField` with schema\n```json\n{\"code\": \"string\", \"uri\": \"<string-uri>\", \"description\": \"string\", \"type\": \"string\"}\n```\n2. `source.filters` -- `ArrayField` with schema\n```json\n{\"code\": \"string\", \"operator\": \"<string-uri>\", \"description\": \"string\", \"value\": \"string\"}\n```\n3. Just like `/extras/` OCL CRUD APIs on `/properties/` and `/filters/`\n```text\nGET /orgs/MyOrg/sources/MySource/properties/\nGET /orgs/MyOrg/sources/MySource/properties/<code>/\nPUT /orgs/MyOrg/sources/MySource/properties/<code>/\nDELETE /orgs/MyOrg/sources/MySource/properties/<code>/\n```\n\n### MVP Round 2 (32 - 40 points)\n1. ES search query builder for each type of operator\n2. Exposing the DSL on TB/Swagger\n\n\n### MVP round 3 (24 points)\n1. Property schema validation on `concept.extras` as a separate/new schema validator (similar to OpenMRSSchemaValidator)\n2. TB forms validations based on new schema validator\n\n\n### MVP round 4 (~40 points) -- Need to read bit more here."
+        },
+        {
+          "author": {
+            "login": "paynejd"
+          },
+          "createdAt": "2025-05-14T10:53:55Z",
+          "body": "Additional notes: \n- Source property and filter definitions would be stored here: `source.properties` and `source.filters`\n- Actual concept property data (in round 2) would be stored in `concept.extras`, \n\nStill needed for MVP round 1:\n- Expose CRUD for property and filter definitions in the native OCL FHIR CodeSystem serializers"
+        },
+        {
+          "author": {
+            "login": "paynejd"
+          },
+          "createdAt": "2025-05-14T10:55:35Z",
+          "body": "See a full LOINC codesystem property and filter definition here: https://loinc.org/fhir/\n"
+        },
+        {
+          "author": {
+            "login": "paynejd"
+          },
+          "createdAt": "2025-05-28T16:39:59Z",
+          "body": "Change display of properties and filters in TBv2 and TBv3 to a tabular format, e.g.:\n\n## Properties\n| code | type | description | uri |\n| -- | -- | -- | -- |\n| class | code | Classification of the concept, e.g. diagnosis, symptom | |\n| datatype | code | Data type of the concept, e.g. numeric, string, coded | |\n\n## Filters\n| code | operators | description | value |\n| -- | -- | -- | -- |\n| my-filter | =, is-a, regex | My filter used for nefarious purposes | value |"
+        }
+      ]
+    }
+  },
+  "2093": {
+    "number": 2093,
+    "title": "Export Metadata as a ConceptMap",
+    "state": "OPEN",
+    "body": "Save the metadata as a FHIR ConceptMap\n\nAcceptance Criteria\n- [ ] User can save the results of a mapping project as a ConceptMap (on OCL and/or as a download)",
+    "createdAt": "2025-02-18T13:44:54Z",
+    "updatedAt": "2026-03-24T16:39:29Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "Priority: Low"
+        },
+        {
+          "name": "reviewed/keep"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": []
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": []
+    }
+  },
+  "1971": {
+    "number": 1971,
+    "title": "Mobile updates",
+    "state": "OPEN",
+    "body": "### Dashboard\r\n\r\n![iPhone 16 - 1](https://github.com/user-attachments/assets/7409ca78-8937-4461-ad9f-9d54f0a115e4)\r\n\r\n\r\nRepo",
+    "createdAt": "2024-11-13T06:51:08Z",
+    "updatedAt": "2026-03-26T20:13:56Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "Design"
+        },
+        {
+          "name": "V3"
+        },
+        {
+          "name": "reviewed/keep"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": [
+        {
+          "login": "paulsonder"
+        }
+      ]
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": []
+    }
+  },
+  "1911": {
+    "number": 1911,
+    "title": "OCL CSV exports truncated at 1000",
+    "state": "OPEN",
+    "body": "Issue tracker is **ONLY** used for reporting bugs. New features should be discussed with us on [OCL Chat](https://chat.openconceptlab.org/) or on one our slack channels.\r\n\r\nWhen used to export the codes as CSV the list is truncated at 1000\r\nThere are 55066 codes\r\nhttps://api.openconceptlab.org/orgs/CIEL/sources/CIEL/\r\nBut, CSV has only 1000\r\n\r\nExport also SHOULD have the CONCEPT NAME\r\n",
+    "createdAt": "2024-08-05T13:01:23Z",
+    "updatedAt": "2026-03-27T19:50:57Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "reviewed/keep"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": []
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "paynejd"
+          },
+          "createdAt": "2024-08-08T14:23:06Z",
+          "body": "Thanks for reporting this @chamiw2008. Truncating CSV downloads at 1k was by design, because CSV downloads are generated on-the-fly and the same method is used for downloading content from a repo as from a search result that has no limit in the number of results, so we needed to set some arbitrary limit. This made the CSV download not very useful and poorly maintained, and at this point the data in the CSV download doesn't offer much value at all.\r\n\r\nHowever, implementing a better CSV download has long been in the backlog, and it would be great to move this forward.\r\n\r\nFirst step is to agree on the columns/format. The CSV download is NOT intended to be a full representation of the content, it is intended to be a useful summary of the content.\r\n\r\n@chamiw2008 Would you be willing to add in your requirements for fields in a CSV download? I included OCL's current CSV download and the OpenMRS download as examples below.\r\n\r\n\r\n## CSV examples:\r\n* Current OCL CSV Download:\r\n<img width=\"1878\" alt=\"image\" src=\"https://github.com/user-attachments/assets/e9707615-2e7b-4e11-8862-c8fb5f605370\">\r\n\r\n* OpenMRS v3 Concept Dictionary Export:\r\n<img width=\"1117\" alt=\"image\" src=\"https://github.com/user-attachments/assets/17cf6656-c4b3-42a2-bd77-132189dbeeac\">\r\n\r\n"
+        },
+        {
+          "author": {
+            "login": "chamiw2008"
+          },
+          "createdAt": "2024-08-08T15:00:56Z",
+          "body": "@paynejd Thanks for the update.\r\n\r\nMy requirement was to generate couple of code sets that can be used to capture a tentative diagnosis in OPD setup.\r\nSo, the display name (Name/FSN) is required. Then when sharing with fhir the code and code system is needed.\r\n\r\nMany code systems would have codes for findings, diagnosis, investigations, etc. But collecting apples oranges and bananas in one basket is not very useful. So I needed to filter by the OCL Class attribute.\r\n\r\nFor my exercise I had to find diagnosis codes from SNOMED-GPS, CIEL and ICPC-2.\r\n\r\nIf the OCL had a better working download option, two of the systems could have been retrieved from OCL. \r\n\r\nHope this explained my requirement better.\r\n\r\n![image](https://github.com/user-attachments/assets/222e92bc-c46e-4d04-a691-4cafd6f750bc)\r\n"
+        }
+      ]
+    }
+  },
+  "1697": {
+    "number": 1697,
+    "title": "Standardizing Lookup Fields - Approaches for cleaning up data in OCL",
+    "state": "OPEN",
+    "body": "",
+    "createdAt": "2023-11-14T18:26:49Z",
+    "updatedAt": "2026-03-27T02:32:20Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "Epic"
+        },
+        {
+          "name": "V3"
+        },
+        {
+          "name": "v3-foundation"
+        },
+        {
+          "name": "reviewed/keep"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": []
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "jamlung-ri"
+          },
+          "createdAt": "2024-01-04T13:33:24Z",
+          "body": "The high level journey and brainstorming for this is happening here: https://miro.com/app/board/uXjVNeppQ4Y=/?moveToWidget=3458764565674292842&cot=14"
+        }
+      ]
+    }
+  },
+  "1666": {
+    "number": 1666,
+    "title": "Introduce \"Synonym\" name type and remove \"None\" name type",
+    "state": "OPEN",
+    "body": "Currently, OCL [name types](https://app.openconceptlab.org/#/orgs/OCL/sources/NameTypes/) include `None` and do not have an entry for `Synonym`.\r\n\r\n**Problem with `None`**: Since name type is optional, the difference between `None` and `null` is not defined and, as long as `None` exists, will cause headaches & confusion.\r\n\r\n**`Synonym` as default**: an alternate name for a concept implies the very definition of [synonym](https://www.dictionary.com/browse/synonym), so it's natural to assume any name where name type is not specified is a synonym.\r\n\r\n1. Purge the [None name type](https://app.openconceptlab.org/#/orgs/OCL/sources/NameTypes/concepts/None/). Any existing data using the `None` name type can be converted to `null`.\r\n\r\n2. Add a `Synonym` name type and start treating `null` & `Synonym` the same (i.e., assuming a name of unknown type is an alternate name \u2013 a.k.a. synonym).\r\n\r\n3. Optionally, once the codebase is treating `null` & `Synonym` the same, then we could elect to make name type required (converting all existing `null` entries to `Synonym`).",
+    "createdAt": "2023-09-14T18:32:50Z",
+    "updatedAt": "2026-03-27T19:36:36Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "openmrs"
+        },
+        {
+          "name": "api2"
+        },
+        {
+          "name": "breaking-change"
+        },
+        {
+          "name": "reviewed/keep"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": []
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "jamlung-ri"
+          },
+          "createdAt": "2023-09-22T14:56:21Z",
+          "body": "Areas in TermBrowser where this might impact (i.e. where name types come into play):\r\n\r\n- Importing/validating content: Imported content may not match what is in OCL\r\n- Forms: Create/Edit Concept\r\n- Screens:\r\n    - Names & Synonyms in Concept Details section\r\n    - Summary tab: Name Types\r\n    - Facets (Global search and repo browsing)\r\n- Checksums\r\n- OpenMRS Validation Schema?\r\n- API Search e.g. `?q=&isTable=true&isList=false&page=1&type=concepts&facets={\"nameTypes\":{\"\":true}}` vs. `?q=&isTable=true&isList=false&page=1&type=concepts&facets={\"nameTypes\":{\"None\":true}}` \r\n\r\nAnd an overall question - are we also getting rid of the \"None\" type for Descriptions too? Or are we only focused on Name Types here?"
+        },
+        {
+          "author": {
+            "login": "bmamlin"
+          },
+          "createdAt": "2024-10-02T13:37:49Z",
+          "body": "During an OCL Squad call today, @jamlung-ri was sharing an OCL screen and it was a good example of why this issue needs to be addressed:\r\n\r\n<img src=\"https://github.com/user-attachments/assets/3b33e2a7-6e7c-4383-ad21-7989996e672e\" width=\"600\" />\r\n\r\nNotice that some synonyms have name type `None` and another synonym has a blank name type."
+        }
+      ]
+    }
+  },
+  "1143": {
+    "number": 1143,
+    "title": "Ability to transfer ownership of a source or collection",
+    "state": "OPEN",
+    "body": "Not a high priority, but required in both the API and TermBrowser",
+    "createdAt": "2021-12-03T15:27:58Z",
+    "updatedAt": "2026-03-27T21:08:34Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "reviewed/keep"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": [
+        {
+          "login": "snyaggarwal"
+        }
+      ]
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "snyaggarwal"
+          },
+          "createdAt": "2021-12-06T04:52:01Z",
+          "body": "@paynejd Can you add a bit more here on the following points:\r\n1. Transfer ownership essentially means moving a source or collection from one org/user to another org/user?\r\n2. How do we handle uniqueness clauses if the new owner has existing repo with the same mnemonic of to be moved repo? I guess we don't allow them?\r\n3. Any other checks to perform before moving? \r\n4. What about permissions?"
+        }
+      ]
+    }
+  },
+  "1740": {
+    "number": 1740,
+    "title": "Maintain original casing for facets in filter panel",
+    "state": "OPEN",
+    "body": "This also impacts the Repo Summary -- are there other places in the app that this will impact too?\r\n\r\n@snyaggarwal will document fields where we change casing while indexing",
+    "createdAt": "2024-01-16T13:15:27Z",
+    "updatedAt": "2024-03-12T11:26:10Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "api2"
+        },
+        {
+          "name": "ES"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": [
+        {
+          "login": "snyaggarwal"
+        }
+      ]
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": []
+    }
+  },
+  "1396": {
+    "number": 1396,
+    "title": "User should have option not to auto-import Mappings to retired concepts",
+    "state": "OPEN",
+    "body": "(@paynejd and @bmamlin do you agree with this?)\r\n\r\nI propose: When a user goes through the \"Add to Collection\" workflow and wants all mapped concepts imported, e.g. as we often do with CIEL concepts, we should have the option (or perhaps this should be the default behavior) to NOT have mappings to retired concepts included. \r\n\r\nRight now there's a mismatch: the *Mappings* to retired concepts are auto-imported, but the *retired concepts* themselves are _not_ auto-imported. I think this created for us the situation in https://github.com/OpenConceptLab/ocl_issues/issues/1395 ",
+    "createdAt": "2022-10-27T00:01:05Z",
+    "updatedAt": "2024-03-12T11:54:03Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "api2"
+        },
+        {
+          "name": "bulk-import"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": []
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": [
+        {
+          "author": {
+            "login": "jamlung-ri"
+          },
+          "createdAt": "2022-10-27T15:07:36Z",
+          "body": "@paynejd @paulsonder This seems like another level of control that the user should have when using $cascade. Users should get to choose whether or not retired target concepts are cascaded and/or returned. Let's include this as part of the work in #1378. \r\n\r\n@paynejd I forget if we talked about this in this morning's Cascade deep dive, but is this something that the user should be able to control using the $cascade feature?"
+        }
+      ]
+    }
+  },
+  "790": {
+    "number": 790,
+    "title": "Implement access control for exports",
+    "state": "OPEN",
+    "body": "Right now, a source or collection is either public or private, and this access control applies to all aspects of that repository. From the perspective of a standards development organization, reference access (searching/browsing) is treated separately from distribution.\n\nHow could we allow admins to control reference access to a source/collection separately from distribution access?\n\nFor now, we can keep these definitions simple:\n* Reference - search, browse, viewing details of resources, basic API access (though we should probably put a ceiling to the `limit` parameter)\n* Distribution - users may download full exports\n\nOpen questions:\n* How do we (and should we) limit mappings and references\n\n@bmamlin FYI",
+    "createdAt": "2021-06-03T16:11:05Z",
+    "updatedAt": "2024-03-15T18:13:52Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "enhancement"
+        },
+        {
+          "name": "discussion-needed"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": [
+        {
+          "login": "snyaggarwal"
+        },
+        {
+          "login": "jamlung-ri"
+        }
+      ]
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": []
+    }
+  },
+  "638": {
+    "number": 638,
+    "title": "Allow source/collection admins to control visibility of repo versions separate from tags",
+    "state": "OPEN",
+    "body": "Right now, the visibility of a source/collection version is tied somewhat to its `released` and `retired` flags. This is especially true when using the `latest` keyword (which evaluates to \"latest released version\") or when evaluating a version-less reference, like `/orgs/CIEL/sources/CIEL/concepts/1234/`. We want administrators to have complete control over how OCL resolves these pointers, which means letting them set repo version visibility / behavior separately from flags.\r\n\r\nIn addition, we want to support the rest of the \"flags\" supported by the FHIR `status` field for CodeSystem, ValueSet, ConceptMap (draft | active | retired | unknown). Here's the publication status ValueSet: https://www.hl7.org/fhir/valueset-publication-status.html",
+    "createdAt": "2021-03-12T14:06:07Z",
+    "updatedAt": "2024-03-15T18:13:28Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "discussion-needed"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": []
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": []
+    }
+  },
+  "2294": {
+    "number": 2294,
+    "title": "$match API performance optimization",
+    "state": "OPEN",
+    "body": "Currently running $match with reranker that returns 30 candidates takes around avg 15-20 seconds in production, the breakup of one the request is:\n\n- ES Search built in 0.39279985427856445 seconds\n- Cross encoder time: 7.125919818878174 seconds\n- ES hits to Objects in 3.99991991999999 seconds\n- Serialization in 2.370438814163208 seconds\n- Sorting in 0.0003390312194824219 seconds\n\nEncoder taking ~50% of time \u2014 we have few options to go with -\n\n- We do smaller batches like 10-15 candidates\n- We use GPUs (right now its on CPU only)\n- We use some other light encoder",
+    "createdAt": "2026-01-19T05:04:01Z",
+    "updatedAt": "2026-03-20T14:14:45Z",
+    "labels": {
+      "nodes": [
+        {
+          "name": "performance"
+        },
+        {
+          "name": "reviewed/keep"
+        }
+      ]
+    },
+    "assignees": {
+      "nodes": []
+    },
+    "milestone": null,
+    "comments": {
+      "nodes": []
+    }
+  }
+}
