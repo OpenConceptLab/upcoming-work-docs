@@ -21,14 +21,16 @@ This is the most common path for Terminology Implementers building a dictionary.
 1. User clicks "Add to Collection"
 2. A dialog/drawer opens:
    - **Collection selector**: searchable dropdown of collections the user has edit access to; shows collection name, owner, and current version status (HEAD only — you can only add to HEAD)
-   - **Cascade option**: dropdown with options:
-     - None — add the concept only
-     - Source Mappings — add the concept plus all mappings where it is the "from concept" in its own source
-     - [Custom cascade options if configured for the collection]
-   - **Preview** (optional, default collapsed): "Preview results" expands to show what will be added (see Preview section below)
-3. User confirms → POST to `/[owner]/collections/[collection]/references/` with expression built from the concept URL
-4. Success state: inline confirmation with count of concepts/mappings added and a chip linking to the collection
-5. Error state: show errors inline (e.g., "3 concepts already exist in this collection")
+   - **Cascade** dropdown with four presets:
+     - **None** — add the concept only; no mappings or target concepts
+     - **Source Mappings** — add the concept plus all its mappings within the same source (`method=sourcemappings`)
+     - **OpenMRS** — traverse Q-AND-A and CONCEPT-SET mappings recursively, returning all reachable concepts and mappings (`method=sourcetoconcepts&mapTypes=Q-AND-A,CONCEPT-SET&cascadeLevels=*&returnMapTypes=*`)
+     - **Custom** — expands an inline form to specify `method`, `mapTypes`, `excludeMapTypes`, `cascadeLevels`, and `returnMapTypes` manually
+   - **Transform** checkbox (default: unchecked) — applies the OpenMRS transform (`transformReferences=openmrs_concept_reference`) on top of the selected cascade. Only relevant for OpenMRS or custom `sourcetoconcepts` cascades. Shown with a tooltip explaining its purpose.
+   - **Preview API call** (optional, default collapsed): shows the full `PUT /:owner/collections/:collection/references/` request with query string and request body, updating live as options change
+3. User confirms → `PUT /[owner]/collections/[collection]/references/` with `data.expressions` containing the concept URL and `cascade` set to the selected method
+4. Results displayed inline per reference: successful additions shown in a light blue list; failures shown in a two-column table (Reference | Error) with human-readable error descriptions and conflicting reference IDs
+5. On completion the form locks; user closes or adds to another collection
 
 ### Version Consistency Warning
 - If the concept being added comes from a **different version of a source** than the collection's current canonical source version:

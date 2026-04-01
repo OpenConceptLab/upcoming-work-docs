@@ -61,7 +61,7 @@ These items have been explicitly called out as needing focused design time — n
 
 ### Cascade Specification
 
-_Recommend handling as part of the dedicated Add Reference / Cascade session above._
+_Resolved. Cascade presets (None, Source Mappings, OpenMRS, Custom) and Transform checkbox fully documented in `01_objects/reference.md` and `02_capabilities/manage-references.md`. Implemented in `CascadeSelector.jsx` and `AddToCollectionDialog.jsx`._
 
 
 ### Expansion Specification
