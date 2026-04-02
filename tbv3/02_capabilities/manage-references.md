@@ -137,10 +137,22 @@ Transforms change a reference's expression type without changing the content it 
 
 ## Removing References
 
-- Available from reference row action menu (⋮) → "Remove reference"
-- Confirmation required: "This will remove [X] concepts from the collection expansion. Continue?"
-- Only possible on HEAD version (released versions are immutable)
-- Removal queues a re-expansion of HEAD
+**Entry point:** Collection → References tab → checkbox selection → "Remove selected" (bulk action only; no row action menu)
+
+**Confirmation dialog** (shown before deletion):
+> "Remove [X] reference(s)?"
+> "This will remove [Y] concepts and [Z] mappings from the collection expansion."
+
+- Only possible on **HEAD** version (released versions are immutable)
+- Successful removal queues a re-expansion of HEAD
+- Dialog has Cancel and Remove (destructive) buttons — no type-to-confirm required
+
+**API:** `DELETE /:ownerType/:owner/collections/:collection/references/` with body `{ "ids": [id1, id2, ...] }`
+
+**Implementation (oclweb3):**
+- `DeleteReferencesDialog` component: `src/components/collections/DeleteReferencesDialog.jsx`
+- Delete button rendered as `toolbarControl` in `Search.jsx` when `resource === 'references'` and items are selected
+- Reference IDs sourced from selected result objects; concept/mapping counts summed from `reference.concepts` and `reference.mappings` fields
 
 ---
 

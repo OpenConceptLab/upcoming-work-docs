@@ -276,7 +276,7 @@ This distinction between full authoring (#2005) and quick add (#2006) is a delib
 | Delete (duplicate) | #2011 | Open |
 | Update metadata | #2012 | Open |
 
-Note that #2008 and #2011 are both titled "CTA / Reference / Delete" -- this appears to be a duplicate ticket. All reference CTAs have empty bodies and no comments.
+Note: #2011 was a duplicate of #2008 and has been closed. #2008 now has a full spec (requirements written April 2026) and implementation underway in oclweb3. See `02_capabilities/manage-references.md` for details.
 
 ### Collection References Tab
 
