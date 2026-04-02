@@ -152,7 +152,8 @@ Transforms change a reference's expression type without changing the content it 
 **Implementation (oclweb3):**
 - `DeleteReferencesDialog` component: `src/components/collections/DeleteReferencesDialog.jsx`
 - Delete button rendered as `toolbarControl` in `Search.jsx` when `resource === 'references'` and items are selected
-- Reference IDs sourced from selected result objects; concept/mapping counts summed from `reference.concepts` and `reference.mappings` fields
+- HEAD-only: button is disabled with tooltip "Not available in saved versions. Switch to HEAD to edit." when not on HEAD; derived from `props.url?.includes('/HEAD/')`
+- Reference IDs sourced from selected result objects matched by `r.id`; concept/mapping counts summed from `reference.concepts` and `reference.mappings` fields
 
 ---
 
