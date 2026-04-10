@@ -35,11 +35,16 @@ This is the most common path for Terminology Implementers building a dictionary.
 ### Version Consistency Warning
 > **M42 MVP deliverable — not yet implemented.** This is the primary version locking UX for the M42 showcase.
 
-- Before submission, detect whether the concept being added comes from a **different version of a source** than the collection's current canonical source version
-- If a mismatch is detected, show a warning in the dialog before the user confirms:
-  > "This concept is from [source] v[X], but this collection currently uses [source] v[Y]. Do you want to add it with a version-pinned reference (to v[X]) or an unversioned reference (which will resolve to v[Y])?"
-- Two options: **"Add versioned reference"** | **"Add unversioned reference (recommended)"**
-- If the collection has no canonical version yet, no warning is needed
+- Before submission, detect whether the concept version that a user intends to add to a collection based on the user's context (let's call this the **intended concept version**) would be different than the **resolved concept version** based on an auto-expanded collection's locked source versions
+- If a mismatch is detected, show a warning in the dialog before the user confirms
+- If no mismatch (or the collection has no locked source version yet), proceed silently with no warning
+
+**Happy path (best practice):**
+- **Add unversioned reference and rebuild the expansion** — the expansion re-evaluates all unversioned references against the latest locked source version, so the new reference will resolve correctly
+
+**Less happy paths (presented as secondary options):**
+- **Add unversioned reference without rebuilding** — the reference is added but will resolve to the old locked version v[Y] until the expansion is rebuilt
+- **Add version-pinned reference** — not recommended unless the user explicitly wants to pin to a specific version; shown with a caution label
 
 ---
 
