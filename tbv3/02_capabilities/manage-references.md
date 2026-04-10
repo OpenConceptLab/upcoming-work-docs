@@ -12,31 +12,34 @@ This capability covers all ways a user can define what content belongs in a coll
 This is the most common path for Terminology Implementers building a dictionary. The user encounters a concept elsewhere in TBv3 and wants to add it to a collection they own.
 
 ### Entry Points
-- Concept Detail (split view or full page) → "Add to Collection" CTA
-- Concept row in Search Results → action button or right-click menu
-- Concept row while browsing a repository → action button or right-click menu
-- Hierarchy view node → "Add to Collection" action
+- Concept Detail (split view or full page) → "Add to Collection" CTA ✅ implemented
+- Concept row in Search Results → action button or right-click menu ⬜ not yet wired
+- Concept row while browsing a repository → action button or right-click menu ⬜ not yet wired
+- Hierarchy view node → "Add to Collection" action ⬜ not yet wired
 
 ### Interaction Flow
 1. User clicks "Add to Collection"
-2. A dialog/drawer opens:
-   - **Collection selector**: searchable dropdown of collections the user has edit access to; shows collection name, owner, and current version status (HEAD only — you can only add to HEAD)
-   - **Cascade** dropdown with four presets:
+2. A dialog opens (`src/components/common/AddToCollectionDialog.jsx`):
+   - **Collection selector**: searchable autocomplete of all collections the user has edit access to (personal + org), grouped by owner; live-filtered by collection name, ID, short code, or owner — no debounce. Each option shows the collection name on the left and a `RepoChip` on the right; the chip tooltip activates after a 1-second hover. Only HEAD collections are shown (you can only add references to HEAD).
+   - **Cascade selector** (rendered via `src/components/common/CascadeSelector.jsx`):
      - **None** — add the concept only; no mappings or target concepts
      - **Source Mappings** — add the concept plus all its mappings within the same source (`method=sourcemappings`)
      - **OpenMRS** — traverse Q-AND-A and CONCEPT-SET mappings recursively, returning all reachable concepts and mappings (`method=sourcetoconcepts&mapTypes=Q-AND-A,CONCEPT-SET&cascadeLevels=*&returnMapTypes=*`)
-     - **Custom** — expands an inline form to specify `method`, `mapTypes`, `excludeMapTypes`, `cascadeLevels`, and `returnMapTypes` manually
-   - **Transform** checkbox (default: unchecked) — applies the OpenMRS transform (`transformReferences=openmrs_concept_reference`) on top of the selected cascade. Only relevant for OpenMRS or custom `sourcetoconcepts` cascades. Shown with a tooltip explaining its purpose.
-   - **Preview API call** (optional, default collapsed): shows the full `PUT /:owner/collections/:collection/references/` request with query string and request body, updating live as options change
-3. User confirms → `PUT /[owner]/collections/[collection]/references/` with `data.expressions` containing the concept URL and `cascade` set to the selected method
-4. Results displayed inline per reference: successful additions shown in a light blue list; failures shown in a two-column table (Reference | Error) with human-readable error descriptions and conflicting reference IDs
-5. On completion the form locks; user closes or adds to another collection
+     - **Custom** — expands an inline form (left-bordered) to specify `method`, `mapTypes`, `excludeMapTypes`, `cascadeLevels`, and `returnMapTypes` manually
+   - **Transform** checkbox (default: unchecked) — applies the OpenMRS transform (`transformReferences=openmrs_concept_reference`) on top of the selected cascade. Only relevant for OpenMRS or custom `sourcetoconcepts` cascades. Shown with a `?` help icon tooltip explaining its purpose.
+   - **Preview API call** (default collapsed): toggled by a chip button; shows the full `PUT /:owner/collections/:collection/references/` request with query string and request body, updating live as collection and cascade options change
+3. User confirms → `PUT /[owner]/collections/[collection]/references/` with `data.expressions` containing the concept URL (version stripped) and `cascade` set to the selected method; cascade query params appended as needed
+4. Results displayed inline: successful additions shown in light blue rows (concept ID + message); failures shown in a two-column table (Reference | Error) with human-readable error descriptions unwrapped from the API's expression-keyed envelope, including conflicting reference IDs and conflicting concept names
+5. On completion the form locks; user can close
 
 ### Version Consistency Warning
-- If the concept being added comes from a **different version of a source** than the collection's current canonical source version:
-  - Show a warning in the dialog before confirming: "This concept is from [source] v[X], but this collection currently uses [source] v[Y]. Do you want to add it with a version-pinned reference (to v[X]) or an unversioned reference (which will resolve to v[Y])?"
-  - Two options: "Add versioned reference" | "Add unversioned reference (recommended)"
-  - If the collection has no canonical version yet, no warning is needed
+> **M42 MVP deliverable — not yet implemented.** This is the primary version locking UX for the M42 showcase.
+
+- Before submission, detect whether the concept being added comes from a **different version of a source** than the collection's current canonical source version
+- If a mismatch is detected, show a warning in the dialog before the user confirms:
+  > "This concept is from [source] v[X], but this collection currently uses [source] v[Y]. Do you want to add it with a version-pinned reference (to v[X]) or an unversioned reference (which will resolve to v[Y])?"
+- Two options: **"Add versioned reference"** | **"Add unversioned reference (recommended)"**
+- If the collection has no canonical version yet, no warning is needed
 
 ---
 
