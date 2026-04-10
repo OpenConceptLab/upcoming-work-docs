@@ -1,0 +1,1585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Repository Page - References Tab - TBv3 Mockup</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f5f3fb;
+    --card: #ffffff;
+    --card-soft: #fcfbff;
+    --line: #e7e1f1;
+    --line-strong: #ddd4ea;
+    --text: #2d2937;
+    --muted: #756e87;
+    --muted-soft: #9188a4;
+    --accent: #5540ff;
+    --accent-soft: #f0edff;
+    --teal: #006c67;
+    --teal-soft: #e6f5f4;
+    --green: #347a4a;
+    --green-soft: #ecf8ee;
+    --amber: #b67a00;
+    --amber-soft: #fff5dc;
+    --shadow: 0 16px 42px rgba(74, 55, 113, 0.08);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: linear-gradient(180deg, #faf8fd 0%, var(--bg) 100%);
+    padding: 26px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  h1 {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 8px;
+  }
+
+  .intro {
+    max-width: 860px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .scene {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .scene-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted-soft);
+  }
+
+  .page {
+    background: var(--card);
+    border: 1px solid var(--line-strong);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .shell-bar,
+  .context-bar,
+  .title-bar,
+  .tab-bar,
+  .toolbar {
+    padding-left: 22px;
+    padding-right: 22px;
+  }
+
+  .shell-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    background: #faf8fd;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .shell-left,
+  .shell-right,
+  .context-left,
+  .context-right,
+  .toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  .logo span {
+    display: inline-block;
+    background: var(--accent);
+    border-radius: 999px;
+  }
+
+  .logo .a { width: 20px; height: 20px; }
+  .logo .b { width: 14px; height: 20px; border-radius: 12px 0 0 12px; }
+  .logo .c { width: 10px; height: 10px; }
+  .logo .d { width: 10px; height: 10px; }
+
+  .shell-pill,
+  .context-pill,
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+
+  .shell-pill {
+    border: 1px solid var(--line-strong);
+    background: #fff;
+    color: #504963;
+  }
+
+  .shell-avatar {
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #dcc6ff 0%, #8558ff 100%);
+    border: 1px solid var(--line-strong);
+  }
+
+  .search {
+    flex: 1;
+    min-width: 260px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    border: 1px solid var(--line-strong);
+    background: #fff;
+    color: var(--muted);
+  }
+
+  .context-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 18px;
+    padding-top: 14px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+    background: var(--card-soft);
+  }
+
+  .context-pill {
+    background: #fff;
+    border: 1px solid var(--line-strong);
+    color: #585167;
+  }
+
+  .context-pill.primary {
+    background: var(--accent-soft);
+    border-color: #d8d1ff;
+    color: var(--accent);
+  }
+
+  .title-bar {
+    padding-top: 18px;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line);
+    background: #fff;
+  }
+
+  .title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 18px;
+  }
+
+  .title-row h2 {
+    font-size: 28px;
+    font-weight: 760;
+    margin-bottom: 8px;
+  }
+
+  .title-bar p {
+    color: var(--muted);
+  }
+
+  .title-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #5a546b;
+    font-size: 13px;
+  }
+
+  .action-pill {
+    border: 1px solid var(--line-strong);
+    background: #fff;
+    border-radius: 12px;
+    padding: 8px 10px;
+    color: #625c73;
+    font-weight: 600;
+  }
+
+  .banner {
+    margin-top: 14px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid #efe2af;
+    background: var(--amber-soft);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .banner p {
+    color: #755400;
+    line-height: 1.5;
+  }
+
+  .banner .button {
+    background: #fff;
+    flex-shrink: 0;
+  }
+
+  .tab-bar {
+    display: flex;
+    align-items: flex-end;
+    gap: 28px;
+    padding-top: 14px;
+    border-bottom: 1px solid var(--line);
+    background: var(--card-soft);
+    overflow-x: auto;
+  }
+
+  .tab {
+    padding: 0 0 14px;
+    color: #696279;
+    font-weight: 700;
+    white-space: nowrap;
+    border-bottom: 3px solid transparent;
+    min-width: 120px;
+    text-align: center;
+  }
+
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 300px;
+    gap: 0;
+  }
+
+  .main {
+    border-right: 1px solid var(--line);
+    background: #fff;
+  }
+
+  .sidebar {
+    background: var(--card-soft);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .toolbar {
+    padding-top: 0;
+    padding-bottom: 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    min-height: 54px;
+    border-bottom: 1px solid var(--line);
+    background: #fff;
+  }
+
+  .toolbar-left {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #655d75;
+    font-weight: 600;
+  }
+
+  .toolbar-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .control,
+  .button {
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    background: #faf8fd;
+    padding: 9px 12px;
+    font-size: 13px;
+    font-weight: 650;
+    color: #5d566e;
+    white-space: nowrap;
+  }
+
+  .control.searchwide {
+    min-width: 240px;
+    color: #8b83a0;
+    background: #fff;
+  }
+
+  .button.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .button.disabled {
+    color: #a29ab4;
+    background: #faf9fc;
+  }
+
+  .version-state {
+    padding: 12px 22px;
+    border-bottom: 1px solid var(--line);
+    background: #f9f7fd;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .table {
+    background: #fff;
+  }
+
+  .table-head,
+  .ref-row {
+    display: grid;
+    grid-template-columns: 34px 26px minmax(260px, 1.8fr) 110px 150px 120px 34px;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 16px;
+  }
+
+  .table-head {
+    background: #fcfbff;
+    border-bottom: 1px solid var(--line);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted-soft);
+  }
+
+  .ref-row {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .ref-row.selected {
+    background: #f7f5ff;
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+
+  .sub-row,
+  .orphan-row {
+    display: grid;
+    grid-template-columns: 34px 26px 32px minmax(220px, 1.6fr) 150px 120px 34px;
+    gap: 12px;
+    align-items: center;
+    color: #5b546d;
+    font-size: 13px;
+    padding: 9px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .sub-row {
+    background: #fdfcff;
+  }
+
+  .sub-row.deeper {
+    background: #faf8ff;
+    padding-left: 38px;
+  }
+
+  .orphan-row {
+    background: #fffaf1;
+  }
+
+  .expander,
+  .check,
+  .kebab {
+    color: #9b92ad;
+    text-align: center;
+    font-size: 13px;
+  }
+
+  .path {
+    font-weight: 650;
+    color: #4b445c;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-size: 13px;
+  }
+
+  .sub-label {
+    margin-top: 3px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .ref-inline {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+
+  .concept-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 9px;
+    border: 1px solid #cbc3db;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #4b445c;
+    font-size: 12px;
+    font-weight: 650;
+    max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .concept-chip .chip-source {
+    color: #9188a4;
+    font-weight: 600;
+  }
+
+  .concept-chip .chip-sep {
+    color: #cbc3db;
+  }
+
+  .map-label {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #f2eff8;
+    color: #615a72;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    flex-shrink: 0;
+  }
+
+  .chip {
+    padding: 5px 10px;
+    background: #f2eff8;
+    color: #5f5870;
+    border: 1px solid transparent;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+
+  .chip.blue {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .chip.teal {
+    background: var(--teal-soft);
+    color: var(--teal);
+  }
+
+  .chip.green {
+    background: var(--green-soft);
+    color: var(--green);
+  }
+
+  .chip.amber {
+    background: var(--amber-soft);
+    color: var(--amber);
+  }
+
+  .chip.red {
+    background: #ffeaea;
+    color: #c0392b;
+  }
+
+  .count {
+    color: #4c455d;
+    font-weight: 600;
+    font-size: 13px;
+  }
+
+  /* ── Reference Detail Sidebar ── */
+
+  .ref-detail-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px 0;
+  }
+
+  .ref-detail-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted-soft);
+  }
+
+  .ref-detail-close {
+    color: var(--muted-soft);
+    font-size: 16px;
+    cursor: pointer;
+    line-height: 1;
+  }
+
+  .sidebar-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 1px solid var(--line);
+    margin-top: 10px;
+    padding: 0 16px;
+  }
+
+  .sidebar-tab {
+    padding: 8px 14px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #8b83a0;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+
+  .sidebar-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .sidebar-body {
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    overflow-y: auto;
+  }
+
+  .field-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .field-row {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .field-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted-soft);
+  }
+
+  .field-value {
+    color: #4a4360;
+    font-size: 13px;
+    line-height: 1.4;
+  }
+
+  .field-mono {
+    font-family: "SFMono-Regular", "Consolas", monospace;
+    font-size: 11px;
+    background: #f5f3fb;
+    padding: 6px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--line);
+    color: #4b445c;
+    word-break: break-all;
+  }
+
+  .field-section {
+    border-top: 1px solid var(--line);
+    padding-top: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .field-section-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted-soft);
+    margin-bottom: 2px;
+  }
+
+  .filter-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 10px;
+    border-radius: 8px;
+    background: #eeeaf6;
+    border: 1px solid var(--line-strong);
+    font-size: 12px;
+    color: #4a4360;
+  }
+
+  .filter-key { font-weight: 700; }
+  .filter-op  { color: var(--muted); }
+  .filter-val { color: var(--teal); font-weight: 650; }
+
+  /* ── Expansion sub-tab ── */
+
+  .exp-summary {
+    font-size: 15px;
+    font-weight: 700;
+    color: #3a3450;
+  }
+
+  .exp-source-note {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: -8px;
+  }
+
+  .mini-table {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    overflow: hidden;
+    font-size: 12px;
+  }
+
+  .mini-head {
+    display: grid;
+    grid-template-columns: 52px 1fr 70px;
+    gap: 8px;
+    padding: 7px 10px;
+    background: #f7f5fd;
+    border-bottom: 1px solid var(--line);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted-soft);
+  }
+
+  .mini-row {
+    display: grid;
+    grid-template-columns: 52px 1fr 70px;
+    gap: 8px;
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--line);
+    color: #4a4360;
+  }
+
+  .mini-row:last-of-type {
+    border-bottom: none;
+  }
+
+  .mini-code {
+    font-family: "SFMono-Regular", "Consolas", monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .mini-name {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .mini-more {
+    padding: 8px 10px;
+    font-size: 12px;
+    color: var(--muted);
+    border-top: 1px solid var(--line);
+    text-align: center;
+  }
+
+  /* ── Bulk action preview panel ── */
+
+  .preview-panel {
+    border-top: 1px solid var(--line);
+    background: #fcfbff;
+  }
+
+  .preview-head {
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .preview-head h3 {
+    font-size: 13px;
+    font-weight: 700;
+    color: #4a4360;
+  }
+
+  .preview-body {
+    padding: 14px 16px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .stat {
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+  }
+
+  .stat-label {
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted-soft);
+    margin-bottom: 6px;
+  }
+
+  .stat-value {
+    font-size: 18px;
+    font-weight: 700;
+    color: #3a3450;
+  }
+
+  .stat-copy {
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 11px;
+    line-height: 1.45;
+  }
+
+  /* ── Scene 2: released results view ── */
+
+  .compact-page {
+    max-width: 980px;
+  }
+
+  .results-table .results-head,
+  .results-table .results-row {
+    display: grid;
+    grid-template-columns: 28px minmax(240px, 1.8fr) 110px 160px 120px;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .results-head {
+    background: #fcfbff;
+    color: var(--muted-soft);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .results-row {
+    background: #fff;
+    color: #625b72;
+  }
+
+  .results-row .expression {
+    color: #4f485d;
+    font-size: 12px;
+    font-family: "SFMono-Regular", "Consolas", monospace;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .muted { color: var(--muted); }
+
+  /* ── Group by Source view ── */
+
+  .control.active {
+    background: var(--accent-soft);
+    border-color: #d8d1ff;
+    color: var(--accent);
+  }
+
+  .group-block {
+    border-bottom: 1px solid var(--line);
+  }
+
+  .group-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 16px;
+    background: #f7f5ff;
+    border-bottom: 1px solid var(--line-strong);
+    cursor: pointer;
+  }
+
+  .group-header.collapsed {
+    background: #fcfbff;
+  }
+
+  .group-expander {
+    color: #9188a4;
+    font-size: 12px;
+    width: 18px;
+    flex-shrink: 0;
+    text-align: center;
+  }
+
+  .group-source-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 11px;
+    border-radius: 999px;
+    background: var(--accent-soft);
+    border: 1px solid #d8d1ff;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .group-count {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 9px;
+    border-radius: 999px;
+    background: #ede9f8;
+    color: #5540cc;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .group-cascade {
+    font-size: 12px;
+    color: var(--muted);
+    flex: 1;
+  }
+
+  .group-cascade strong {
+    color: #4a4360;
+    font-weight: 650;
+  }
+
+  .group-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-left: auto;
+  }
+
+  .group-action-btn {
+    padding: 5px 10px;
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    background: #fff;
+    color: #625c73;
+    font-size: 12px;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+
+  .concept-row {
+    display: grid;
+    grid-template-columns: 34px 26px minmax(0, 1fr) 120px 34px;
+    gap: 12px;
+    align-items: center;
+    padding: 9px 16px 9px 40px;
+    border-bottom: 1px solid var(--line);
+    background: #fff;
+  }
+
+  .concept-row.selected {
+    background: #f7f5ff;
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+
+  .concept-row.excluded {
+    background: #fffaf5;
+  }
+
+  .concept-sub-row {
+    display: grid;
+    grid-template-columns: 34px 26px minmax(0, 1fr) 120px 34px;
+    gap: 12px;
+    align-items: center;
+    padding: 8px 16px 8px 64px;
+    border-bottom: 1px solid var(--line);
+    background: #fdfcff;
+    font-size: 13px;
+    color: #5b546d;
+  }
+
+  @media (max-width: 1200px) {
+    .content {
+      grid-template-columns: 1fr;
+    }
+
+    .main {
+      border-right: 0;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .table-head,
+    .ref-row {
+      grid-template-columns: 28px 22px minmax(220px, 1.8fr) 96px 136px 104px 28px;
+    }
+
+    .sub-row,
+    .orphan-row {
+      grid-template-columns: 28px 22px 28px minmax(190px, 1.5fr) 136px 104px 28px;
+    }
+
+    .preview-body {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+<div>
+  <h1>Repository Page — References Tab</h1>
+  <p class="intro">
+    Static HTML mockup for the References tab on a Collection repository page.
+    Scene 1 shows the editable HEAD view with a selected reference and its detail panel open.
+    Scene 2 shows a released version in read-only mode.
+  </p>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     Scene 1: HEAD view · reference selected · detail panel open
+     ═══════════════════════════════════════════════════════ -->
+<section class="scene">
+  <div class="scene-label">1 — Collection HEAD · editable · reference selected</div>
+  <div class="page">
+
+    <div class="shell-bar">
+      <div class="shell-left">
+        <div class="logo">
+          <span class="a"></span>
+          <span class="b"></span>
+          <span class="c"></span>
+          <span class="d"></span>
+        </div>
+        <div class="search">Search OCL, repositories, and resources…</div>
+      </div>
+      <div class="shell-right">
+        <span class="shell-pill">+ New</span>
+        <span class="shell-pill">🔔</span>
+        <span class="shell-avatar"></span>
+      </div>
+    </div>
+
+    <div class="context-bar">
+      <div class="context-left">
+        <span class="context-pill">BA-team-demo</span>
+        <span class="context-pill primary">cascade-04nov25 · Collection</span>
+        <span class="context-pill">Version: HEAD</span>
+        <span class="context-pill">Watch</span>
+      </div>
+      <div class="context-right">
+        <span class="context-pill">Manage Repository</span>
+      </div>
+    </div>
+
+    <div class="title-bar">
+      <div class="title-row">
+        <div>
+          <h2>cascade-04nov25</h2>
+          <p>WHO SMART IG reference dictionary · 12 references · 4 source dependencies</p>
+        </div>
+        <div class="title-actions">
+          <span class="action-pill">Download</span>
+          <span class="action-pill">Bookmark</span>
+          <span class="action-pill">Share</span>
+          <span class="action-pill">⋯</span>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab">Concepts</div>
+      <div class="tab">Mappings</div>
+      <div class="tab active">References</div>
+      <div class="tab">Versions + Expansions</div>
+      <div class="tab">About</div>
+      <div class="tab">Proposals</div>
+      <div class="tab">Settings</div>
+    </div>
+
+    <div class="content">
+      <div class="main">
+
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <span>12 references</span>
+          </div>
+          <div class="toolbar-group">
+            <div class="control searchwide">Search or filter references…</div>
+            <div class="control">Expansion: autoexpand-v2024-11-01 ▾</div>
+            <div class="control">Display: Expression ▾</div>
+            <button class="button primary">+ Add References</button>
+            <button class="button">Transform</button>
+            <button class="button">Remove</button>
+          </div>
+        </div>
+
+        <div class="table">
+          <div class="table-head">
+            <span class="check">☐</span>
+            <span class="expander"></span>
+            <span>Expression</span>
+            <span>Ref Type</span>
+            <span>Resolved Repo</span>
+            <span>Results</span>
+            <span></span>
+          </div>
+
+          <!-- Row 1: selected, expanded intensional reference -->
+          <div class="ref-row selected">
+            <span class="check">☑</span>
+            <span class="expander">▼</span>
+            <div>
+              <div class="path">/orgs/CIEL/sources/CIEL/concepts/?conceptClass=Test</div>
+              <div class="sub-label">Intensional · unversioned</div>
+            </div>
+            <span class="chip blue">Intensional</span>
+            <span class="chip">CIEL v2024-08-01</span>
+            <span class="count">5,484 concepts</span>
+            <span class="kebab">⋮</span>
+          </div>
+
+          <!-- Expanded sub-rows for row 1 -->
+          <div class="sub-row">
+            <span></span>
+            <span></span>
+            <span>▶</span>
+            <div class="ref-inline">
+              <span class="concept-chip">
+                <span>5484</span>
+                <span class="chip-sep">·</span>
+                <span>Nutritional support</span>
+                <span class="chip-sep">|</span>
+                <span class="chip-source">CIEL</span>
+              </span>
+            </div>
+            <span class="chip teal">Concept</span>
+            <span class="count muted">2 mappings</span>
+            <span class="count">Included</span>
+            <span></span>
+          </div>
+
+          <div class="sub-row">
+            <span></span>
+            <span></span>
+            <span>▼</span>
+            <div class="ref-inline">
+              <span class="concept-chip">
+                <span>1380</span>
+                <span class="chip-sep">·</span>
+                <span>Nutrition counselling</span>
+                <span class="chip-sep">|</span>
+                <span class="chip-source">CIEL</span>
+              </span>
+            </div>
+            <span class="chip teal">Concept</span>
+            <span class="count muted">2 mappings</span>
+            <span class="count">Included</span>
+            <span></span>
+          </div>
+
+          <!-- Mapping sub-row nested under concept 1380 -->
+          <div class="sub-row deeper">
+            <span></span>
+            <span></span>
+            <span></span>
+            <div class="ref-inline">
+              <span class="map-label">SAME-AS</span>
+              <span class="concept-chip">
+                <span>QA701</span>
+                <span class="chip-sep">|</span>
+                <span class="chip-source">WHO / ICD-11</span>
+              </span>
+            </div>
+            <span class="chip">Mapping</span>
+            <span></span>
+            <span class="count">Resolved</span>
+            <span></span>
+          </div>
+
+          <!-- Row 2: single extensional concept -->
+          <div class="ref-row">
+            <span class="check">☐</span>
+            <span class="expander">▶</span>
+            <div>
+              <div class="path">/orgs/PIH/sources/PIH/concepts/3843/</div>
+              <div class="sub-label">Extensional · unversioned</div>
+            </div>
+            <span class="chip blue">Extensional</span>
+            <span class="chip">PIH v2024-09-15</span>
+            <span class="count">1 concept</span>
+            <span class="kebab">⋮</span>
+          </div>
+
+          <!-- Row 3: canonical URL mapping reference -->
+          <div class="ref-row">
+            <span class="check">☐</span>
+            <span class="expander">▶</span>
+            <div>
+              <div class="path">http://id.who.int/icd/entity/1208540397</div>
+              <div class="sub-label">Extensional · canonical URL resolved via registry</div>
+            </div>
+            <span class="chip blue">Extensional</span>
+            <span class="chip">WHO ICD-11 v2024-10-01</span>
+            <span class="count">1 mapping</span>
+            <span class="kebab">⋮</span>
+          </div>
+
+          <!-- Row 4: cascade reference with orphaned mappings expanded -->
+          <div class="ref-row">
+            <span class="check">☐</span>
+            <span class="expander">▼</span>
+            <div>
+              <div class="path">/orgs/MSF/sources/MSF-concepts/concepts/1099/?cascade=sourcemappings</div>
+              <div class="sub-label">Extensional · cascade: Source to Mappings</div>
+            </div>
+            <span class="chip green">Cascade</span>
+            <span class="chip">MSF v2023-01-01</span>
+            <span class="count">1 concept, 3 mappings</span>
+            <span class="kebab">⋮</span>
+          </div>
+
+          <!-- Orphaned mapping group -->
+          <div class="orphan-row">
+            <span></span>
+            <span></span>
+            <span class="expander">▶</span>
+            <div>
+              <div class="path" style="color:#755400;">Orphaned mappings (2)</div>
+              <div class="sub-label">Not attached to any resolved concept in this reference</div>
+            </div>
+            <span class="chip amber">Mapping</span>
+            <span></span>
+            <span class="count">Included</span>
+            <span></span>
+          </div>
+
+          <!-- Row 5: exclusion reference -->
+          <div class="ref-row">
+            <span class="check">☐</span>
+            <span class="expander">▶</span>
+            <div>
+              <div class="path">/orgs/CIEL/sources/CIEL/concepts/160148/</div>
+              <div class="sub-label">Extensional · exclude rule</div>
+            </div>
+            <span class="chip red">Exclude</span>
+            <span class="chip">CIEL v2024-08-01</span>
+            <span class="count">1 concept</span>
+            <span class="kebab">⋮</span>
+          </div>
+
+        </div><!-- /table -->
+
+      </div><!-- /main -->
+
+      <!-- Reference detail sidebar for selected row 1 -->
+      <aside class="sidebar">
+        <div class="ref-detail-header">
+          <span class="ref-detail-title">Reference Detail</span>
+          <span class="ref-detail-close">×</span>
+        </div>
+
+        <div class="sidebar-tabs">
+          <div class="sidebar-tab active">Details</div>
+          <div class="sidebar-tab">Expansion</div>
+        </div>
+
+        <div class="sidebar-body">
+          <div class="field-list">
+            <div class="field-row">
+              <span class="field-label">Type</span>
+              <span class="field-value"><span class="chip blue">Intensional</span></span>
+            </div>
+            <div class="field-row">
+              <span class="field-label">Expression</span>
+              <div class="field-mono">/orgs/CIEL/sources/CIEL/concepts/?conceptClass=Test</div>
+            </div>
+            <div class="field-row">
+              <span class="field-label">Source version</span>
+              <span class="field-value">
+                <span class="chip">CIEL v2024-08-01</span>
+                <span class="muted" style="font-size:11px; margin-left:4px;">canonical</span>
+              </span>
+            </div>
+            <div class="field-row">
+              <span class="field-label">Cascade</span>
+              <span class="field-value muted">None</span>
+            </div>
+            <div class="field-row">
+              <span class="field-label">Include</span>
+              <span class="field-value">Yes</span>
+            </div>
+          </div>
+
+          <div class="field-section">
+            <div class="field-section-title">Filters</div>
+            <span class="filter-tag">
+              <span class="filter-key">conceptClass</span>
+              <span class="filter-op"> = </span>
+              <span class="filter-val">Test</span>
+            </span>
+          </div>
+        </div>
+      </aside>
+
+    </div><!-- /content -->
+  </div><!-- /page -->
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     Scene 2: Released version · read-only · expansion results view
+     ═══════════════════════════════════════════════════════ -->
+<section class="scene">
+  <div class="scene-label">2 — Released version v2024-11-01 · read-only · results view</div>
+  <div class="page compact-page">
+
+    <div class="context-bar">
+      <div class="context-left">
+        <span class="context-pill">BA-team-demo</span>
+        <span class="context-pill primary">cascade-04nov25 · Collection</span>
+        <span class="context-pill">Version: v2024-11-01</span>
+      </div>
+      <div class="context-right">
+        <span class="context-pill">Read-only</span>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab">Concepts</div>
+      <div class="tab">Mappings</div>
+      <div class="tab active">References</div>
+      <div class="tab">Versions + Expansions</div>
+      <div class="tab">About</div>
+    </div>
+
+    <div class="toolbar">
+      <div class="toolbar-group">
+        <div class="control searchwide">Search references in this version…</div>
+        <div class="control">Expansion: default ▾</div>
+        <div class="control">Display: Results ▾</div>
+      </div>
+      <div class="toolbar-group">
+        <button class="button disabled">+ Add References</button>
+        <button class="button disabled">Transform</button>
+        <button class="button disabled">Remove</button>
+      </div>
+    </div>
+
+    <div class="version-state">Viewing v2024-11-01 (released). Switch to HEAD to modify references.</div>
+
+    <div class="results-table">
+      <div class="results-head">
+        <span></span>
+        <span>Expression</span>
+        <span>Ref Type</span>
+        <span>Resolved Repo</span>
+        <span>Results</span>
+      </div>
+
+      <div class="results-row">
+        <span class="expander">▶</span>
+        <span class="expression">/orgs/CIEL/sources/CIEL/concepts/?conceptClass=Test</span>
+        <span><span class="chip blue">Intensional</span></span>
+        <span><span class="chip">CIEL v2024-08-01</span></span>
+        <span class="count">5,484 concepts</span>
+      </div>
+
+      <div class="results-row">
+        <span class="expander">▶</span>
+        <span class="expression">/orgs/PIH/sources/PIH/concepts/3843/</span>
+        <span><span class="chip blue">Extensional</span></span>
+        <span><span class="chip">PIH v2024-09-15</span></span>
+        <span class="count">1 concept</span>
+      </div>
+
+      <div class="results-row">
+        <span class="expander">▶</span>
+        <span class="expression">http://id.who.int/icd/entity/1208540397</span>
+        <span><span class="chip blue">Extensional</span></span>
+        <span><span class="chip">WHO ICD-11 v2024-10-01</span></span>
+        <span class="count">1 mapping</span>
+      </div>
+
+      <div class="results-row">
+        <span class="expander">▶</span>
+        <span class="expression">/orgs/MSF/sources/MSF-concepts/concepts/1099/?cascade=sourcemappings</span>
+        <span><span class="chip green">Cascade</span></span>
+        <span><span class="chip">MSF v2023-01-01</span></span>
+        <span class="count">1 concept, 3 mappings</span>
+      </div>
+
+      <div class="results-row">
+        <span class="expander">▶</span>
+        <span class="expression">/orgs/CIEL/sources/CIEL/concepts/160148/</span>
+        <span><span class="chip red">Exclude</span></span>
+        <span><span class="chip">CIEL v2024-08-01</span></span>
+        <span class="count">1 concept</span>
+      </div>
+    </div>
+
+  </div><!-- /page -->
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     Scene 3: HEAD view · Group by Source · CIEL group expanded
+     ═══════════════════════════════════════════════════════ -->
+<section class="scene">
+  <div class="scene-label">3 — Collection HEAD · Group by Source · CIEL group expanded</div>
+  <div class="page">
+
+    <div class="context-bar">
+      <div class="context-left">
+        <span class="context-pill">BA-team-demo</span>
+        <span class="context-pill primary">cascade-04nov25 · Collection</span>
+        <span class="context-pill">Version: HEAD</span>
+      </div>
+      <div class="context-right">
+        <span class="context-pill">Manage Repository</span>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab">Concepts</div>
+      <div class="tab">Mappings</div>
+      <div class="tab active">References</div>
+      <div class="tab">Versions + Expansions</div>
+      <div class="tab">About</div>
+      <div class="tab">Proposals</div>
+      <div class="tab">Settings</div>
+    </div>
+
+    <div class="main">
+
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <span>12 references · 3 sources</span>
+        </div>
+        <div class="toolbar-group">
+          <div class="control searchwide">Search or filter references…</div>
+          <div class="control">Expansion: autoexpand-v2024-11-01 ▾</div>
+          <div class="control active">Group by: Source ▾</div>
+          <button class="button primary">+ Add References</button>
+          <button class="button">Transform</button>
+          <button class="button">Remove</button>
+        </div>
+      </div>
+
+      <div class="table">
+
+        <!-- ── Group 1: CIEL · expanded ── -->
+        <div class="group-block">
+          <div class="group-header">
+            <span class="group-expander">▼</span>
+            <span class="group-source-chip">CIEL v2024-08-01</span>
+            <span class="group-count">8 references</span>
+            <span class="group-cascade">cascade: <strong>Source to Mappings</strong></span>
+            <div class="group-actions">
+              <span class="group-action-btn">Transform all</span>
+              <span class="group-action-btn">Remove all</span>
+              <span class="kebab">⋮</span>
+            </div>
+          </div>
+
+          <!-- Concept row: expanded, showing mapping sub-rows -->
+          <div class="concept-row selected">
+            <span class="check">☑</span>
+            <span class="expander">▼</span>
+            <span class="concept-chip">
+              <span>1380</span>
+              <span class="chip-sep">·</span>
+              <span>Nutrition counselling</span>
+            </span>
+            <span class="count">1 concept, 2 mappings</span>
+            <span class="kebab">⋮</span>
+          </div>
+
+          <div class="concept-sub-row">
+            <span></span>
+            <span></span>
+            <div class="ref-inline">
+              <span class="map-label">SAME-AS</span>
+              <span class="concept-chip">
+                <span>QA701</span>
+                <span class="chip-sep">|</span>
+                <span class="chip-source">WHO / ICD-11</span>
+              </span>
+            </div>
+            <span class="count muted">Resolved</span>
+            <span></span>
+          </div>
+
+          <div class="concept-sub-row">
+            <span></span>
+            <span></span>
+            <div class="ref-inline">
+              <span class="map-label">NARROWER-THAN</span>
+              <span class="concept-chip">
+                <span>182006</span>
+                <span class="chip-sep">|</span>
+                <span class="chip-source">SNOMED CT</span>
+              </span>
+            </div>
+            <span class="count muted">Resolved</span>
+            <span></span>
+          </div>
+
+          <!-- Concept rows: collapsed -->
+          <div class="concept-row">
+            <span class="check">☐</span>
+            <span class="expander">▶</span>
+            <span class="concept-chip">
+              <span>5484</span>
+              <span class="chip-sep">·</span>
+              <span>Nutritional support</span>
+            </span>
+            <span class="count">1 concept, 1 mapping</span>
+            <span class="kebab">⋮</span>
+          </div>
+
+          <div class="concept-row">
+            <span class="check">☐</span>
+            <span class="expander">▶</span>
+            <span class="concept-chip">
+              <span>3221</span>
+              <span class="chip-sep">·</span>
+              <span>Body weight measurement</span>
+            </span>
+            <span class="count">1 concept, 3 mappings</span>
+            <span class="kebab">⋮</span>
+          </div>
+
+          <div class="concept-row">
+            <span class="check">☐</span>
+            <span class="expander">▶</span>
+            <span class="concept-chip">
+              <span>1234</span>
+              <span class="chip-sep">·</span>
+              <span>Anemia</span>
+            </span>
+            <span class="count">1 concept, 2 mappings</span>
+            <span class="kebab">⋮</span>
+          </div>
+
+          <div class="concept-row">
+            <span class="check">☐</span>
+            <span class="expander">▶</span>
+            <span class="concept-chip">
+              <span>7823</span>
+              <span class="chip-sep">·</span>
+              <span>Fever</span>
+            </span>
+            <span class="count">1 concept, 4 mappings</span>
+            <span class="kebab">⋮</span>
+          </div>
+
+          <div class="concept-row">
+            <span class="check">☐</span>
+            <span class="expander">▶</span>
+            <span class="concept-chip">
+              <span>2044</span>
+              <span class="chip-sep">·</span>
+              <span>Diarrhea</span>
+            </span>
+            <span class="count">1 concept, 3 mappings</span>
+            <span class="kebab">⋮</span>
+          </div>
+
+          <div class="concept-row">
+            <span class="check">☐</span>
+            <span class="expander">▶</span>
+            <span class="concept-chip">
+              <span>4419</span>
+              <span class="chip-sep">·</span>
+              <span>Malaria</span>
+            </span>
+            <span class="count">1 concept, 5 mappings</span>
+            <span class="kebab">⋮</span>
+          </div>
+
+          <!-- Exclusion reference within the same source group -->
+          <div class="concept-row excluded">
+            <span class="check">☐</span>
+            <span class="expander">▶</span>
+            <div style="display:flex; align-items:center; gap:8px;">
+              <span class="chip red" style="font-size:11px; padding:2px 8px;">Exclude</span>
+              <span class="concept-chip">
+                <span>160148</span>
+                <span class="chip-sep">·</span>
+                <span>Unknown cause of death</span>
+              </span>
+            </div>
+            <span class="count muted">1 concept</span>
+            <span class="kebab">⋮</span>
+          </div>
+        </div><!-- /group CIEL -->
+
+        <!-- ── Group 2: PIH · collapsed ── -->
+        <div class="group-block">
+          <div class="group-header collapsed">
+            <span class="group-expander">▶</span>
+            <span class="group-source-chip" style="background:#e6f5f4; border-color:#b2dbd8; color:var(--teal);">PIH v2024-09-15</span>
+            <span class="group-count">3 references</span>
+            <span class="group-cascade">cascade: <strong>None</strong></span>
+            <div class="group-actions">
+              <span class="group-action-btn">Transform all</span>
+              <span class="group-action-btn">Remove all</span>
+              <span class="kebab">⋮</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- ── Group 3: WHO ICD-11 · collapsed ── -->
+        <div class="group-block">
+          <div class="group-header collapsed">
+            <span class="group-expander">▶</span>
+            <span class="group-source-chip" style="background:#ecf8ee; border-color:#b6dfc0; color:var(--green);">WHO ICD-11 v2024-10-01</span>
+            <span class="group-count">1 reference</span>
+            <span class="group-cascade">cascade: <strong>None</strong></span>
+            <div class="group-actions">
+              <span class="group-action-btn">Transform all</span>
+              <span class="group-action-btn">Remove all</span>
+              <span class="kebab">⋮</span>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /table -->
+    </div><!-- /main -->
+
+  </div><!-- /page -->
+</section>
+
+</body>
+</html>

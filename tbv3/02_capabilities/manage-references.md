@@ -98,6 +98,8 @@ Users can evaluate what a reference would resolve to before committing it. This 
 
 ## Reference Presentation in the References Tab
 
+> **M42 scope note:** The flat list view (columns, row selection, toolbar actions, detail sidebar) is M42. Inline row expansion (concept sub-rows, mapping sub-rows, orphaned mapping groups) and Group by Source are **post-M42** — see `04_surfaces/references-tab.md` and the pending tickets in `tbv3-ticket-execution-log.md` Section 6.
+
 ### List View
 - Table columns: Expression | Type (Extensional/Intensional/Cascade/Exclude) | Resolved Count | Version Pinned? | Status
 - Resolved Count: number of concepts/mappings this reference evaluates to in the current expansion

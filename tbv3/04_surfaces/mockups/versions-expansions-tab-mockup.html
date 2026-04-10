@@ -1,0 +1,946 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Versions + Expansions Tab - TBv3 Mockup</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #eef1f5;
+    --card: #ffffff;
+    --line: #dfe4ea;
+    --line-soft: #edf1f5;
+    --text: #1c2430;
+    --muted: #6f7c8e;
+    --blue: #1565c0;
+    --blue-soft: #e8f1fd;
+    --green: #2e7d32;
+    --green-soft: #e7f6ea;
+    --amber: #d98200;
+    --amber-soft: #fff4dd;
+    --red: #c62828;
+    --red-soft: #fdeaea;
+    --grey: #607080;
+    --shadow: 0 10px 30px rgba(19, 34, 56, 0.08);
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 14px;
+    background: linear-gradient(180deg, #f8fafc 0%, var(--bg) 100%);
+    color: var(--text);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 8px; }
+  .intro { max-width: 840px; color: var(--muted); line-height: 1.6; }
+  .scene { display: flex; flex-direction: column; gap: 12px; }
+  .scene-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #7a8795;
+  }
+  .shell {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+  .tab-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 22px;
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(180deg, #ffffff 0%, #f9fbfd 100%);
+  }
+  .tab-header h2 { font-size: 18px; font-weight: 650; }
+  .subtle { margin-top: 4px; font-size: 12px; color: var(--muted); }
+  .btn {
+    border: 1px solid transparent;
+    border-radius: 10px;
+    padding: 9px 14px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: default;
+    white-space: nowrap;
+  }
+  .btn-primary { background: var(--blue); color: #fff; }
+  .btn-secondary { background: #fff; color: var(--grey); border-color: var(--line); }
+  .content {
+    padding: 18px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 18px;
+  }
+  .stacked { grid-template-columns: 1fr; }
+  .panel {
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .panel-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+    background: #fbfcfe;
+  }
+  .panel-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #7a8795;
+  }
+  .panel-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: #f0f4f8;
+    color: #425466;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .banner {
+    margin: 16px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    background: var(--amber-soft);
+    border: 1px solid #ffd692;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+  .banner strong { display: block; margin-bottom: 4px; }
+  .banner p { color: #765100; line-height: 1.45; }
+  .version-list { display: flex; flex-direction: column; }
+  .version-row {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line-soft);
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto auto auto;
+    gap: 12px;
+    align-items: start;
+  }
+  .version-row.selected { background: #f4f8fd; box-shadow: inset 3px 0 0 var(--blue); }
+  .version-row.open { grid-template-columns: minmax(0, 1fr) auto auto auto; }
+  .title-with-caret {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .row-caret {
+    display: inline-flex;
+    width: 18px;
+    justify-content: center;
+    color: #69809a;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .version-id { font-weight: 700; color: #1d2a3b; }
+  .version-meta { margin-top: 7px; display: flex; flex-wrap: wrap; gap: 6px; }
+  .summary { margin-top: 9px; color: var(--muted); font-size: 12px; line-height: 1.45; }
+  .summary strong { color: #445062; }
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .badge-active { background: var(--green-soft); color: var(--green); }
+  .badge-released { background: var(--blue-soft); color: var(--blue); }
+  .badge-draft { background: #eef2f5; color: var(--grey); }
+  .badge-default { background: #eef7ee; color: var(--green); }
+  .badge-count { background: #f2efff; color: #5d52c9; }
+  .badge-stale { background: var(--amber-soft); color: var(--amber); }
+  .badge-legacy { background: #fff3e0; color: #d97706; }
+  .badge-processing { background: #fff2e9; color: #c16000; }
+  .badge-failed { background: var(--red-soft); color: var(--red); }
+  .dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: inline-block;
+    background: currentColor;
+  }
+  .kebab { color: #9aa7b4; font-size: 18px; line-height: 1; }
+  .empty-panel { padding: 42px 28px; text-align: center; }
+  .empty-panel h3 { font-size: 20px; margin-bottom: 8px; }
+  .empty-panel p { color: var(--muted); line-height: 1.6; margin-bottom: 18px; }
+  .table-head,
+  .table-row {
+    display: grid;
+    grid-template-columns: minmax(170px, 1.35fr) 74px 108px 164px 72px 72px 104px 28px;
+    gap: 10px;
+    align-items: center;
+    padding: 12px 16px;
+  }
+  .table-head {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #7a8795;
+    border-bottom: 1px solid var(--line);
+    background: #fbfcfe;
+  }
+  .table-row { border-bottom: 1px solid var(--line-soft); position: relative; }
+  .table-row.highlight { background: #fffdfa; }
+  .table-row.open { box-shadow: inset 3px 0 0 #d7e5f5; }
+  .expansion-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    min-width: 0;
+  }
+  .expansion-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+  }
+  .legacy-indicator {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 18px;
+    height: 18px;
+    border-radius: 999px;
+    background: #fff3e0;
+    color: #d97706;
+    font-size: 11px;
+    font-weight: 800;
+    flex: 0 0 auto;
+  }
+  .expansion-meta {
+    color: #7b8897;
+    font-size: 11px;
+  }
+  .param-summary {
+    color: #5b6c7f;
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .param-summary strong {
+    color: #415364;
+    font-weight: 700;
+  }
+  .linkish { font-weight: 650; color: #1f4f86; }
+  .count { color: #465364; }
+  .muted { color: var(--muted); }
+  .popover-actions { display: flex; gap: 8px; }
+  .mini {
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    border: 1px solid transparent;
+  }
+  .mini.primary { background: var(--blue); color: #fff; }
+  .mini.ghost { background: #fff; color: var(--grey); border-color: var(--line); }
+  .spinner {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    border: 2px solid #c16000;
+    border-top-color: transparent;
+    display: inline-block;
+  }
+  .footer-note { padding: 14px 18px 18px; color: var(--muted); font-size: 12px; }
+  .expansion-detail {
+    grid-column: 1 / -1;
+    margin: -2px 16px 14px 32px;
+    border: 1px solid #dfe7f0;
+    border-radius: 12px;
+    background: #fbfcfe;
+    overflow: hidden;
+  }
+  .expansion-detail-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 10px 12px;
+    border-bottom: 1px solid var(--line);
+    background: #f5f8fb;
+  }
+  .expansion-detail-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #72859a;
+  }
+  .resolved-list {
+    display: grid;
+    gap: 0;
+  }
+  .resolved-section {
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .resolved-section:last-child { border-bottom: 0; }
+  .resolved-section-head {
+    padding: 10px 12px 6px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #7a8795;
+  }
+  .resolved-empty {
+    padding: 0 12px 12px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+  .resolved-row {
+    display: grid;
+    grid-template-columns: 1fr 150px 1fr;
+    gap: 12px;
+    align-items: center;
+    padding: 11px 12px;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .resolved-row:last-child { border-bottom: 0; }
+  .resolved-source {
+    font-weight: 700;
+    color: #30445b;
+  }
+  .resolved-version {
+    display: inline-flex;
+    justify-content: center;
+    padding: 5px 10px;
+    border-radius: 999px;
+    background: #eef3f8;
+    color: #526579;
+    font-size: 12px;
+    font-weight: 700;
+  }
+  .resolved-note {
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.4;
+  }
+  .version-drawer {
+    grid-column: 1 / -1;
+    margin-top: 14px;
+    border: 1px solid #d7e5f5;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.8);
+  }
+  .drawer-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+    background: #f8fbff;
+  }
+  .drawer-title {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6b7f95;
+  }
+  .drawer-banner {
+    margin: 14px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: var(--amber-soft);
+    border: 1px solid #ffd692;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+  .drawer-banner p { color: #765100; line-height: 1.45; }
+  .expand-cue {
+    color: #6f7c8e;
+    font-size: 12px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .table-footer {
+    padding: 14px 18px 18px;
+    border-top: 1px solid var(--line);
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 22px;
+    color: #5f6d7c;
+    font-size: 12px;
+    font-weight: 600;
+  }
+  .pager {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .pager-btn {
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: #fff;
+    color: #8090a3;
+  }
+  .menu-samples {
+    padding: 0 18px 18px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+  .menu-card {
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+    box-shadow: 0 10px 22px rgba(24, 39, 58, 0.08);
+    overflow: hidden;
+  }
+  .menu-card-head {
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+    background: #fbfcfe;
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #72859a;
+  }
+  .menu-list {
+    display: flex;
+    flex-direction: column;
+  }
+  .menu-item {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--line-soft);
+    color: #354252;
+    font-size: 13px;
+  }
+  .menu-item:last-child { border-bottom: 0; }
+  .menu-item.danger { color: #c62828; }
+  .menu-note {
+    padding: 10px 14px 14px;
+    color: var(--muted);
+    font-size: 12px;
+    line-height: 1.45;
+    border-top: 1px solid var(--line);
+    background: #fbfcfe;
+  }
+  .mobile-card {
+    border: 1px dashed #cfd8e2;
+    border-radius: 16px;
+    padding: 16px;
+    background: linear-gradient(180deg, #fbfcfe 0%, #f7f9fc 100%);
+  }
+  .phone {
+    width: 100%;
+    max-width: 440px;
+    margin: 0 auto;
+    border: 1px solid var(--line);
+    border-radius: 24px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: var(--shadow);
+  }
+  .phone-bar { padding: 12px 16px; border-bottom: 1px solid var(--line); font-weight: 700; background: #fbfcfe; }
+  .phone-panel { padding: 14px 16px; border-bottom: 1px solid var(--line-soft); }
+  .phone-panel h3 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #7a8795;
+    margin-bottom: 10px;
+  }
+  .phone-version { padding: 12px 0; border-bottom: 1px solid var(--line-soft); }
+  .phone-version:last-child { border-bottom: 0; }
+  .phone-empty { padding: 22px 0 4px; color: var(--muted); line-height: 1.5; }
+  .phone-drawer {
+    margin-top: 12px;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: #fbfcfe;
+  }
+  .phone-drawer h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #7a8795;
+    margin-bottom: 10px;
+  }
+  .phone-expansion {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--line-soft);
+  }
+  .phone-expansion:last-child { border-bottom: 0; }
+  .phone-resolved {
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fff;
+  }
+  .phone-resolved-title {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: #7a8795;
+    margin-bottom: 8px;
+  }
+  .phone-resolved-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 6px 0;
+    color: #506174;
+    font-size: 12px;
+  }
+  .phone-resolved-row strong { color: #30445b; }
+  .popover-sample {
+    margin-top: 16px;
+    max-width: 320px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid var(--line);
+    background: #fff;
+    box-shadow: 0 16px 32px rgba(24, 39, 58, 0.14);
+  }
+  .popover-sample h4 { font-size: 12px; color: var(--amber); margin-bottom: 8px; }
+  .popover-sample p { font-size: 13px; line-height: 1.5; color: #445062; margin-bottom: 12px; }
+  .popover-sample .popover-actions { display: flex; gap: 8px; }
+  .tooltip-sample {
+    margin-top: 12px;
+    max-width: 420px;
+    padding: 12px 14px;
+    border-radius: 10px;
+    background: rgba(57, 63, 77, 0.94);
+    color: #fff;
+    box-shadow: 0 10px 24px rgba(0,0,0,0.18);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+  .tooltip-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .tooltip-sample strong { color: #ffd38a; }
+  @media (max-width: 1100px) {
+    .content { grid-template-columns: 1fr; }
+    .table-head,
+    .table-row { grid-template-columns: minmax(150px, 1.25fr) 70px 94px 140px 70px 70px 92px 24px; }
+    .menu-samples { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<div>
+  <h1>Versions + Expansions Tab</h1>
+  <p class="intro">
+    Static HTML mockup for the collection repository tab described in
+    <code>versions-expansions-tab.md</code>. This version shows expansions as an expandable drawer nested within each version row,
+    along with a HEAD empty state and a stacked mobile interpretation of the same pattern.
+  </p>
+</div>
+
+<section class="scene">
+  <div class="scene-label">1 - Desktop collection state with expansions expanded inside the selected version</div>
+  <div class="shell">
+    <div class="tab-header">
+      <div>
+        <h2>Versions + Expansions</h2>
+        <div class="subtle">Default selection opens on the most recently released version, with dependency updates highlighted for review.</div>
+      </div>
+      <button class="btn btn-primary">+ New Version</button>
+    </div>
+
+    <div class="content">
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Versions</div>
+          <span class="panel-chip">5 total</span>
+        </div>
+        <div class="version-list">
+          <div class="version-row">
+            <div>
+              <div class="title-with-caret">
+                <span class="row-caret">&gt;</span>
+                <div class="version-id">HEAD</div>
+              </div>
+              <div class="version-meta">
+                <span class="badge badge-active">Active</span>
+                <span class="badge badge-count">0 expansions</span>
+              </div>
+              <div class="summary">Editing workspace only. No expansions exist until a version is created.</div>
+            </div>
+            <span></span>
+            <div class="expand-cue">Create version to expand</div>
+            <div class="kebab">...</div>
+          </div>
+          <div class="version-row selected open">
+            <div>
+              <div class="title-with-caret">
+                <span class="row-caret">v</span>
+                <div class="version-id">v2024-11-01</div>
+              </div>
+              <div class="version-meta">
+                <span class="badge badge-released">Released</span>
+                <span class="badge badge-stale"><span class="dot"></span>Needs Refresh</span>
+                <span class="badge badge-count">4 expansions</span>
+              </div>
+              <div class="summary">4 expansions are available for this release. Expand an expansion row to inspect resolved source versions.</div>
+            </div>
+            <span class="badge badge-default">Default</span>
+            <div class="expand-cue">Drawer open</div>
+            <div class="kebab">...</div>
+
+            <div class="version-drawer">
+              <div class="drawer-banner">
+                <div>
+                  <strong>Review changes from CIEL v2024-11-01 before rebuilding.</strong>
+                  <p>Opened from a dependency notification link. The expansion that needs a refresh is already selected and scrolled into view.</p>
+                </div>
+                <button class="btn btn-secondary">Compare changes</button>
+              </div>
+              <div class="drawer-head">
+                <div class="drawer-title">Expansions for v2024-11-01</div>
+                <button class="btn btn-primary">+ New Expansion</button>
+              </div>
+              <div class="table">
+                <div class="table-head">
+                  <span>Expansion ID</span>
+                  <span>Default</span>
+                  <span>Status</span>
+                  <span>Version Update</span>
+                  <span>Concepts</span>
+                  <span>Mappings</span>
+                  <span>Last Built</span>
+                  <span></span>
+                </div>
+                <div class="table-row highlight open">
+                  <div class="expansion-cell">
+                    <div class="expansion-title">
+                      <span class="row-caret">v</span>
+                      <span class="linkish">autoexpand-v2024-11-01</span>
+                    </div>
+                    <div class="expansion-meta">Created on Nov 4, 2025 by jamlung</div>
+                    <div class="param-summary"><strong>Params:</strong> activeOnly=true</div>
+                  </div>
+                  <span class="badge badge-default">Default</span>
+                  <span class="badge badge-released">Released</span>
+                  <span class="badge badge-stale">Needs Refresh</span>
+                  <span class="count">12,043</span>
+                  <span class="count">8,421</span>
+                  <span class="muted">3 days ago</span>
+                  <span class="kebab">...</span>
+                </div>
+                <div class="expansion-detail">
+                  <div class="expansion-detail-head">
+                    <div class="expansion-detail-title">Resolved Source Versions</div>
+                    <span class="panel-chip">2 sources</span>
+                  </div>
+                  <div class="resolved-list">
+                    <div class="resolved-section">
+                      <div class="resolved-section-head">Explicit</div>
+                      <div class="resolved-empty">No source version overrides were saved on this expansion.</div>
+                    </div>
+                    <div class="resolved-section">
+                      <div class="resolved-section-head">Auto-resolved</div>
+                      <div class="resolved-row">
+                        <span class="resolved-source">CIEL</span>
+                        <span class="resolved-version">v2024-08-01</span>
+                        <span class="resolved-note">Canonical source version used when the expansion was last built.</span>
+                      </div>
+                      <div class="resolved-row">
+                        <span class="resolved-source">MSF</span>
+                        <span class="resolved-version">v2023-01-01</span>
+                        <span class="resolved-note">Inherited from the collection's current resolved repository set.</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="table-row">
+                  <div class="expansion-cell">
+                    <div class="expansion-title">
+                      <span class="row-caret">&gt;</span>
+                      <span class="linkish">custom-loinc</span>
+                    </div>
+                    <div class="expansion-meta">Created on Nov 4, 2025 by jamlung</div>
+                    <div class="param-summary"><strong>Params:</strong> date=2023-06; excludeNested=false</div>
+                  </div>
+                  <span></span>
+                  <span class="badge badge-released">Released</span>
+                  <span></span>
+                  <span class="count">4,210</span>
+                  <span class="count">1,033</span>
+                  <span class="muted">5 months ago</span>
+                  <span class="kebab">...</span>
+                </div>
+                <div class="table-row">
+                  <div class="expansion-cell">
+                    <div class="expansion-title">
+                      <span class="row-caret">&gt;</span>
+                      <span class="linkish">preview-clinical-terms</span>
+                    </div>
+                    <div class="expansion-meta">Created on Nov 5, 2025 by jamlung</div>
+                    <div class="param-summary"><strong>Params:</strong> activeOnly=false; systemVersion=http://loinc.org|2.56</div>
+                  </div>
+                  <span></span>
+                  <span class="badge badge-processing"><span class="spinner"></span>Processing</span>
+                  <span></span>
+                  <span class="muted">-</span>
+                  <span class="muted">-</span>
+                  <span class="muted">Just now</span>
+                  <span class="kebab">...</span>
+                </div>
+                <div class="table-row">
+                  <div class="expansion-cell">
+                    <div class="expansion-title">
+                      <span class="row-caret">&gt;</span>
+                      <span class="linkish">qa-regression-check</span>
+                    </div>
+                    <div class="expansion-meta">Created on Nov 5, 2025 by jamlung</div>
+                    <div class="param-summary"><strong>Params:</strong> excludeNested=false</div>
+                  </div>
+                  <span></span>
+                  <span class="badge badge-failed">Failed</span>
+                  <span></span>
+                  <span class="muted">-</span>
+                  <span class="muted">-</span>
+                  <span class="muted">1 hour ago</span>
+                  <span class="kebab">...</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="version-row">
+            <div>
+              <div class="title-with-caret">
+                <span class="row-caret">&gt;</span>
+                <div class="version-id">v2024-08-01</div>
+              </div>
+              <div class="version-meta">
+                <span class="badge badge-released">Released</span>
+                <span class="badge badge-count">2 expansions</span>
+              </div>
+              <div class="summary">2 expansions are available for this release.</div>
+            </div>
+            <span></span>
+            <div class="expand-cue">2 hidden in drawer</div>
+            <div class="kebab">...</div>
+          </div>
+          <div class="version-row">
+            <div>
+              <div class="title-with-caret">
+                <span class="row-caret">&gt;</span>
+                <div class="version-id">v2024-05-15</div>
+              </div>
+              <div class="version-meta">
+                <span class="badge badge-draft">Draft</span>
+                <span class="badge badge-count">0 expansions</span>
+              </div>
+              <div class="summary"> </div>
+            </div>
+            <span></span>
+            <div class="expand-cue">No drawer content</div>
+            <div class="kebab">...</div>
+          </div>
+          <div class="version-row">
+            <div>
+              <div class="title-with-caret">
+                <span class="row-caret">&gt;</span>
+                <div class="version-id">v2023-12-01</div>
+              </div>
+              <div class="version-meta">
+                <span class="badge badge-released">Released</span>
+                <span class="badge badge-count">1 expansion</span>
+              </div>
+              <div class="summary">1 expansion is available for this release.</div>
+            </div>
+            <span></span>
+            <div class="expand-cue">1 hidden in drawer</div>
+            <div class="kebab">...</div>
+          </div>
+        </div>
+        <div class="footer-note">(Note: Source repositories use the same display pattern, but the Expansion Drawers are omitted and the tab label becomes <strong>Versions</strong>).</div>
+        <div class="table-footer">
+          <span>Rows per page: 5</span>
+          <span>1-1 of 1</span>
+          <div class="pager">
+            <span class="pager-btn">&lt;</span>
+            <span class="pager-btn">&gt;</span>
+          </div>
+        </div>
+        <div class="menu-samples" style="grid-template-columns: repeat(2, minmax(0, 1fr));">
+          <div class="menu-card">
+            <div class="menu-card-head">Version Actions</div>
+            <div class="menu-list">
+              <div class="menu-item">View</div>
+              <div class="menu-item">Edit description</div>
+              <div class="menu-item">Create Similar Expansion</div>
+              <div class="menu-item">Copy version URL</div>
+            </div>
+            <div class="menu-note">Draft-only actions: Release and Delete when no expansions exist.</div>
+          </div>
+          <div class="menu-card">
+            <div class="menu-card-head">Expansion Actions</div>
+            <div class="menu-list">
+              <div class="menu-item">Browse expansion</div>
+              <div class="menu-item">Set as default</div>
+              <div class="menu-item">Rebuild</div>
+              <div class="menu-item">Create Similar</div>
+              <div class="menu-item">Copy expansion URL</div>
+              <div class="menu-item danger">Delete</div>
+            </div>
+            <div class="menu-note">Processing expansions expose Cancel only. Failed expansions expose Retry and View Errors.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="scene">
+  <div class="scene-label">2 - HEAD selected empty drawer state</div>
+  <div class="shell">
+    <div class="content stacked">
+      <div class="panel">
+        <div class="panel-head">
+          <div class="panel-title">Versions</div>
+          <span class="panel-chip">HEAD selected</span>
+        </div>
+        <div class="version-list">
+          <div class="version-row selected open">
+            <div>
+              <div class="version-id">HEAD</div>
+              <div class="version-meta">
+                <span class="badge badge-active">Active</span>
+                <span class="badge badge-count">0 expansions</span>
+              </div>
+              <div class="summary">Editing workspace only. No expansions exist until a version is created.</div>
+            </div>
+            <span></span>
+            <div class="expand-cue">Drawer open</div>
+            <div class="kebab">...</div>
+            <div class="version-drawer">
+              <div class="empty-panel">
+                <h3>HEAD does not have expansions.</h3>
+                <p>Expansions are created when you create a version. This keeps the editing workspace lightweight and clearly separates draft changes from released snapshots.</p>
+                <button class="btn btn-primary">Create Version</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="scene">
+  <div class="scene-label">3 - Responsive stacked layout below 900px</div>
+  <div class="mobile-card">
+    <div class="phone">
+      <div class="phone-bar">Versions + Expansions</div>
+      <div class="phone-panel">
+        <h3>Versions</h3>
+        <div class="phone-version">
+          <div class="version-id">HEAD</div>
+          <div class="version-meta">
+            <span class="badge badge-active">Active</span>
+            <span class="badge badge-count">0 expansions</span>
+          </div>
+        </div>
+        <div class="phone-version">
+          <div class="version-id">v2024-11-01</div>
+          <div class="version-meta">
+            <span class="badge badge-released">Released</span>
+            <span class="badge badge-stale"><span class="dot"></span>Needs Refresh</span>
+            <span class="badge badge-count">4 expansions</span>
+          </div>
+          <div class="phone-drawer">
+            <h4>Expansions</h4>
+            <div class="phone-expansion">
+              <div class="version-id">autoexpand-v2024-11-01</div>
+              <div class="version-meta">
+                <span class="badge badge-default">Default</span>
+                <span class="badge badge-released">Released</span>
+                <span class="badge badge-stale">Needs Refresh</span>
+                <span class="badge badge-legacy">Legacy</span>
+              </div>
+              <div class="summary">12,043 concepts and 8,421 mappings.</div>
+              <div class="phone-resolved">
+                <div class="phone-resolved-title">Resolved Source Versions</div>
+                <div class="phone-resolved-row">
+                  <strong>CIEL</strong>
+                  <span>v2024-08-01</span>
+                </div>
+                <div class="phone-resolved-row">
+                  <strong>MSF</strong>
+                  <span>v2023-01-01</span>
+                </div>
+              </div>
+            </div>
+            <div class="phone-expansion">
+              <div class="version-id">custom-loinc</div>
+              <div class="version-meta"><span class="badge badge-released">Released</span></div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-version">
+          <div class="version-id">v2024-08-01</div>
+          <div class="version-meta">
+            <span class="badge badge-released">Released</span>
+            <span class="badge badge-count">2 expansions</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="popover-sample">
+      <h4>Needs Refresh</h4>
+      <p>
+        <strong>Source:</strong> CIEL<br />
+        <strong>New version:</strong> v2024-11-01<br />
+        <strong>Released:</strong> Nov 1, 2024
+      </p>
+      <div class="popover-actions">
+        <button class="mini primary">Rebuild now</button>
+        <button class="mini ghost">Dismiss</button>
+      </div>
+    </div>
+    <div class="tooltip-sample">
+      <div class="tooltip-title">
+        <span class="legacy-indicator">!</span>
+        <strong>Legacy Expansion:</strong>
+      </div>
+      <div>This expansion was created using older expansion logic. Recreate it with current expansion logic for better version handling and reproducibility.</div>
+    </div>
+  </div>
+</section>
+</body>
+</html>

@@ -135,6 +135,8 @@ Comment added to each: FHIR subtype architecture questions (ConceptMap/CodeSyste
 |---|---|---|---|
 | [#2437](https://github.com/OpenConceptLab/ocl_issues/issues/2437) | Surface / Versions + Expansions Tab | — (P2) | Tab route exists in oclweb3 but not rendered in RepoHome |
 | [#2438](https://github.com/OpenConceptLab/ocl_issues/issues/2438) | Version Consistency Warning UI | — (P2, needs design session) | Requires SESSION in TODO.md before building |
+| TBD | Surface / References Tab / Inline Expansion | — (post-M42) | Expandable ref rows showing concept sub-rows, mapping sub-rows, and orphaned mapping groups; spec in `04_surfaces/references-tab.md` |
+| TBD | Surface / References Tab / Group by Source | — (post-M42) | Toolbar toggle collapses flat list into source groups with group-level actions; spec in `04_surfaces/references-tab.md` |
 
 ---
 
@@ -147,4 +149,5 @@ Comment added to each: FHIR subtype architecture questions (ConceptMap/CodeSyste
 | Renamed | 1 |
 | Milestone removed | 3 |
 | New tickets created | 8 |
+| Pending ticket creation | 2 |
 | **Total issues touched** | **69** |
