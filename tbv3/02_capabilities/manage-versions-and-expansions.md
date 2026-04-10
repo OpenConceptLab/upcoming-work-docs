@@ -90,6 +90,10 @@ See `04_surfaces/versions-expansions-tab.md` for the full layout specification.
 ### Rebuild Expansion
 - Available on any expansion via action menu (⋮) → "Rebuild"
 - Re-evaluates the expansion with the same parameters (picks up any underlying source content changes)
+- **Confirmation dialog** (shown before triggering):
+  > "Rebuild [expansion ID]?"
+  > "This will re-evaluate all references using the same parameters. This cannot be undone. To compare before committing, use 'Create Similar' instead."
+- **API:** `POST /:owner/collections/:collection/:version/expansions/:expansion/re-evaluate/`
 - Shows as "Processing" while rebuilding; non-blocking (user can navigate away)
 - On complete: updated counts shown; staleness indicator removed
 
@@ -98,6 +102,22 @@ See `04_surfaces/versions-expansions-tab.md` for the full layout specification.
 - Opens the "New Expansion" dialog pre-filled with the current expansion's parameters
 - User can modify any parameter before saving
 - Use case: "Try this expansion but pin CIEL to v2025 instead of v2024"
+
+### Update Expansion Metadata
+- Available on any expansion via action menu (⋮) → "Edit"
+- Editable fields: **Expansion ID** (mnemonic) and **Canonical URL** only
+- Evaluation parameters are **not** editable after creation — use "Create Similar" to create a new expansion with different parameters
+- Renaming the Expansion ID changes the expansion's URL; a warning is shown: "Changing the ID will update this expansion's URL. Any saved links will need to be updated."
+- **API:** `PUT /:owner/collections/:collection/:version/expansions/:expansion/` with `{ mnemonic, canonical_url }`
+- Does not trigger re-evaluation; the expansion's resolved content is unchanged
+
+### Delete Expansion
+- Available on any expansion via action menu (⋮) → "Delete" (owners only)
+- Not available on the **default expansion** for a version — set a different expansion as default first
+- **Confirmation dialog:**
+  > "Delete expansion [ID]?"
+  > "This cannot be undone. Concepts and mappings in this collection version will not be affected."
+- **API:** `DELETE /:owner/collections/:collection/:version/expansions/:expansion/`
 
 ---
 
