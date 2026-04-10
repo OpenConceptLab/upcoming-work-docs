@@ -75,16 +75,7 @@ Default: most recently released version if one exists; HEAD otherwise.
 
 ### Global Shell Bar (implemented)
 
-The top-most bar is always present across all pages:
-
-| Element                | Notes                                  |
-| ---------------------- | -------------------------------------- |
-| Hamburger menu (☰)    | Opens/closes the left navigation panel |
-| OCL logo               | Links to home                          |
-| Search OCL             | Global search bar, center-aligned      |
-| Notification bell (🔔) | User notifications                     |
-| + button               | Quick create action                    |
-| User avatar            | Account menu                           |
+Full spec in `04_surfaces/global-shell.md`. The top-most bar contains: hamburger menu, OCL logo, global search bar, notification bell, quick-create (+), and user avatar.
 
 ### Repo Context Bar (implemented)
 
@@ -95,7 +86,7 @@ Directly below the shell bar, scoped to the current repository:
 | **Owner chip**             | Owner username/org; links to owner page                                                                    |
 | **Repo name · Type chip** | Repository name with type label (e.g., "cascade-04nov25 · Collection"); links to repo                     |
 | **Version selector**       | "Version: HEAD ▾" dropdown; changes version context across all tabs; shows HEAD and all released versions |
-| **Eye icon (👁)**          | Watch / visibility toggle                                                                                  |
+| **Eye icon (👁)**          | Watch / Follow — available to all authenticated users                                                     |
 | **Manage Repository ▾**   | Dropdown menu for repo management actions (see below)                                                      |
 
 ### Manage Repository Dropdown (implemented)
@@ -120,7 +111,6 @@ Below the repo context bar, the repository name is rendered as an H1 page title.
 | ----------------- | --------------------------- |
 | Short description | Single line below repo name |
 | Canonical URL     | Copyable chip if set        |
-| Star / Follow     | For authenticated users     |
 
 ### Conditional Elements (not yet implemented)
 
@@ -167,6 +157,27 @@ Below the repo context bar, the repository name is rendered as an H1 page title.
 
 ---
 
+The search bar appears at the top of each page in the Global Shell. It supports two scopes:
+
+**Scope**
+
+- **Within repository** (default in tab context): searches concepts, mappings, or references in the current repo and version
+- **Global**: searches across all of OCL via the shell header search bar
+
+**Filter selection**
+
+- Pressing the bracket shortcut key (`⌘` on Mac) opens a filter type selector with chips: **Organization** | **Repository** | **Class** | **User** — and resource-specific filters per tab
+- Concepts tab filters: Concept Class, Datatype, Status (Active / Retired), Locale
+- Mappings tab filters: Map Type, Status
+- References tab filters: reference type, expression type, cascade, include/exclude direction
+- Active filters appear as removable chips in the bar
+- Keyboard navigation: arrow keys to navigate, Enter/Space to select; Navigate / Select hints shown in the bar
+
+**Behavior**
+
+- Results update live as the user types
+- Placeholder when focused and empty: "Select a filter with [⌘] keys"
+
 ## Concepts Tab
 
 ### Layout
@@ -188,7 +199,7 @@ Rows per page: 25 ▾       1–12 of 12      |◀  ◀  ▶  ▶|
 - **Count label**: "N concepts" displayed in the toolbar (updates with active filters)
 - **Filter icon**: opens filter controls
 - **Sort ▾**: sort dropdown (field + direction); default appears to be ID ascending (ID ↑)
-- **Display ▾**: display mode toggle (list view options)
+- **Display ▾**: switches between **Table** view (default) and **Card** view. Card view may be retired (TBD).
 
 ### Columns (implemented)
 
@@ -206,31 +217,11 @@ Rows per page: 25 ▾       1–12 of 12      |◀  ◀  ▶  ▶|
 - Selected row is highlighted (blue background)
 - Retired concepts: greyed out text
 
-### Concept Detail Split View (Details tab)
+### Concept Detail Split View
 
-When a concept row is clicked, the right panel opens showing:
+When a concept row is clicked, the right half of the content area becomes the concept detail panel. Full spec: `04_surfaces/concept-detail.md`.
 
-**Header**
-
-- Concept ID (numbered chip, e.g., `● 1`)
-- Concept display name (H2)
-- Close (×) button
-- **Details** | **History** tabs
-
-**Details tab — Properties section**
-
-- Concept Class
-- Datatype
-
-**Details tab — Name and synonyms section**
-
-- Count badge (e.g., "7")
-- Each name row: locale code (EN, FR, ES…) | name text | name type badge (FULLY_SPECIFIED) | flag icon | External ID | copy button
-
-**Details tab — Descriptions section**
-
-- Count badge
-- Each description: locale code | description text
+The panel shows **Details** and **History** tabs. The Details tab includes Properties, Name and synonyms (with locale, name type badge, External ID, and copy action per row), and Descriptions.
 
 ### Pagination
 
@@ -249,25 +240,23 @@ No concepts found.
 
 ## Mappings Tab
 
+Full spec in `04_surfaces/mapping-detail.md`.
+
 ### Layout
 
-Same pattern as Concepts tab.
+Three-panel layout: collapsible filter sidebar (left) | mapping list (center) | mapping detail split view (right, opens on row click).
 
-### Columns
+### Filter Sidebar
 
-- From Concept | Map Type | To Concept / To Source Code | Sort Weight | Status | Actions
+Faceted filters: From/Target Source, Map Type, Map Type Source, Concept Class (Source/Target), Concept Owner (Source/Target).
 
-### Filter Bar
+### Mapping List Columns
 
-- Map Type filter (multi-select)
-- From Concept search
-- To Concept / Code search
-- Status filter (Active / Retired)
+Checkbox | From concept | Map Type | To concept | Repository chip | Row actions
 
 ### Mapping Row
 
-- Clicking a row opens a mapping detail side panel (lighter than concept detail; no full split view)
-- Row actions: View, Edit, Add to Comparison
+Clicking a row opens the mapping detail split view on the right. See `04_surfaces/mapping-detail.md` for the full detail panel spec.
 
 ---
 
@@ -277,7 +266,7 @@ Same pattern as Concepts tab.
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│  [Search/filter bar]   [Expansion: Name ▾]  [Display: Expression ▾] │
+│  [Search/filter bar]   [Expansion: Name ▾]  [Expression/Results ▾]   │
 │  [+ Add References]    [Transform ▾]  [Remove]  (active on selection)│
 ├────┬───┬──────────────────────────────────┬──────────────┬───────────┤
 │ □  │ ▶ │ Expression                       │ Type         │ Filters   │
@@ -408,6 +397,7 @@ References define what content belongs in this collection.
 - All write actions (Add, Transform, Remove, checkboxes) are only available when viewing **HEAD**
 - When viewing a released version: checkboxes hidden, toolbar shows only search/filter and Display controls, row action menus show View and Preview only
 - A "Viewing [version ID] — switch to HEAD to edit" indicator is shown in the toolbar when not on HEAD
+- These behaviors appear only for users authenticated to write to this repository.
 
 ---
 
