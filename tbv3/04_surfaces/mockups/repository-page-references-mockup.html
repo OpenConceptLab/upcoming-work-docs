@@ -835,6 +835,35 @@
     background: #fcfbff;
   }
 
+  /* ── M42 flat table (no expander column) ── */
+
+  .table-head.flat,
+  .ref-row.flat {
+    grid-template-columns: 34px minmax(260px, 1.8fr) 110px 150px 120px 34px;
+  }
+
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 8px 0 4px;
+  }
+
+  .section-divider-line {
+    flex: 1;
+    height: 1px;
+    background: var(--line-strong);
+  }
+
+  .section-divider-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted-soft);
+    white-space: nowrap;
+  }
+
   .group-expander {
     color: #9188a4;
     font-size: 12px;
@@ -960,16 +989,22 @@
   <h1>Repository Page — References Tab</h1>
   <p class="intro">
     Static HTML mockup for the References tab on a Collection repository page.
-    Scene 1 shows the editable HEAD view with a selected reference and its detail panel open.
-    Scene 2 shows a released version in read-only mode.
+    Scenes 1–3 show the full post-M42 vision (inline expansion, Group by Source).
+    Scenes 4–5 show the M42-scoped view (flat list, detail sidebar, no inline expansion).
   </p>
+</div>
+
+<div class="section-divider">
+  <div class="section-divider-line"></div>
+  <div class="section-divider-label">Post-M42 / Full Vision</div>
+  <div class="section-divider-line"></div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════════
      Scene 1: HEAD view · reference selected · detail panel open
      ═══════════════════════════════════════════════════════ -->
 <section class="scene">
-  <div class="scene-label">1 — Collection HEAD · editable · reference selected</div>
+  <div class="scene-label">1 — [Post-M42] Collection HEAD · inline expansion · reference selected</div>
   <div class="page">
 
     <div class="shell-bar">
@@ -1261,7 +1296,7 @@
      Scene 2: Released version · read-only · expansion results view
      ═══════════════════════════════════════════════════════ -->
 <section class="scene">
-  <div class="scene-label">2 — Released version v2024-11-01 · read-only · results view</div>
+  <div class="scene-label">2 — [Post-M42] Released version v2024-11-01 · read-only · results view</div>
   <div class="page compact-page">
 
     <div class="context-bar">
@@ -1356,7 +1391,7 @@
      Scene 3: HEAD view · Group by Source · CIEL group expanded
      ═══════════════════════════════════════════════════════ -->
 <section class="scene">
-  <div class="scene-label">3 — Collection HEAD · Group by Source · CIEL group expanded</div>
+  <div class="scene-label">3 — [Post-M42] Collection HEAD · Group by Source · CIEL group expanded</div>
   <div class="page">
 
     <div class="context-bar">
@@ -1577,6 +1612,314 @@
 
       </div><!-- /table -->
     </div><!-- /main -->
+
+  </div><!-- /page -->
+</section>
+
+
+<div class="section-divider">
+  <div class="section-divider-line"></div>
+  <div class="section-divider-label">M42 Scope</div>
+  <div class="section-divider-line"></div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     Scene 4: M42 · HEAD · flat list · reference selected · detail panel open
+     ═══════════════════════════════════════════════════════ -->
+<section class="scene">
+  <div class="scene-label">4 — [M42] Collection HEAD · flat list · reference selected</div>
+  <div class="page">
+
+    <div class="shell-bar">
+      <div class="shell-left">
+        <div class="logo">
+          <span class="a"></span><span class="b"></span><span class="c"></span><span class="d"></span>
+        </div>
+        <div class="search">Search OCL, repositories, and resources…</div>
+      </div>
+      <div class="shell-right">
+        <span class="shell-pill">+ New</span>
+        <span class="shell-pill">🔔</span>
+        <span class="shell-avatar"></span>
+      </div>
+    </div>
+
+    <div class="context-bar">
+      <div class="context-left">
+        <span class="context-pill">BA-team-demo</span>
+        <span class="context-pill primary">cascade-04nov25 · Collection</span>
+        <span class="context-pill">Version: HEAD</span>
+        <span class="context-pill">Watch</span>
+      </div>
+      <div class="context-right">
+        <span class="context-pill">Manage Repository</span>
+      </div>
+    </div>
+
+    <div class="title-bar">
+      <div class="title-row">
+        <div>
+          <h2>cascade-04nov25</h2>
+          <p>WHO SMART IG reference dictionary · 12 references · 4 source dependencies</p>
+        </div>
+        <div class="title-actions">
+          <span class="action-pill">Download</span>
+          <span class="action-pill">Bookmark</span>
+          <span class="action-pill">Share</span>
+          <span class="action-pill">⋯</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab">Concepts</div>
+      <div class="tab">Mappings</div>
+      <div class="tab active">References</div>
+      <div class="tab">Versions + Expansions</div>
+      <div class="tab">About</div>
+      <div class="tab">Proposals</div>
+      <div class="tab">Settings</div>
+    </div>
+
+    <div class="content">
+      <div class="main">
+
+        <div class="toolbar">
+          <div class="toolbar-left">
+            <span>12 references</span>
+          </div>
+          <div class="toolbar-group">
+            <div class="control searchwide">Search or filter references…</div>
+            <div class="control">Expansion: autoexpand-v2024-11-01 ▾</div>
+            <button class="button primary">+ Add References</button>
+            <button class="button">Transform</button>
+            <button class="button">Remove</button>
+          </div>
+        </div>
+
+        <div class="table">
+          <div class="table-head flat">
+            <span class="check">☐</span>
+            <span>Expression</span>
+            <span>Ref Type</span>
+            <span>Resolved Repo</span>
+            <span>Results</span>
+            <span></span>
+          </div>
+
+          <div class="ref-row flat selected">
+            <span class="check">☑</span>
+            <div>
+              <div class="path">/orgs/CIEL/sources/CIEL/concepts/?conceptClass=Test</div>
+              <div class="sub-label">Intensional · unversioned</div>
+            </div>
+            <span class="chip blue">Intensional</span>
+            <span class="chip">CIEL v2024-08-01</span>
+            <span class="count">5,484 concepts</span>
+            <span class="kebab">⋮</span>
+          </div>
+
+          <div class="ref-row flat">
+            <span class="check">☐</span>
+            <div>
+              <div class="path">/orgs/PIH/sources/PIH/concepts/3843/</div>
+              <div class="sub-label">Extensional · unversioned</div>
+            </div>
+            <span class="chip blue">Extensional</span>
+            <span class="chip">PIH v2024-09-15</span>
+            <span class="count">1 concept</span>
+            <span class="kebab">⋮</span>
+          </div>
+
+          <div class="ref-row flat">
+            <span class="check">☐</span>
+            <div>
+              <div class="path">http://id.who.int/icd/entity/1208540397</div>
+              <div class="sub-label">Extensional · canonical URL resolved via registry</div>
+            </div>
+            <span class="chip blue">Extensional</span>
+            <span class="chip">WHO ICD-11 v2024-10-01</span>
+            <span class="count">1 mapping</span>
+            <span class="kebab">⋮</span>
+          </div>
+
+          <div class="ref-row flat">
+            <span class="check">☐</span>
+            <div>
+              <div class="path">/orgs/MSF/sources/MSF-concepts/concepts/1099/?cascade=sourcemappings</div>
+              <div class="sub-label">Extensional · cascade: Source to Mappings</div>
+            </div>
+            <span class="chip green">Cascade</span>
+            <span class="chip">MSF v2023-01-01</span>
+            <span class="count">1 concept, 3 mappings</span>
+            <span class="kebab">⋮</span>
+          </div>
+
+          <div class="ref-row flat">
+            <span class="check">☐</span>
+            <div>
+              <div class="path">/orgs/CIEL/sources/CIEL/concepts/160148/</div>
+              <div class="sub-label">Extensional · exclude rule</div>
+            </div>
+            <span class="chip red">Exclude</span>
+            <span class="chip">CIEL v2024-08-01</span>
+            <span class="count">1 concept</span>
+            <span class="kebab">⋮</span>
+          </div>
+
+        </div><!-- /table -->
+      </div><!-- /main -->
+
+      <!-- Reference detail sidebar for selected row 1 -->
+      <aside class="sidebar">
+        <div class="ref-detail-header">
+          <span class="ref-detail-title">Reference Detail</span>
+          <span class="ref-detail-close">×</span>
+        </div>
+
+        <div class="sidebar-tabs">
+          <div class="sidebar-tab active">Details</div>
+          <div class="sidebar-tab">Expansion</div>
+        </div>
+
+        <div class="sidebar-body">
+          <div class="field-list">
+            <div class="field-row">
+              <span class="field-label">Type</span>
+              <span class="field-value"><span class="chip blue">Intensional</span></span>
+            </div>
+            <div class="field-row">
+              <span class="field-label">Expression</span>
+              <div class="field-mono">/orgs/CIEL/sources/CIEL/concepts/?conceptClass=Test</div>
+            </div>
+            <div class="field-row">
+              <span class="field-label">Source version</span>
+              <span class="field-value">
+                <span class="chip">CIEL v2024-08-01</span>
+                <span class="muted" style="font-size:11px; margin-left:4px;">canonical</span>
+              </span>
+            </div>
+            <div class="field-row">
+              <span class="field-label">Cascade</span>
+              <span class="field-value muted">None</span>
+            </div>
+            <div class="field-row">
+              <span class="field-label">Include</span>
+              <span class="field-value">Yes</span>
+            </div>
+          </div>
+
+          <div class="field-section">
+            <div class="field-section-title">Filters</div>
+            <span class="filter-tag">
+              <span class="filter-key">conceptClass</span>
+              <span class="filter-op"> = </span>
+              <span class="filter-val">Test</span>
+            </span>
+          </div>
+        </div>
+      </aside>
+
+    </div><!-- /content -->
+  </div><!-- /page -->
+</section>
+
+
+<!-- ═══════════════════════════════════════════════════════
+     Scene 5: M42 · Released version · read-only · flat list
+     ═══════════════════════════════════════════════════════ -->
+<section class="scene">
+  <div class="scene-label">5 — [M42] Released version v2024-11-01 · read-only · flat list</div>
+  <div class="page compact-page">
+
+    <div class="context-bar">
+      <div class="context-left">
+        <span class="context-pill">BA-team-demo</span>
+        <span class="context-pill primary">cascade-04nov25 · Collection</span>
+        <span class="context-pill">Version: v2024-11-01</span>
+      </div>
+      <div class="context-right">
+        <span class="context-pill">Read-only</span>
+      </div>
+    </div>
+
+    <div class="tab-bar">
+      <div class="tab">Concepts</div>
+      <div class="tab">Mappings</div>
+      <div class="tab active">References</div>
+      <div class="tab">Versions + Expansions</div>
+      <div class="tab">About</div>
+    </div>
+
+    <div class="toolbar">
+      <div class="toolbar-group">
+        <div class="control searchwide">Search references in this version…</div>
+        <div class="control">Expansion: default ▾</div>
+      </div>
+      <div class="toolbar-group">
+        <button class="button disabled">+ Add References</button>
+        <button class="button disabled">Transform</button>
+        <button class="button disabled">Remove</button>
+      </div>
+    </div>
+
+    <div class="version-state">Viewing v2024-11-01 (released). Switch to HEAD to modify references.</div>
+
+    <div class="table">
+      <div class="table-head flat">
+        <span class="check">☐</span>
+        <span>Expression</span>
+        <span>Ref Type</span>
+        <span>Resolved Repo</span>
+        <span>Results</span>
+        <span></span>
+      </div>
+
+      <div class="ref-row flat">
+        <span class="check">☐</span>
+        <span class="expression">/orgs/CIEL/sources/CIEL/concepts/?conceptClass=Test</span>
+        <span><span class="chip blue">Intensional</span></span>
+        <span><span class="chip">CIEL v2024-08-01</span></span>
+        <span class="count">5,484 concepts</span>
+        <span class="kebab">⋮</span>
+      </div>
+
+      <div class="ref-row flat">
+        <span class="check">☐</span>
+        <span class="expression">/orgs/PIH/sources/PIH/concepts/3843/</span>
+        <span><span class="chip blue">Extensional</span></span>
+        <span><span class="chip">PIH v2024-09-15</span></span>
+        <span class="count">1 concept</span>
+        <span class="kebab">⋮</span>
+      </div>
+
+      <div class="ref-row flat">
+        <span class="check">☐</span>
+        <span class="expression">http://id.who.int/icd/entity/1208540397</span>
+        <span><span class="chip blue">Extensional</span></span>
+        <span><span class="chip">WHO ICD-11 v2024-10-01</span></span>
+        <span class="count">1 mapping</span>
+        <span class="kebab">⋮</span>
+      </div>
+
+      <div class="ref-row flat">
+        <span class="check">☐</span>
+        <span class="expression">/orgs/MSF/sources/MSF-concepts/concepts/1099/?cascade=sourcemappings</span>
+        <span><span class="chip green">Cascade</span></span>
+        <span><span class="chip">MSF v2023-01-01</span></span>
+        <span class="count">1 concept, 3 mappings</span>
+        <span class="kebab">⋮</span>
+      </div>
+
+      <div class="ref-row flat">
+        <span class="check">☐</span>
+        <span class="expression">/orgs/CIEL/sources/CIEL/concepts/160148/</span>
+        <span><span class="chip red">Exclude</span></span>
+        <span><span class="chip">CIEL v2024-08-01</span></span>
+        <span class="count">1 concept</span>
+        <span class="kebab">⋮</span>
+      </div>
+    </div>
 
   </div><!-- /page -->
 </section>
