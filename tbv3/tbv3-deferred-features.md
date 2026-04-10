@@ -94,6 +94,19 @@ Allow non-admin, non-proposer users to view a source's open proposals and endors
 
 ---
 
+## Expansions
+
+### Include Drafts Parameter in Expansion Creation
+**Origin:** `04_surfaces/expansion-form.md`, `02_capabilities/manage-versions-and-expansions.md`
+
+The **Include Drafts** toggle (would set `include_drafts: true` in expansion parameters) allows an expansion to pull in HEAD/unreleased content from referenced sources. This is useful for testing against in-progress source content before an official version is released.
+
+Deferred because: the use case requires more design work around how users discover and understand that an expansion contains draft content, and what permissions or warnings are appropriate when sharing such an expansion. For now, expansions always use released source versions only.
+
+**When to revisit:** When users request pre-release testing workflows or when the "shadow expansion" / staging use case becomes a priority.
+
+---
+
 ## References
 
 ### Transform: Update Pinned Source Version

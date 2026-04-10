@@ -70,17 +70,15 @@ See `04_surfaces/versions-expansions-tab.md` for the full layout specification.
 
 **Entry Point:** Versions + Expansions tab → Select a version → "New Expansion" button
 
-**Interaction Flow:**
-1. Dialog opens with:
-   - **Expansion ID**: text input
-   - **Parameters**:
-     - **Repo Versions**: per-source version override table (source name | version selector)
-     - **Date**: date picker ("Use versions released as of this date")
-     - **Active Only**: toggle (default: on)
-     - **Include Drafts**: toggle (default: off)
-   - **Set as Default**: checkbox
-2. On submit: expansion created; shown as "Processing" while being evaluated
-3. On complete: concept/mapping counts appear; browsable
+See `04_surfaces/expansion-form.md` for the full form layout and field specifications.
+
+**Summary of fields:**
+- **Expansion ID** (mnemonic) — required; immutable after creation
+- **Canonical URL** — optional
+- **Parameters**: Active Only (default: on), Source Version Overrides (per-source version table), Date, and advanced FHIR params (collapsed)
+- **Set as Default** checkbox
+
+On submit: expansion created; shown as "Processing" while being evaluated. On complete: concept/mapping counts appear; browsable.
 
 ### Setting Default Expansion
 - Any expansion for a version can be set as default
@@ -105,10 +103,9 @@ See `04_surfaces/versions-expansions-tab.md` for the full layout specification.
 
 ### Update Expansion Metadata
 - Available on any expansion via action menu (⋮) → "Edit"
-- Editable fields: **Expansion ID** (mnemonic) and **Canonical URL** only
+- Only **Canonical URL** is editable after creation — the expansion ID (mnemonic) is immutable
 - Evaluation parameters are **not** editable after creation — use "Create Similar" to create a new expansion with different parameters
-- Renaming the Expansion ID changes the expansion's URL; a warning is shown: "Changing the ID will update this expansion's URL. Any saved links will need to be updated."
-- **API:** `PUT /:owner/collections/:collection/:version/expansions/:expansion/` with `{ mnemonic, canonical_url }`
+- **API:** `PUT /:owner/collections/:collection/:version/expansions/:expansion/` with `{ canonical_url }`
 - Does not trigger re-evaluation; the expansion's resolved content is unchanged
 
 ### Delete Expansion

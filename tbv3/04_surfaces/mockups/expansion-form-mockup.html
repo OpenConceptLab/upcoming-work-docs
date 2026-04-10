@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Expansion Form — TBv3 Mockup</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Roboto', sans-serif;
+    font-size: 14px;
+    background: #f0f2f5;
+    display: flex;
+    justify-content: flex-end;
+    min-height: 100vh;
+  }
+
+  /* Page behind drawer */
+  .page-bg {
+    flex: 1;
+    background: #fafafa;
+    padding: 24px;
+    color: #999;
+    font-size: 13px;
+  }
+  .page-bg h3 { color: #333; margin-bottom: 8px; }
+
+  /* Drawer */
+  .drawer {
+    width: 440px;
+    background: #fff;
+    box-shadow: -4px 0 24px rgba(0,0,0,0.12);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+  }
+
+  .drawer-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e0e0e0;
+    background: #fff;
+  }
+  .drawer-header h2 {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1a1a2e;
+  }
+  .drawer-header .subtitle {
+    font-size: 12px;
+    color: #666;
+    margin-top: 2px;
+  }
+  .close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #666;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+  .close-btn:hover { background: #f0f0f0; }
+
+  .drawer-body {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px;
+  }
+
+  /* Field groups */
+  .field-group { margin-bottom: 20px; }
+  .field-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 6px;
+    letter-spacing: 0.3px;
+  }
+  .field-group label .required { color: #d32f2f; margin-left: 2px; }
+  .field-group .helper { font-size: 11px; color: #888; margin-top: 4px; }
+
+  input[type="text"], input[type="url"], input[type="date"] {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 14px;
+    color: #333;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  input[type="text"]:focus, input[type="url"]:focus, input[type="date"]:focus {
+    border-color: #1976d2;
+    box-shadow: 0 0 0 2px rgba(25,118,210,0.12);
+  }
+  input::placeholder { color: #bbb; }
+
+  /* Section divider */
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: #888;
+    margin: 24px 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: #e8e8e8;
+  }
+
+  /* Toggle */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 0;
+  }
+  .toggle-row .label-text { font-size: 14px; color: #333; }
+  .toggle {
+    position: relative;
+    width: 40px;
+    height: 22px;
+  }
+  .toggle input { display: none; }
+  .toggle-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 11px;
+    background: #ccc;
+    transition: background 0.2s;
+    cursor: pointer;
+  }
+  .toggle-thumb {
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
+    transition: left 0.2s;
+  }
+  .toggle.on .toggle-track { background: #1976d2; }
+  .toggle.on .toggle-thumb { left: 21px; }
+
+  /* Source version overrides table */
+  .overrides-table {
+    border: 1px solid #e0e0e0;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .overrides-header {
+    display: grid;
+    grid-template-columns: 1fr 160px 32px;
+    padding: 8px 12px;
+    background: #f7f7f7;
+    border-bottom: 1px solid #e0e0e0;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    color: #888;
+    text-transform: uppercase;
+  }
+  .override-row {
+    display: grid;
+    grid-template-columns: 1fr 160px 32px;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid #f0f0f0;
+    gap: 8px;
+  }
+  .source-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #e3f2fd;
+    color: #1565c0;
+    border-radius: 12px;
+    padding: 2px 10px 2px 8px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .source-chip .chip-x {
+    color: #90a4ae;
+    font-size: 14px;
+    cursor: pointer;
+    margin-left: 2px;
+  }
+  .version-select {
+    width: 100%;
+    padding: 5px 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #333;
+    background: #fff;
+  }
+  .remove-btn {
+    background: none;
+    border: none;
+    color: #bbb;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 2px;
+    border-radius: 3px;
+    line-height: 1;
+  }
+  .remove-btn:hover { color: #e53935; background: #fce4e4; }
+  .add-source-btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    color: #1976d2;
+    font-size: 13px;
+    cursor: pointer;
+    background: none;
+    border: none;
+    width: 100%;
+    text-align: left;
+  }
+  .add-source-btn:hover { background: #f0f7ff; }
+
+  /* Advanced section */
+  .advanced-toggle {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: none;
+    border: none;
+    color: #1976d2;
+    font-size: 13px;
+    cursor: pointer;
+    padding: 4px 0;
+    margin-top: 4px;
+  }
+  .advanced-toggle:hover { text-decoration: underline; }
+  .advanced-body {
+    margin-top: 12px;
+    padding: 14px;
+    background: #f9f9f9;
+    border-left: 3px solid #e0e0e0;
+    border-radius: 0 4px 4px 0;
+    display: none; /* collapsed by default */
+  }
+  .advanced-body.open { display: block; }
+  .advanced-body .field-group { margin-bottom: 14px; }
+  .advanced-body .field-group:last-child { margin-bottom: 0; }
+
+  /* Default checkbox */
+  .default-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 0 4px;
+    border-top: 1px dashed #e8e8e8;
+    margin-top: 20px;
+  }
+  .default-row input[type="checkbox"] { width: 16px; height: 16px; cursor: pointer; }
+  .default-row label { font-size: 14px; color: #333; cursor: pointer; }
+
+  /* Footer */
+  .drawer-footer {
+    padding: 16px 20px;
+    border-top: 1px solid #e0e0e0;
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    background: #fff;
+  }
+  .btn {
+    padding: 8px 22px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid transparent;
+    transition: background 0.15s;
+  }
+  .btn-primary {
+    background: #1976d2;
+    color: #fff;
+    border-color: #1976d2;
+  }
+  .btn-primary:hover { background: #1565c0; }
+  .btn-secondary {
+    background: #fff;
+    color: #555;
+    border-color: #ccc;
+  }
+  .btn-secondary:hover { background: #f5f5f5; }
+
+  /* Edit mode panel (shown below create for reference) */
+  .mode-tabs {
+    display: flex;
+    gap: 0;
+    border-bottom: 2px solid #e0e0e0;
+    margin-bottom: 0;
+  }
+  .mode-tab {
+    padding: 10px 20px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #888;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -2px;
+  }
+  .mode-tab.active {
+    color: #1976d2;
+    border-bottom-color: #1976d2;
+  }
+
+  .readonly-field {
+    padding: 8px 12px;
+    background: #f5f5f5;
+    border: 1px solid #e0e0e0;
+    border-radius: 4px;
+    color: #666;
+    font-size: 14px;
+  }
+  .readonly-label { font-size: 11px; color: #aaa; margin-top: 4px; }
+
+  /* Second drawer (Edit mode) */
+  .drawer2 {
+    width: 440px;
+    background: #fff;
+    box-shadow: -4px 0 24px rgba(0,0,0,0.08);
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    border-left: 1px solid #e0e0e0;
+  }
+</style>
+</head>
+<body>
+
+<!-- Page background -->
+<div class="page-bg">
+  <h3>Versions + Expansions</h3>
+  <p style="margin-top: 8px; font-size: 12px;">← The drawer opens over the right side of this tab</p>
+  <p style="margin-top: 40px; font-size: 11px; color: #bbb;">
+    This is a static visual mockup only — not functional code.<br>
+    See <code>ocl-kb/tbv3/04_surfaces/expansion-form.md</code> for the full spec.
+  </p>
+</div>
+
+<!-- CREATE MODE DRAWER -->
+<div class="drawer">
+  <div class="drawer-header">
+    <div>
+      <div class="subtitle">BA-team-demo / v2024-11-01</div>
+      <h2>New Expansion</h2>
+    </div>
+    <button class="close-btn">×</button>
+  </div>
+
+  <div class="drawer-body">
+
+    <!-- Identity -->
+    <div class="field-group">
+      <label>Expansion ID <span class="required">*</span></label>
+      <input type="text" placeholder="e.g. my-expansion-2024" />
+      <div class="helper">Alphanumeric, @, hyphens, periods, underscores. Cannot be changed after creation.</div>
+    </div>
+
+    <div class="field-group">
+      <label>Canonical URL</label>
+      <input type="url" placeholder="https://..." />
+    </div>
+
+    <div class="section-label">Parameters</div>
+
+    <!-- Active Only -->
+    <div class="toggle-row">
+      <span class="label-text">Active Only</span>
+      <div class="toggle on" title="Default: On">
+        <div class="toggle-track"></div>
+        <div class="toggle-thumb"></div>
+      </div>
+    </div>
+
+    <!-- Source Version Overrides -->
+    <div class="field-group" style="margin-top: 16px;">
+      <label>Source Version Overrides</label>
+      <div class="overrides-table">
+        <div class="overrides-header">
+          <span>Source</span>
+          <span>Version</span>
+          <span></span>
+        </div>
+        <div class="override-row">
+          <span class="source-chip">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="#1565c0"><circle cx="5" cy="5" r="4"/></svg>
+            CIEL
+            <span class="chip-x">×</span>
+          </span>
+          <select class="version-select">
+            <option>v2024-08-01</option>
+            <option>v2024-01-15</option>
+            <option>v2023-12-01</option>
+          </select>
+          <button class="remove-btn">×</button>
+        </div>
+        <div class="override-row">
+          <span class="source-chip" style="background:#e8f5e9; color:#2e7d32;">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="#2e7d32"><circle cx="5" cy="5" r="4"/></svg>
+            MSF
+            <span class="chip-x">×</span>
+          </span>
+          <select class="version-select">
+            <option>v2023-01-01</option>
+          </select>
+          <button class="remove-btn">×</button>
+        </div>
+        <button class="add-source-btn">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="#1976d2"><path d="M7 1v12M1 7h12" stroke="#1976d2" stroke-width="1.8" stroke-linecap="round"/></svg>
+          Add source
+        </button>
+      </div>
+      <div class="helper">Leave empty to use the collection's canonical source versions.</div>
+    </div>
+
+    <!-- Date -->
+    <div class="field-group">
+      <label>Date</label>
+      <input type="date" />
+      <div class="helper">Use source versions released as of this date (alternative to version overrides).</div>
+    </div>
+
+    <!-- Advanced -->
+    <button class="advanced-toggle" onclick="toggleAdvanced(this)">
+      <svg width="12" height="12" viewBox="0 0 12 12" fill="#1976d2"><path d="M2 4l4 4 4-4" stroke="#1976d2" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg>
+      Show advanced parameters
+    </button>
+    <div class="advanced-body" id="advanced">
+      <div class="field-group">
+        <label>Exclude System</label>
+        <input type="text" placeholder="http://loinc.org|2.56" />
+        <div class="helper">Format: [system]|[version]</div>
+      </div>
+      <div class="field-group">
+        <label>System Version</label>
+        <input type="text" placeholder="http://loinc.org|2.56" />
+        <div class="helper">Format: [system]|[version]</div>
+      </div>
+      <div class="field-group">
+        <label>Filter</label>
+        <input type="text" placeholder="Additional filter criteria" />
+      </div>
+    </div>
+
+    <!-- Set as default -->
+    <div class="default-row">
+      <input type="checkbox" id="setDefault" />
+      <label for="setDefault">Set as default expansion for this version</label>
+    </div>
+
+  </div>
+
+  <div class="drawer-footer">
+    <button class="btn btn-secondary">Cancel</button>
+    <button class="btn btn-primary">Create</button>
+  </div>
+</div>
+
+<!-- EDIT MODE DRAWER -->
+<div class="drawer2">
+  <div class="drawer-header">
+    <div>
+      <div class="subtitle">BA-team-demo / v2024-11-01</div>
+      <h2>Edit Expansion</h2>
+    </div>
+    <button class="close-btn">×</button>
+  </div>
+
+  <div class="drawer-body">
+
+    <div class="field-group">
+      <label>Expansion ID</label>
+      <div class="readonly-field">autoexpand-HEAD</div>
+      <div class="readonly-label">Cannot be changed after creation</div>
+    </div>
+
+    <div class="field-group" style="margin-top: 16px;">
+      <label>Canonical URL</label>
+      <input type="url" placeholder="https://..." value="" />
+    </div>
+
+    <div class="section-label">Parameters (read-only)</div>
+
+    <div style="padding: 10px 12px; background: #f7f7f7; border-radius: 6px; font-size: 13px; color: #555; line-height: 1.8;">
+      <div><strong>Active Only:</strong> On</div>
+      <div><strong>Source Overrides:</strong> CIEL → v2024-08-01</div>
+      <div><strong>Date:</strong> —</div>
+    </div>
+    <div style="margin-top: 8px; font-size: 12px; color: #1976d2; cursor: pointer;">
+      To change parameters, use "Create Similar" instead →
+    </div>
+
+  </div>
+
+  <div class="drawer-footer">
+    <button class="btn btn-secondary">Cancel</button>
+    <button class="btn btn-primary">Save</button>
+  </div>
+</div>
+
+<script>
+  function toggleAdvanced(btn) {
+    const body = document.getElementById('advanced');
+    body.classList.toggle('open');
+    const isOpen = body.classList.contains('open');
+    btn.innerHTML = isOpen
+      ? '<svg width="12" height="12" viewBox="0 0 12 12" fill="#1976d2"><path d="M2 8l4-4 4 4" stroke="#1976d2" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg> Hide advanced parameters'
+      : '<svg width="12" height="12" viewBox="0 0 12 12" fill="#1976d2"><path d="M2 4l4 4 4-4" stroke="#1976d2" stroke-width="1.5" stroke-linecap="round" fill="none"/></svg> Show advanced parameters';
+  }
+</script>
+</body>
+</html>
