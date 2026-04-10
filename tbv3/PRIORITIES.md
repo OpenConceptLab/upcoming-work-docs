@@ -65,7 +65,7 @@ Add a **Dependency Change Notifications** section (maps to Tracker #62) covering
 The two-panel layout spec (Versions left, Expansions right) is referenced throughout capability and workflow files but never written. Should cover:
 - Panel layout and responsive behavior
 - Version list: columns, status badges, action buttons (Create Similar, Rebuild, Lock controls)
-- Expansion list: columns, stale indicator, async rebuild status
+- Expansion list: columns, Needs Refresh indicator, async rebuild status
 - Empty states
 - This tab is central to both the M42 and M44 showcases.
 

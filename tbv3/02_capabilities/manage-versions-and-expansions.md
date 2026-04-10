@@ -93,7 +93,7 @@ On submit: expansion created; shown as "Processing" while being evaluated. On co
   > "This will re-evaluate all references using the same parameters. This cannot be undone. To compare before committing, use 'Create Similar' instead."
 - **API:** `POST /:owner/collections/:collection/:version/expansions/:expansion/re-evaluate/`
 - Shows as "Processing" while rebuilding; non-blocking (user can navigate away)
-- On complete: updated counts shown; staleness indicator removed
+- On complete: updated counts shown; Needs Refresh indicator removed
 
 ### Create Similar Expansion
 - Available on any expansion via action menu (⋮) → "Create Similar"
@@ -179,11 +179,11 @@ This event is what triggers the notification. No notification is generated if th
 [Review updates →]                          2 hours ago
 ```
 
-### Staleness Indicator on Expansions
-- Expansions that were built before the dependency change occurred are marked **stale**
-- Stale indicator: a yellow dot + "Stale" badge next to the expansion in the Versions + Expansions tab
+### Needs Refresh Indicator on Expansions
+- Expansions that were built before the dependency change occurred are marked **Needs Refresh**
+- Needs Refresh indicator: a yellow dot + "Needs Refresh" badge next to the expansion in the Versions + Expansions tab
 - Tooltip: "This expansion was built before [Source] released [versionID]. Rebuild to pick up changes."
-- Rebuilding the expansion clears the stale indicator
+- Rebuilding the expansion clears the Needs Refresh indicator
 
 ---
 

@@ -117,7 +117,7 @@ These were flagged inline but are already adequately addressed elsewhere:
 
 | To Do Location | Reason for Dismissal |
 |---|---|
-| `expansion.md` — stale expansion behavior | Fully specced in `02_capabilities/manage-versions-and-expansions.md` under Staleness Indicator |
+| `expansion.md` — Needs Refresh expansion behavior | Fully specced in `02_capabilities/manage-versions-and-expansions.md` under Needs Refresh Indicator |
 | `repository.md` — version dropdown: do not wrap | Already specified in `04_surfaces/versions-expansions-tab.md` and `01_objects/version.md` |
 | `manage-references.md` — bulk transform via checkbox | Already documented in the Bulk Transform section of `02_capabilities/manage-references.md` |
 

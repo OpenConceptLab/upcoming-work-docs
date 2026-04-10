@@ -76,8 +76,8 @@ As an alternative, owners can elect to **re-evaluate all references** at the mom
 - References with `include: false` produce excluded resources
 - The expansion tracks these separately so users can audit what was intentionally left out
 
-### Stale Expansions
-- An expansion may become stale if the underlying source content has changed since it was last evaluated
+### Needs Refresh
+- An expansion needs a refresh if the underlying source content has changed since it was last evaluated
 - The UI should indicate when a released source version has been updated after an expansion was created
 - Users can refresh (re-evaluate) any expansion at any time
 
@@ -109,7 +109,7 @@ In the Expansions list (within a version):
 - Show `resolved_repo_versions` as a summary chip (e.g., "CIEL v2024-08-01")
 - Show processing indicator if `is_processing = true`
 - Show error badge if evaluation failed
-- Show "stale" indicator if underlying source content has changed since the expansion was created
+- Show "Needs Refresh" indicator if underlying source content has changed since the expansion was created
 
 Expansion detail:
 - Show all parameters used

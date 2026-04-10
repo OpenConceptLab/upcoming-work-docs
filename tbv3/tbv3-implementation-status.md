@@ -145,14 +145,14 @@ These features are implemented but not spec'd — the KB should document them.
 
 #### Implemented but diverges from spec
 - **"Copy vs. Re-evaluate" expansion choice** — Only a simple autoexpand checkbox; no radio button choice between "Copy current HEAD expansion as-is" and "Re-evaluate all references now"
-- **Version rows** — Missing expansion metadata (default expansion indicator, resolved repo versions, staleness)
+- **Version rows** — Missing expansion metadata (default expansion indicator, resolved repo versions, Needs Refresh indicator)
 - **Versions + Expansions tab** — No dedicated tab; versions only accessible via the version selector dropdown in `RepoHeader`; tab key 'versions' exists in routing but never rendered in RepoHome TABS array
 
 #### Spec'd but not implemented
 - **Dedicated Versions + Expansions tab** (two-panel layout: versions left, expansions right)
 - **Expansion creation form** (expansion ID, active_only, repo_versions table, date picker, include_drafts, Set as Default)
-- **Expansion rows** (expansion ID, parameters, status, concept/mapping count, last built, staleness indicator)
-- **Staleness indicator** (yellow dot + "Stale" badge when source has new version post-expansion; "Rebuild" trigger)
+- **Expansion rows** (expansion ID, parameters, status, concept/mapping count, last built, Needs Refresh indicator)
+- **Needs Refresh indicator** (yellow dot + "Needs Refresh" badge when source has new version post-expansion; "Rebuild" trigger)
 - **Set default expansion** as an action menu item (only available via expansion_url edit on VersionForm)
 - **Create Similar Expansion** (pre-fill with existing parameters)
 - **Rebuild Expansion** action
@@ -431,7 +431,7 @@ Several areas show oclweb3 making deliberate architectural choices that differ f
 
 ### Greenfield (must be built from scratch)
 1. **Manage References** — Add-to-Collection dialog, New Reference form, preview, transforms, remove (blocks dictionary-building workflow)
-2. **Expansions domain** — ExpansionForm, ExpansionList, staleness indicator, rebuild; foundational for Versions+Expansions tab
+2. **Expansions domain** — ExpansionForm, ExpansionList, Needs Refresh indicator, rebuild; foundational for Versions+Expansions tab
 3. **Missing repository tabs** — About tab (wire `RepoOverview.jsx`), Versions+Expansions tab, Settings tab
 4. **"Add to Collection" CTA** on concept detail — core user action for Terminology Implementers
 
