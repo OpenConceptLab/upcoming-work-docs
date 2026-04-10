@@ -144,3 +144,38 @@ Optional override: `to_concept_name` may be provided to overwrite OCL's resolved
 - Show both from and to concepts as clickable chips (for internal mappings)
 - Show sort weight if set
 - Show full history (version log)
+
+---
+
+## Inline Mapping Syntax
+
+A compact text syntax for encoding one or more mappings in a single string — used in concept-anchored CSV exports and anywhere a mapping needs to be represented on one line. See [roadmap-2026-knowledge-base.md §4.1](../../../roadmap-2026/roadmap-2026-knowledge-base.md) for full context (issue #2266).
+
+**Generic form:**
+
+```
+[[map-type] ]<SOURCE>:<code>[ "<name>[ [locale]]"]
+```
+
+The `[map-type]` bracket token is optional. When omitted, the mapping is treated as a direct (SAME-AS) relationship. Multiple mappings are comma-separated.
+
+**Examples:**
+
+| Syntax | Meaning |
+|---|---|
+| `SNOMED-CT:1292929349` | SAME-AS to a SNOMED-CT code |
+| `CIEL:1234 "Malaria"` | SAME-AS to CIEL:1234 with display name |
+| `CIEL:1234 "Malaria [en]"` | Same, with explicit locale |
+| `CIEL(v2024-01-01):1234` | SAME-AS to a specific CIEL version |
+| `[NARROWER-THAN] ICD-10:A01.1` | Directional mapping to ICD-10 |
+| `[NARROWER-THAN] ICD-10:A01.1 "Typhoid fever [en]"` | Same, with name and locale |
+
+**Multiple mappings (comma-separated):**
+
+```
+[NARROWER-THAN] ICD-10:A01.1, [SAME-AS] ICD-11-WHO:NE02&XA99N3, [SAME-AS] IMO-ProblemIT:22793
+```
+
+**Source reference:** The `<SOURCE>` token can be a short code (e.g., `CIEL`), a relative OCL URL, or a canonical URL. A specific version is encoded in parentheses: `CIEL(v2024-01-01)`.
+
+**Open questions (not yet resolved):** escaping of special characters (brackets, commas, quotes); whether single quotes are valid; whether mapping order is significant.

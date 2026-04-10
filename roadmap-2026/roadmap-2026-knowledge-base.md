@@ -264,10 +264,40 @@ These were not just internal complaints — community user @chamiw2008 reported 
 - For #2266, a Python notebook was developed ([Google Colab link in ticket](https://colab.research.google.com)) that transforms OCL's export JSON into a concept-anchored CSV (one row per concept, with mappings in the same row).
 - @jamlung-ri proposed a comma-separated syntax for mappings that is *"backwards compatible with the format used in the concept prevalence study, extensible to more metadata, parseable with a single regular expression, and still human readable."*
 
+#### Inline Mapping Syntax (proposed, #2266)
+
+The concept-anchored CSV format uses a compact inline syntax to encode one or more mappings in a single CSV cell. Each mapping is a space-separated token string; multiple mappings are comma-separated.
+
+**Generic form:**
+
+```
+[[map-type] ]<SOURCE>:<code>[ "<name>[ [locale]]"]
+```
+
+The `[map-type]` bracket token is optional. When omitted, the mapping is treated as a direct (SAME-AS) relationship. When present, it appears in square brackets before the source reference. An inverse map type can appear at the end instead, indicating the directionality is reversed.
+
+**Examples:**
+
+| Syntax | Meaning |
+|---|---|
+| `SNOMED-CT:1292929349` | SAME-AS mapping to SNOMED-CT code (no name) |
+| `CIEL:1234 "Malaria"` | SAME-AS mapping to CIEL:1234 with display name |
+| `CIEL:1234 "Malaria [en]"` | Same, with explicit locale |
+| `[NARROWER-THAN] ICD-10:A01.1` | NARROWER-THAN mapping to ICD-10 code |
+| `[NARROWER-THAN] ICD-10:A01.1 "Typhoid fever [en]"` | Same, with name and locale |
+
+**Multiple mappings in one cell (comma-separated):**
+
+```
+[NARROWER-THAN] ICD-10:A01.1, [SAME-AS] ICD-11-WHO:NE02&XA99N3, [SAME-AS] IMO-ProblemIT:22793
+```
+
+**Source reference format:** The `<SOURCE>` token can be a short code (e.g., `CIEL`, `SNOMED-CT`), a relative OCL URL, or a canonical URL. A version can be included using parentheses: `CIEL(v2024-01-01):1234`.
+
 #### What Is Pending
 
 - **Remove 1k CSV limit** (#1911): Implement a proper CSV download that supports the full repository, not just the first 1,000 resources.
-- **Concept-anchored CSV format** (#2266): Formalize the new format that combines concepts and mappings into a single row. Key questions from @bmamlin: how are special characters escaped? Are single quotes valid? Does mapping order matter?
+- **Concept-anchored CSV format** (#2266): Formalize the new format that combines concepts and mappings into a single row. The inline mapping syntax is documented above. Remaining open questions: how are special characters escaped? Are single quotes valid? Does mapping order matter?
 - **Column/format agreement** (#1911): @paynejd asked @chamiw2008 to contribute requirements; the response emphasized needing code, display name, and code system — with class-based filtering.
 
 #### Open Design Questions
