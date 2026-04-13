@@ -109,6 +109,24 @@ Deferred because: the use case requires more design work around how users discov
 
 ## References
 
+### Add References Dialog: Intensional Filter Builder
+**Origin:** `02_capabilities/manage-references.md § Add References (Within Collection)`, ocl_issues#2431
+
+A structured UI for building intensional reference expressions without typing raw query params. Would present rows of Property | Operator | Value inputs that generate the query string automatically (e.g., `?conceptClass=Test&locale=en`). For M42, users author intensional expressions by typing query params directly into the Expression field.
+
+**Post-M42 rationale:** Requires design work on which filter properties to surface, how operators map to OCL query params, and how to handle complex multi-condition filters. The expression field is a sufficient workaround for power users in the near term.
+
+---
+
+### Add References Dialog: Search-and-Select Concepts
+**Origin:** `02_capabilities/manage-references.md § Add References (Within Collection)`, ocl_issues#2431
+
+A mode within the Add References dialog that lets users browse or search a source's concepts and select individual ones to add, rather than typing expressions or pasting IDs. Selected concepts would be queued and submitted as a batch of extensional expressions.
+
+**Post-M42 rationale:** Significant additional UI work on top of the expression input and Bulk Add modes already in M42 scope. Bulk Add (comma-separated IDs) covers the most common multi-concept case for now.
+
+---
+
 ### Reference Preview: Unresolvable Reference Error Taxonomy
 **Origin:** `02_capabilities/manage-references.md § Reference Preview`, ocl_issues#2007
 
