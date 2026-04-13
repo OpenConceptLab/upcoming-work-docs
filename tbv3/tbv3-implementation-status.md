@@ -1,6 +1,6 @@
 # TBv3 Implementation Status
 
-> **Snapshot date:** 2026-03-27
+> **Snapshot date:** 2026-04-13 (partial update: #2007 spec noted)
 > **oclweb3 version:** 3.0.0-alpha (223 component files, React 18, MUI v5, React Router v5)
 > **Methodology:** Each KB capability/surface was compared against the relevant oclweb3 components by an Explore agent reading both spec and source files in full. See [`tbv3-folder-structure.md`](tbv3-folder-structure.md) for spec library layout.
 
@@ -69,7 +69,7 @@ These features are implemented but not spec'd — the KB should document them.
 - **Version consistency warning** — No warning dialog when concept source version ≠ collection canonical version
 - **Cascade option in Add to Collection dialog** — None/Source Mappings/custom options
 - **Create Reference from inside collection** — No "New Reference" button; no Extensional/Intensional form
-- **Reference Preview (non-destructive)** — No preview before saving
+- **Reference Preview (non-destructive)** — No preview before saving; spec complete in `manage-references.md § Reference Preview` (#2007)
 - **Reference Detail drawer** — Clicking reference rows does nothing (`SearchResults.jsx` explicitly returns early for references)
 - **Reference Transforms** — No Transform to Unversioned / Repo-Versioned / Lock to Repo Version
 - **Remove reference** — No row action menu

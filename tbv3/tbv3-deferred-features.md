@@ -109,6 +109,32 @@ Deferred because: the use case requires more design work around how users discov
 
 ## References
 
+### Reference Preview: Unresolvable Reference Error Taxonomy
+**Origin:** `02_capabilities/manage-references.md § Reference Preview`, ocl_issues#2007
+
+When a reference expression cannot be evaluated at all (source not found, invalid URL, validation failure, etc.), the preview panel should surface a typed error rather than just showing an empty result. This requires the `CollectionReferencesPreview` API endpoint to return a structured `errors` array per expression.
+
+**Proposed `errors` entry shape:**
+```json
+{ "type": "source_not_found", "message": "Source CIEL not found or not accessible." }
+```
+
+**Error type taxonomy:**
+
+| `type` | Cause | Display message |
+|---|---|---|
+| `source_not_found` | The source in the expression URL does not exist or is not accessible | "Source not found or not accessible." |
+| `concept_not_found` | The concept ID in the expression does not exist in the source | "Concept not found in source." |
+| `invalid_expression` | The expression URL is malformed or uses a deprecated resource-versioned pattern | "Invalid reference expression." |
+| `validation_error` | The resolved concept fails the collection's validation schema (e.g., OpenMRS required fields) | "Concept does not pass this collection's validation schema." |
+| `cascade_error` | The cascade params reference a map type or method that is not valid for this source | "Cascade configuration is not valid for this source." |
+
+Multiple errors per expression are possible; the frontend should display all. The `errors` array is in addition to (not replacing) the `new` / `existing` groups — an expression can have errors and also partially resolve.
+
+**Post-M42 rationale:** Requires `CollectionReferencesPreview` to catch and classify per-expression failures instead of silently returning an empty result. For M42, unresolvable expressions are shown as empty results with no per-type explanation.
+
+---
+
 ### Transform: Update Pinned Source Version
 **Origin:** `02_capabilities/manage-references.md`
 

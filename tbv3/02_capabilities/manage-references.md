@@ -79,20 +79,293 @@ Used when the user is in the collection context and wants to define a reference 
 
 ## Reference Preview (Without Persisting)
 
-Users can evaluate what a reference would resolve to before committing it. This is non-destructive and does not add anything to the collection.
+> **Ticket:** ocl_issues#2007 — CTA / Reference / Preview
 
-### Trigger
-- "Preview" button within the Add to Collection dialog
-- "Preview results" toggle in the New Reference form
-- "Preview" action on any existing reference in the References list
+Users can evaluate what a reference expression would resolve to before committing it. This is non-destructive: nothing is added to or removed from the collection.
 
-### Behavior
-- Calls `GET /:owner/collections/:collection/references/?expression=:expr&preview=true`
-- Shows a paginated list of concepts/mappings that would be included
-- Grouped by: ✅ New (not yet in collection) | ⚠️ Already exists (would be duplicate) | ❌ Error (not resolvable)
-- Summary counts shown at the top: "X new concepts, Y already in collection, Z errors"
-- Individual rows are not selectable; this is a read-only preview
-- For large result sets (>100 resources), preview shows the first 100 with "and X more" indicator; full count is shown 
+### M42 Scope
+
+| Entry Point | M42? |
+|---|---|
+| Preview panel within the Add to Collection dialog (`AddToCollectionDialog.jsx`) | ✅ M42 |
+| Preview panel within the New Reference dialog (`NewReferenceDialog.jsx`) | ✅ M42 (built as part of #2431) |
+| Preview action on an existing reference row in the References list | ⬜ Post-M42 (row action menus are post-M42 per `references-tab.md`) |
+
+---
+
+### API
+
+**Endpoint:** `POST /:ownerType/:owner/collections/:collection/references/preview/`
+
+The endpoint accepts multiple expressions in a single call and returns one result object per expression. This is important for batch operations (e.g., previewing a search-result selection before adding them all at once via the New Reference dialog).
+
+**Request body:**
+```json
+{
+  "data": {
+    "expressions": [
+      "/orgs/CIEL/sources/CIEL/concepts/1234/",
+      "/orgs/CIEL/sources/CIEL/concepts/5678/"
+    ]
+  },
+  "cascade": "sourcemappings"
+}
+```
+
+**Query params (appended as needed):**
+- `cascade` — cascade method string (e.g., `sourcemappings`, `sourcetoconcepts`)
+- `transformReferences` — optional transform (e.g., `openmrs_concept_reference`)
+- Additional cascade params as needed (`mapTypes`, `cascadeLevels`, `returnMapTypes`)
+
+**Response:** Array of preview result objects, one entry per input expression:
+```json
+[
+  {
+    "reference": "/orgs/CIEL/sources/CIEL/concepts/1234/",
+    "new": {
+      "concepts": [ /* ConceptListSerializer[] — first 25 */ ],
+      "mappings": [ /* MappingListSerializer[] — first 25 */ ],
+      "concepts_count": 1,
+      "mappings_count": 3
+    },
+    "existing": {
+      "concepts": [ /* ConceptListSerializer[] — first 25 */ ],
+      "mappings": [ /* MappingListSerializer[] — first 25 */ ],
+      "concepts_count": 0,
+      "mappings_count": 0
+    },
+    "version_status": {
+      "consistent": true,
+      "canonical_source_version": "CIEL v2024-08-01",
+      "resolved_source_version": "CIEL v2024-08-01"
+    },
+    "errors": [],
+    "exclude": false
+  },
+  {
+    "reference": "/orgs/CIEL/sources/CIEL/concepts/5678/",
+    "new": { "concepts": [], "mappings": [], "concepts_count": 0, "mappings_count": 0 },
+    "existing": { "concepts": [], "mappings": [], "concepts_count": 0, "mappings_count": 0 },
+    "version_status": null,
+    "errors": [
+      { "type": "source_not_found", "message": "Source CIEL not found or not accessible." }
+    ],
+    "exclude": false
+  }
+]
+```
+
+> **API enhancement required:** The current `CollectionReferencesPreview` view returns a flat `concepts` / `mappings` array with no collection-membership awareness, version checking, or error taxonomy. The endpoint needs to be updated to:
+> 1. Accept multiple expressions and return one result object per expression
+> 2. Split resolved resources into `new` vs. `existing` groups by checking each against the collection's current expansion
+> 3. Populate `version_status` by comparing the resolved source version against the collection's canonical source version (see [Version Consistency](#version-consistency-warning) above)
+> 4. Populate `errors` with typed error objects for any expression that cannot be evaluated
+>
+> The `concepts` / `mappings` arrays within each group are capped at 25 items each; use the `*_count` fields for display totals.
+
+---
+
+### Warnings and Errors
+
+The preview response surfaces two distinct concern types per expression. These are displayed in the panel above the result rows, one alert per affected expression.
+
+#### Version Inconsistency (Warning)
+
+Shown when one or more result objects have `version_status.consistent === false`. This is the same condition described in [Version Consistency Warning](#version-consistency-warning) above — surfaced here so the user sees the conflict before deciding to submit.
+
+The warning is a single collapsible alert regardless of how many expressions are affected. It does not repeat per-expression.
+
+**Collapsed (default):**
+> ⚠️ **{N} reference(s) will resolve to a different source version than your collection is pinned to.** ▼
+
+**Expanded (user clicks ▼):**
+
+A table drops down listing each affected expression:
+
+| Reference | Resolves to | Collection pinned to |
+|---|---|---|
+| `CIEL/concepts/1234/` | CIEL v2023-10-01 | CIEL v2024-08-01 |
+| `CIEL/concepts/5678/` | CIEL v2023-10-01 | CIEL v2024-08-01 |
+
+- Expression column shows the concept ID portion of the URL (not the full path) for readability
+- Resolved version and collection version are shown as source+version chips
+- If all affected references resolve to the same mismatched version, the table makes this obvious at a glance
+
+The alert is informational only within the preview panel. The action choices (Add unversioned + rebuild / Add unversioned without rebuilding / Pin to this version) are presented in the parent dialog's submit area, not inline in the panel.
+
+If `version_status` is `null` for all results (collection has no locked source version yet), no version warning is shown.
+
+> **Unresolvable Reference (Error) is post-M42** — see `tbv3-deferred-features.md § Reference Preview: Unresolvable Reference Error Taxonomy`. For M42, expressions that fail to resolve are shown as empty results; no per-type error messaging is displayed.
+
+#### Zero-result reference (not an error, a warning)
+
+When `errors` is empty but `new.concepts_count + new.mappings_count + existing.concepts_count + existing.mappings_count === 0`, show a soft warning rather than an error:
+
+> ⚠️ This reference resolves to 0 resources. It will be saved as an empty reference.
+
+This is a valid state (intensional references may legitimately return zero results today but resolve in the future), so saving is not blocked — the user just needs to acknowledge.
+
+---
+
+### Component: `ReferencePreviewPanel`
+
+**File:** `src/components/common/ReferencePreviewPanel.jsx`
+
+**Props:**
+
+| Prop | Type | Description |
+|---|---|---|
+| `collectionUrl` | `string` | Full collection URL; used to build the preview API path |
+| `expressions` | `string[]` | One or more reference expressions to preview in a single call |
+| `cascadeParams` | `object` | Cascade options object from `CascadeSelector` |
+
+> When called from a single-expression context (e.g., Add to Collection dialog), pass a one-element array.
+
+**States:**
+
+| State | UI |
+|---|---|
+| Idle (not yet triggered) | Nothing rendered; parent controls when to mount/show |
+| Loading | `CircularProgress` spinner + "Evaluating reference…" caption |
+| Success — results | Warning/error alerts (if any) + summary bar + grouped result rows |
+| Error (request failure) | `Alert severity="error"` with the API error message |
+
+**State mockups:**
+
+*Loading:*
+```
+┌─────────────────────────────────────────────────────┐
+│  ⟳  Evaluating reference…                           │
+└─────────────────────────────────────────────────────┘
+```
+
+*Results — version mismatch warning, collapsed (default):*
+```
+┌─────────────────────────────────────────────────────┐
+│  ⚠  4 references will resolve to a different source │
+│     version than your collection is pinned to.  ▼  │
+├─────────────────────────────────────────────────────┤
+│  12 new  ·  3 already in collection                 │
+├─────────────────────────────────────────────────────┤
+│  ✅ New (12)                                         │
+│  ...                                                │
+└─────────────────────────────────────────────────────┘
+```
+
+*Results — version mismatch warning, expanded:*
+```
+┌─────────────────────────────────────────────────────┐
+│  ⚠  4 references will resolve to a different source │
+│     version than your collection is pinned to.  ▲  │
+│                                                     │
+│  Reference            Resolves to    Pinned to      │
+│  ─────────────────────────────────────────────────  │
+│  CIEL/concepts/1234/  [CIEL v2023]   [CIEL v2024]   │
+│  CIEL/concepts/5678/  [CIEL v2023]   [CIEL v2024]   │
+│  CIEL/concepts/9012/  [CIEL v2023]   [CIEL v2024]   │
+│  CIEL/concepts/3456/  [CIEL v2023]   [CIEL v2024]   │
+├─────────────────────────────────────────────────────┤
+│  12 new  ·  3 already in collection                 │
+├─────────────────────────────────────────────────────┤
+│  ✅ New (12)                                         │
+│  ─────────────────────────────────────────────────  │
+│  [CIEL]  1234 · Malaria, unspecified   [2 mappings] │
+│      [SAME-AS]  ICD-10-WHO: A09                     │
+│      [NARROWER-THAN]  SNOMED: 61462000              │
+│  ─────────────────────────────────────────────────  │
+│  [CIEL]  1380 · Nutrition counselling               │
+│  ─────────────────────────────────────────────────  │
+│  [CIEL]  5089 · Weight                 [1 mapping]  │
+│      [SAME-AS]  LOINC: 3141-9                       │
+│  … and 9 more concepts                              │
+├─────────────────────────────────────────────────────┤
+│  ⚠  Already in collection (3)                       │
+│  ─────────────────────────────────────────────────  │
+│  [CIEL]  1855 · Amount of substance                 │
+│  [CIEL]  2006 · Diagnosis                           │
+│  [CIEL]  3031 · Body weight                         │
+└─────────────────────────────────────────────────────┘
+```
+
+*Results — zero-result warning (empty intensional reference):*
+```
+┌─────────────────────────────────────────────────────┐
+│  ⚠  This reference resolves to 0 resources. It will │
+│     be saved as an empty reference.                 │
+└─────────────────────────────────────────────────────┘
+```
+
+---
+
+### Result Grouping
+
+Results arrive pre-grouped from the API. Each expression's result object contains `new` and `existing` sub-objects; resources with `errors` have empty `new` and `existing` objects.
+
+| Group | Icon | Source in response |
+|---|---|---|
+| **New** | ✅ green | `result.new` — resources not yet in the collection's current expansion |
+| **Already in collection** | ⚠️ yellow | `result.existing` — resources already in the collection's current expansion |
+| **Unresolvable** | ❌ red | `result.errors` is non-empty |
+
+When previewing multiple expressions, results for all expressions are merged into these groups (New, Already in Collection, Unresolvable). Version inconsistency and zero-result warnings are shown per-expression above the merged result list.
+
+---
+
+### Summary Bar
+
+Shown above the result rows (below any per-expression warning/error alerts):
+
+> `X new · Y already in collection · Z unresolvable`
+
+Zero-count segments are omitted. When multiple expressions are previewed, counts are aggregated across all expressions.
+
+---
+
+### Result Row Display
+
+Each row shows one concept or mapping. No selection controls — rows are read-only.
+
+**Concept row:**
+```
+[CIEL] 1234 · Malaria, unspecified          [1 mapping]
+```
+- Source chip (abbreviated source name)
+- Concept ID · Display name
+- Mapping count badge if mappings > 0
+
+**Mapping row (shown below its parent concept, indented):**
+```
+    [SAME-AS]  ICD-10-WHO: A09
+```
+- Map type chip
+- Target code · Target source (external) or concept chip (internal)
+
+**Pagination / overflow:**
+- If the total across all groups exceeds 100 rows: show first 100, then a muted footer: `"…and N more resources. Add the reference to see the full list."`
+- Within a group, if the `concepts` or `mappings` array is capped at 25 but the `*_count` is higher, show an inline "…and N more [concepts/mappings]" note within that group
+
+---
+
+### Integration: Add to Collection Dialog
+
+In `AddToCollectionDialog.jsx`:
+
+- Add a collapsible "Preview" section below the `CascadeSelector` and above the Submit button
+- Collapsed by default; toggled open by a `Preview` chip-button
+- When open, `ReferencePreviewPanel` is mounted with `expressions={[conceptUrl]}`, `cascadeParams`, and `collectionUrl`
+- Preview updates live when cascade params change (re-fires on each cascade change while panel is open)
+- **Version consistency:** If the preview returns `version_status.consistent === false`, the version mismatch alert is shown in the panel. The Submit area below should also reflect the three action choices described in [Version Consistency Warning](#version-consistency-warning) (Add unversioned + rebuild / Add unversioned without rebuilding / Pin to version)
+
+---
+
+### Integration: New Reference Dialog
+
+In `NewReferenceDialog.jsx` (to be built as part of #2431):
+
+- "Preview results" toggle below the expression/cascade fields; collapsed by default
+- When open, `ReferencePreviewPanel` is mounted with the current expressions array and cascade params
+- Preview re-fires when expressions or cascade change (debounce: 500ms after last change)
+- Multiple expressions (from search-and-select mode) are passed as a single batch; results are merged in the panel
 
 ---
 
