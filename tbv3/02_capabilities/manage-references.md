@@ -35,16 +35,21 @@ This is the most common path for Terminology Implementers building a dictionary.
 ### Version Consistency Warning
 > **M42 MVP deliverable — not yet implemented.** This is the primary version locking UX for the M42 showcase.
 
-- Before submission, detect whether the concept version that a user intends to add to a collection based on the user's context (let's call this the **intended concept version**) would be different than the **resolved concept version** based on an auto-expanded collection's locked source versions
+- Before submission, detect whether the concept version that a user intends to add to a collection based on the user's context (let's call this the **intended concept version**) would be different than the **resolved concept version** based on the collection HEAD's auto-expansion's locked source version for that source
 - If a mismatch is detected, show a warning in the dialog before the user confirms
 - If no mismatch (or the collection has no locked source version yet), proceed silently with no warning
 
 **Happy path (best practice):**
 - **Add unversioned reference and rebuild the expansion** — the expansion re-evaluates all unversioned references against the latest locked source version, so the new reference will resolve correctly
+- The warning dialog should include a "Go to collection to rebuild" CTA that takes the user to the collection's Versions + Expansions tab; the rebuild itself is triggered there, not inline in this dialog
 
 **Less happy paths (presented as secondary options):**
 - **Add unversioned reference without rebuilding** — the reference is added but will resolve to the old locked version v[Y] until the expansion is rebuilt
 - **Add version-pinned reference** — not recommended unless the user explicitly wants to pin to a specific version; shown with a caution label
+
+> **M42 scope boundary:** The warning UI is M42. The guided rebuild workflow (diff-then-confirm, alongside expansion) is **post-M42** — users are directed to the Versions + Expansions tab to trigger the rebuild manually.
+
+> **Technical constraint — CIEL and concept versioning:** CIEL's current import process creates a new concept version and mapping version for every resource on every import, even when content has not meaningfully changed. A naive version-number comparison will therefore always show all concepts as "changed." The version mismatch check must use **smart checksums** (not raw concept version comparison) to distinguish real clinical changes from no-op version bumps. This is a two-pass check: (1) identify if a newer concept version exists → (2) compare smart checksums to determine if there is a meaningful difference. See `01_objects/version.md` and ADR-003 for checksum details.
 
 ---
 
@@ -389,7 +394,7 @@ The endpoint accepts multiple expressions in a single call and returns one resul
 > **API enhancement required:** The current `CollectionReferencesPreview` view returns a flat `concepts` / `mappings` array with no collection-membership awareness, version checking, or error taxonomy. The endpoint needs to be updated to:
 > 1. Accept multiple expressions and return one result object per expression
 > 2. Split resolved resources into `new` vs. `existing` groups by checking each against the collection's current expansion
-> 3. Populate `version_status` by comparing the resolved source version against the collection's canonical source version (see [Version Consistency](#version-consistency-warning) above)
+> 3. Populate `version_status` by comparing the resolved source version against the auto-expansion's locked source version (see [Version Consistency](#version-consistency-warning) above)
 > 4. Populate `errors` with typed error objects for any expression that cannot be evaluated
 >
 > The `concepts` / `mappings` arrays within each group are capped at 25 items each; use the `*_count` fields for display totals.
@@ -607,7 +612,7 @@ In `AddReferencesDialog.jsx` (to be built as part of #2431):
 ### List View
 - Table columns: Expression | Type (Extensional/Intensional/Cascade/Exclude) | Resolved Count | Version Pinned? | Status
 - Resolved Count: number of concepts/mappings this reference evaluates to in the current expansion
-- Version Pinned: badge shown if the reference is locked to a specific source version; warning badge if that version differs from the canonical source version
+- Version Pinned: badge shown if the reference is locked to a specific source version; warning badge if that version differs from the auto-expansion's locked source version
 - Status: Active | Warning | Error
 
 ### Reference Detail (Row Click → Drawer or Split View)
@@ -633,7 +638,7 @@ Transforms change a reference's expression type without changing the content it 
    - Use when: the user wants to pin to a source version but use the modern pattern
 3. **Lock to Repo Version** — Changes an unversioned reference to a repo-versioned reference
    - `/:owner/sources/:source/concepts/:id/` → `/:owner/sources/:source/:repoVersion/concepts/:id/`
-   - Use when: the user wants to freeze the reference to the current canonical source version
+   - Use when: the user wants to freeze the reference to the auto-expansion's current locked source version
 
 ### UI Interaction
 - Transform actions available from the reference row action menu (⋮) in the References tab

@@ -107,7 +107,64 @@ Deferred because: the use case requires more design work around how users discov
 
 ---
 
+## Version Locking / Update Collection
+
+### Facilitated Per-Concept Accept/Reject in the Update Collection Workflow
+**Origin:** Joe + Jon design discussion, 2026-04-16
+
+The current `update-collection-source-version.md` workflow offers a binary choice: accept the new source version entirely, or keep the current locked version. A more granular version would let users review the diff of changed/added/retired concepts and select which specific changes to accept individually — e.g., accept some newly added CIEL concepts but not others, or handle each retired concept differently.
+
+**Why deferred:** The complexity is significant, especially for sources like CIEL that use cascading references. There is no trivial "facilitated accept/reject per concept" for cascade-based collections because the concept boundaries aren't cleanly enumerable from the reference list. Additionally, the happy path should encourage accepting all changes rather than granular picking — encouraging exclusions or per-reference version pinning silently prevents future updates.
+
+**When to revisit:** When a real user need emerges with specific, articulable scope (e.g., "I only want new concepts in class X," which could map cleanly to reference management).
+
+---
+
+### Retired Concept Handling During Source Update — Open Question
+**Origin:** Joe + Jon design discussion, 2026-04-16 — flagged for Wednesday OCL squad call
+
+When a collection accepts a new CIEL version that retires a concept, the concept still appears in the expansion (the reference is unchanged) but is now tagged as "Retired." Two perspectives in tension:
+
+- **Governance argument (Andy Kanter):** Showing the concept as Retired is the correct signal — implementers should know CIEL deprecated it. Pinning to the pre-retirement version hides that important metadata.
+- **Implementation argument (Burke / OpenMRS):** A retired concept flowing through to an OpenMRS export might cause problems — unclear if downstream systems can still collect data against a retired concept.
+
+**If FHIR/OpenMRS is fine with retired concepts:** The happy path is "accept all → rebuild → concept appears as Retired → user is informed but not blocked." Pinning to an old version remains available as an edge-case power-user action.
+
+**If retired concepts break downstream systems:** We may need a more prominent warning during the diff review step and a simpler path to handle retired concepts without requiring the user to manually edit references.
+
+**Action:** Discuss with Andy + Burke on Wednesday OCL squad call.
+
+---
+
 ## References
+
+### "Shopping Cart" Model for Batch Reference Building
+**Origin:** Joe + Jon design discussion, 2026-04-16
+
+Rather than the current one-at-a-time (dialog-per-reference) flow, a "shopping cart" model allows users to queue up multiple references across multiple sources and pages before applying them to a collection all at once. Key characteristics:
+
+**Collection target selection:** When a user first clicks "Add to Collection" anywhere in OCL, they pick a target collection. That selection anchors the session — subsequent "Add" actions across sources accumulate in the same cart automatically.
+
+**Non-blocking sidebar / panel:** The cart is shown as a collapsible sidebar that doesn't take over the page. Users can close it and continue browsing; the cart persists. This is especially important for large async expansions — users don't have to wait.
+
+**Async mismatch detection:** Once the target collection is selected, OCL asynchronously checks each queued item for version mismatches against the auto-expansion's locked source version. Flags appear in the cart without interrupting the user's browsing.
+
+**Checkout / finalize step:** The "checkout" is a review screen where the user can:
+- See a preview of what will resolve from each reference
+- Apply cascade settings or transforms in bulk
+- Review and resolve any version conflict flags before applying
+
+**Rebuild workflow (post-apply):** After applying references to HEAD:
+1. The rebuild (re-expansion) runs **alongside** the current auto-expansion — it does not overwrite in place
+2. A diff is computed between the pre-rebuild and post-rebuild expansions
+3. User sees a simple summary: "X synonyms added, zero clinical impact" or a list of changed/added concepts, with a system recommendation (GitHub-merge metaphor)
+4. User confirms → new auto-expansion becomes active; old one can be retained or discarded
+
+**Multi-source:** The cart naturally handles references to multiple sources (CIEL + OpenMRS distro, etc.) in one session. The rebuild after checkout covers all sources at once.
+
+**Post-M42 rationale:** This is a substantial UX paradigm shift and involves new state management (cart persistence, async mismatch checking, rebuild-alongside logic). For M42, the version consistency warning appears inline in the Add References dialog and the rebuild is triggered manually from the Versions + Expansions tab.
+
+---
 
 ### Add References Dialog: Intensional Filter Builder
 **Origin:** `02_capabilities/manage-references.md § Add References (Within Collection)`, ocl_issues#2431

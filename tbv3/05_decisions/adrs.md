@@ -55,19 +55,22 @@ Collections using unversioned references to CIEL (e.g., `/orgs/CIEL/sources/CIEL
 **Decision:**  
 Implement version locking with a visual indicator approach (Approach 2 from the July 2025 squad discussion):
 
-1. When a collection first resolves an unversioned reference to a source, the resolved source version becomes the **canonical source version** for that collection
-2. All expansions use this canonical source version by default
+1. When a collection's **auto-expansion** first resolves an unversioned reference to a specific source, the resolved source version becomes the **locked source version** for that expansion. It is the expansion that gets locked — not the collection itself. Only auto-expansions participate in version locking; custom expansions are not affected.
+2. All subsequent auto-expansions use this locked source version by default
 3. When the underlying source releases a new version:
    - Notify collection owners
    - Show visual indicator: concepts that are in both versions with identical smart checksums appear normal; concepts that have changed (different smart checksum) are visually flagged
    - The **Update Collection** workflow guides owners through reviewing and accepting changes
 4. Locking controls: "Lock to Current Version" transform, "Rebuild" expansion, "Create Similar" expansion
 
+> **Terminology note:** Use **"locked source version"** consistently throughout the product and docs. Avoid "canonical source version" — "canonical" already has a distinct meaning in FHIR (canonical URL) and would cause confusion.
+
 **Consequences:**
 - Collection owners have control over when their content changes
 - The system prevents silent content drift
 - The Update Collection workflow (see `03_workflows/update-collection-source-version.md`) becomes a critical path feature
 - Resource-versioned references (the deprecated pattern) are never created by the UI; existing ones are migrated via the Transform capability
+- **CIEL version bump caveat:** CIEL's current import process creates a new concept and mapping version for every resource on every import, regardless of whether content changed. Version number comparison alone will therefore always report everything as "changed." The version mismatch check and expansion diff must use **smart checksums** — not raw concept version comparison — to identify meaningful changes. This is a two-pass implementation requirement. When CIEL is eventually managed natively in OCL, this problem diminishes.
 
 ---
 

@@ -190,14 +190,14 @@ This event is what triggers the notification. No notification is generated if th
 ## Version Locking Controls
 
 ### Context
-Version locking (see `05_decisions/adrs.md` ADR-003 for full rationale) ensures a collection consistently resolves references to the same source version. The locking controls in this capability are the user-facing mechanisms.
+Version locking (see `05_decisions/adrs.md` ADR-003 for full rationale) ensures a collection's auto-expansion consistently resolves references to the same source version. It is the **auto-expansion** that gets locked — not the collection itself. The locking controls in this capability are the user-facing mechanisms.
 
 ### "Lock to Current Version" Action
-- Available in the collection's References tab when unversioned references exist and a canonical source version is identified
+- Available in the collection's References tab when unversioned references exist and a locked source version is identified for the auto-expansion
 - Applies the "Lock to Repo Version" transform to all unversioned references for the selected source
-- Confirmation dialog showing: current canonical version, number of references that will be locked, preview of transformed expressions
+- Confirmation dialog showing: current locked source version, number of references that will be locked, preview of transformed expressions
 
-### Canonical Source Version Indicator
+### Locked Source Version Indicator
 - Shown in the collection header and Versions + Expansions tab
 - Format: "CIEL: v2024-08-01" (or multiple entries if the collection references multiple sources)
 - Clicking the indicator opens a summary of all referenced sources and their locked versions
