@@ -10,7 +10,9 @@ For the visual mockup, see `04_surfaces/mockups/repository-page-references-mocku
 
 ---
 
-## M42 Deliverables
+## MVP Deliverables
+
+> **Milestone note:** This section describes the MVP end state for the References tab across milestones. In the current milestone, the row action menu includes **Preview** only. Bulk **Transform** and **Remove** remain part of MVP scope, but are scheduled for a later MVP milestone rather than the current one.
 
 ### Flat List View
 
@@ -44,11 +46,20 @@ For the visual mockup, see `04_surfaces/mockups/repository-page-references-mocku
 - Exclusion reference: red Exclude chip in Ref Type column
 
 **Row action menu (⋮):**
-- Preview — opens Reference Detail sidebar
-- Transform — single-ref transform dialog
-- Remove — confirmation dialog
+- Preview — opens Reference Detail split view
 
-**Reference Detail sidebar** (opens on row click or Preview action):
+**Reference Detail split view** (opens on row click or Preview action):
+
+- Uses the same right-side split view pattern as Concept Detail; the references list remains interactive behind it
+- On smaller breakpoints where split view is not available, navigate to the same reference detail surface as a full page
+- Header includes:
+  - Reference icon + ID
+  - Full expression / canonical URL
+  - `Actions ▾` menu for reference-level utilities
+- Footer includes:
+  - "Last resolved [timestamp]" status text
+  - Download action
+  - Share action
 
 Two-tab panel:
 
@@ -59,21 +70,26 @@ Two-tab panel:
 - Cascade method
 - Include flag
 - Filters (if intensional)
+- If present, show cascade map types, cascade levels, and return map types as additional metadata rows
 
 *Tab 2 — Expansion:*
 - Resolved concept + mapping counts
 - Source note (which expansion these counts reflect)
-- Mini table: Code | Display Name | Repository chip (first few rows + "…and N more")
+- Expandable concept → mapping tree using the same pattern described in **Expandable row layout (concept sub-rows)** below
+- Concept rows show code, display name, mapping count, and repository chip
+- Expanding a concept row reveals its mapping rows inline beneath it
+- Orphaned mappings appear as a separate expandable group below the concept rows
+- If the result set is truncated, show a muted "...and N more" footer below the tree
 
 ---
 
-## Post-M42 Tickets
+## Later Milestones
 
 ### Surface / References Tab / Inline Expansion
 
 **Ticket:** TBD (see `tbv3-ticket-execution-log.md` Section 6)
 
-**What it is:** Each reference row can be expanded (▼) to show the individual concepts and mappings it resolves to, inline within the table — without opening the detail sidebar. This is distinct from the detail sidebar (Tab 2) in that it keeps the user in the list context and supports row-by-row inspection.
+**What it is:** Each reference row can be expanded (▼) to show the individual concepts and mappings it resolves to, inline within the table — without opening the detail split view. This is distinct from the detail split view's Expansion tab in that it keeps the user in the list context and supports row-by-row inspection.
 
 **Expandable row layout (concept sub-rows):**
 

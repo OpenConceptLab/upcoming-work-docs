@@ -341,8 +341,6 @@ Available per reference row:
 | Action    | Notes                                                                        |
 | --------- | ---------------------------------------------------------------------------- |
 | Preview   | Evaluate this reference on-the-fly without saving; shows what it resolves to |
-| Transform | Change the version pinning strategy for this single reference                |
-| Remove    | Remove this reference from the collection HEAD                               |
 
 ---
 
@@ -360,6 +358,8 @@ Sort is hidden initially (requires API support).
 ---
 
 ### Bulk Actions
+
+> **Milestone note:** Bulk Transform and Remove remain part of MVP scope, but are scheduled for a later MVP milestone than the initial row-level Preview interaction.
 
 With one or more reference rows selected:
 
@@ -395,7 +395,7 @@ References define what content belongs in this collection.
 ### HEAD vs. Released Version Behavior
 
 - All write actions (Add, Transform, Remove, checkboxes) are only available when viewing **HEAD**
-- When viewing a released version: checkboxes hidden, toolbar shows only search/filter and Display controls, row action menus show View and Preview only
+- When viewing a released version: checkboxes hidden, toolbar shows only search/filter and Display controls, row action menus show Preview only
 - A "Viewing [version ID] — switch to HEAD to edit" indicator is shown in the toolbar when not on HEAD
 - These behaviors appear only for users authenticated to write to this repository.
 

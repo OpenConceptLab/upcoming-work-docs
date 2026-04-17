@@ -325,7 +325,7 @@ Users can evaluate what a reference expression would resolve to before committin
 |---|---|
 | Preview panel within the Add to Collection dialog (`AddToCollectionDialog.jsx`) | ✅ M42 |
 | Preview panel within the New Reference dialog (`AddReferencesDialog.jsx`) | ✅ M42 (built as part of #2431) |
-| Preview action on an existing reference row in the References list | ⬜ Post-M42 (row action menus are post-M42 per `references-tab.md`) |
+| Preview action on an existing reference row in the References list | ✅ M42 |
 
 ---
 
@@ -607,7 +607,7 @@ In `AddReferencesDialog.jsx` (to be built as part of #2431):
 
 ## Reference Presentation in the References Tab
 
-> **M42 scope note:** The flat list view (columns, row selection, toolbar actions, detail sidebar) is M42. Inline row expansion (concept sub-rows, mapping sub-rows, orphaned mapping groups) and Group by Source are **post-M42** — see `04_surfaces/references-tab.md` and the pending tickets in `tbv3-ticket-execution-log.md` Section 6.
+> **Milestone note:** The flat list view and detail split view are part of the current milestone. Bulk Transform and Remove remain in MVP scope but land in a later MVP milestone. Inline row expansion in the list itself and Group by Source are also later-milestone enhancements — see `04_surfaces/references-tab.md` and the pending tickets in `tbv3-ticket-execution-log.md` Section 6. The concept → mapping tree is already used inside the detail split view's Expansion tab for MVP.
 
 ### List View
 - Table columns: Expression | Type (Extensional/Intensional/Cascade/Exclude) | Resolved Count | Version Pinned? | Status
@@ -615,10 +615,13 @@ In `AddReferencesDialog.jsx` (to be built as part of #2431):
 - Version Pinned: badge shown if the reference is locked to a specific source version; warning badge if that version differs from the auto-expansion's locked source version
 - Status: Active | Warning | Error
 
-### Reference Detail (Row Click → Drawer or Split View)
+### Reference Detail (Row Click → Split View)
 - Full expression (not truncated)
 - Reference type and cascade settings
-- Full list of resolved resources (paginated)
+- Uses the same split-view interaction model as Concept Detail
+- Header-level `Actions ▾` menu includes reference utilities such as download and share
+- Footer shows the last-resolved timestamp plus quick download/share actions
+- Expansion tab shows the resolved resources as an expandable concept → mapping tree, including an orphaned mappings group when applicable
 - "Trace back": any concept in the expansion can link to the reference(s) that brought it in
 
 ---
@@ -641,7 +644,8 @@ Transforms change a reference's expression type without changing the content it 
    - Use when: the user wants to freeze the reference to the auto-expansion's current locked source version
 
 ### UI Interaction
-- Transform actions available from the reference row action menu (⋮) in the References tab
+- In the current milestone, the reference row action menu contains Preview only
+- Transform actions are available via bulk selection in a later MVP milestone
 - Transform 1 and 2 only available on references that are currently resource-versioned (deprecated pattern)
 - Transform 3 only available on unversioned references
 - Before applying: show preview of the new expression and what it will resolve to, alongside the old expression (before/after comparison in the preview dialog) and what it resolved to
@@ -655,6 +659,8 @@ Transforms change a reference's expression type without changing the content it 
 ---
 
 ## Removing References
+
+> **Milestone note:** Bulk Remove is part of MVP scope and is planned for a later MVP milestone rather than the current one.
 
 **Entry point:** Collection → References tab → checkbox selection → "Remove selected" (bulk action only; no row action menu)
 
