@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reference Detail - TBv3 Low-Fidelity Mockup</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #f4f1fa;
+    --page: #ffffff;
+    --panel: #fbf9fe;
+    --line: #e3ddee;
+    --line-strong: #d4ccdf;
+    --text: #2f2938;
+    --muted: #756d84;
+    --muted-soft: #938aa4;
+    --accent: #5540ff;
+    --accent-soft: #efeaff;
+    --chip: #f3eff8;
+    --shadow: 0 18px 42px rgba(78, 61, 120, 0.08);
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    background: linear-gradient(180deg, #faf8fd 0%, var(--bg) 100%);
+    color: var(--text);
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+  }
+
+  h1 {
+    font-size: 24px;
+    margin-bottom: 10px;
+  }
+
+  .intro {
+    max-width: 900px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .scene {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .scene-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted-soft);
+  }
+
+  .frame {
+    background: var(--page);
+    border: 1px solid var(--line-strong);
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+  }
+
+  .shell,
+  .repo-header,
+  .tab-row,
+  .content {
+    width: 100%;
+  }
+
+  .shell {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--line);
+    background: #faf8fd;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .shell-left,
+  .shell-right,
+  .repo-meta,
+  .repo-actions,
+  .list-toolbar,
+  .detail-actions,
+  .detail-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+
+  .search {
+    min-width: 280px;
+    padding: 10px 14px;
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    background: #fff;
+    color: var(--muted);
+    font-size: 13px;
+  }
+
+  .pill,
+  .chip,
+  .button {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 11px;
+    border-radius: 999px;
+    border: 1px solid var(--line-strong);
+    background: #fff;
+    color: #5d556e;
+    font-size: 12px;
+    font-weight: 650;
+    white-space: nowrap;
+  }
+
+  .chip {
+    padding: 5px 10px;
+    background: var(--chip);
+    border-color: transparent;
+  }
+
+  .chip.accent {
+    background: var(--accent-soft);
+    color: var(--accent);
+  }
+
+  .button.primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  .repo-header {
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--line);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .repo-title h2 {
+    font-size: 28px;
+    margin-bottom: 8px;
+  }
+
+  .repo-title p {
+    color: var(--muted);
+    line-height: 1.5;
+  }
+
+  .tab-row {
+    padding: 0 20px;
+    border-bottom: 1px solid var(--line);
+    background: var(--panel);
+    display: flex;
+    gap: 24px;
+    overflow-x: auto;
+  }
+
+  .tab {
+    padding: 14px 0;
+    font-size: 13px;
+    font-weight: 700;
+    color: #736b84;
+    border-bottom: 3px solid transparent;
+    white-space: nowrap;
+  }
+
+  .tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .content {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 460px;
+    min-height: 780px;
+  }
+
+  .list-pane {
+    border-right: 1px solid var(--line);
+    background: #fff;
+  }
+
+  .detail-pane {
+    background: var(--panel);
+    display: flex;
+    flex-direction: column;
+  }
+
+  .list-toolbar {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+    justify-content: space-between;
+  }
+
+  .table-head,
+  .row {
+    display: grid;
+    grid-template-columns: minmax(240px, 1.8fr) 110px 140px 110px 30px;
+    gap: 12px;
+    align-items: center;
+    padding: 12px 16px;
+  }
+
+  .table-head {
+    border-bottom: 1px solid var(--line);
+    background: #fcfbff;
+    color: var(--muted-soft);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .row {
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+  }
+
+  .row.selected {
+    background: #f6f3ff;
+    box-shadow: inset 3px 0 0 var(--accent);
+  }
+
+  .expression {
+    min-width: 0;
+  }
+
+  .expression strong {
+    display: block;
+    color: #453f54;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .expression span {
+    display: block;
+    margin-top: 4px;
+    color: var(--muted);
+    font-size: 11px;
+  }
+
+  .kebab,
+  .close {
+    color: var(--muted-soft);
+    text-align: center;
+    font-size: 15px;
+  }
+
+  .detail-header {
+    padding: 18px 18px 12px;
+    border-bottom: 1px solid var(--line);
+    background: #fff;
+  }
+
+  .detail-header-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .detail-id {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 14px;
+    color: #5f5771;
+    font-size: 13px;
+    font-weight: 700;
+  }
+
+  .detail-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 4px;
+    background: var(--accent);
+  }
+
+  .detail-title {
+    font-size: 20px;
+    line-height: 1.35;
+    color: #2f2938;
+    margin-bottom: 10px;
+    max-width: 360px;
+    word-break: break-word;
+  }
+
+  .detail-actions {
+    justify-content: flex-end;
+  }
+
+  .detail-tabs {
+    display: flex;
+    gap: 20px;
+    padding: 0 18px;
+    border-bottom: 1px solid var(--line);
+    background: #fff;
+  }
+
+  .detail-tab {
+    padding: 12px 2px;
+    font-size: 13px;
+    font-weight: 700;
+    color: #807892;
+    border-bottom: 3px solid transparent;
+  }
+
+  .detail-tab.active {
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+
+  .detail-body {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    flex: 1;
+  }
+
+  .card {
+    border: 1px solid var(--line-strong);
+    border-radius: 16px;
+    background: #fff;
+    overflow: hidden;
+  }
+
+  .card-title {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+    font-weight: 700;
+    color: #4a425b;
+    letter-spacing: 0.03em;
+  }
+
+  .card-body {
+    padding: 0;
+  }
+
+  .field-grid {
+    display: grid;
+    grid-template-columns: 160px 1fr;
+  }
+
+  .field-grid .label,
+  .field-grid .value {
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--line);
+    min-width: 0;
+  }
+
+  .field-grid .label {
+    color: #50485f;
+    font-weight: 600;
+  }
+
+  .field-grid .value {
+    color: #322c3d;
+    line-height: 1.5;
+  }
+
+  .field-grid .value.code {
+    font-family: "SFMono-Regular", Consolas, monospace;
+    font-size: 12px;
+    word-break: break-word;
+  }
+
+  .field-grid .label.last,
+  .field-grid .value.last {
+    border-bottom: none;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .summary-item {
+    padding: 18px 16px;
+    border-right: 1px solid var(--line);
+  }
+
+  .summary-item:last-child {
+    border-right: none;
+  }
+
+  .summary-item .meta {
+    display: block;
+    color: var(--muted);
+    font-size: 12px;
+    margin-bottom: 8px;
+  }
+
+  .summary-item strong {
+    font-size: 28px;
+    font-weight: 760;
+  }
+
+  .tree-head,
+  .tree-row {
+    display: grid;
+    grid-template-columns: 26px minmax(0, 1.5fr) 90px 120px;
+    gap: 10px;
+    align-items: center;
+    padding: 10px 16px;
+  }
+
+  .tree-head {
+    border-bottom: 1px solid var(--line);
+    background: #fcfbff;
+    color: var(--muted-soft);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .tree-row {
+    border-bottom: 1px solid var(--line);
+    font-size: 13px;
+  }
+
+  .tree-row:last-child {
+    border-bottom: none;
+  }
+
+  .tree-row.nested {
+    background: #fcfbff;
+    padding-left: 34px;
+  }
+
+  .tree-row.mapping-row {
+    grid-template-columns: 26px minmax(0, 1fr);
+    align-items: flex-start;
+  }
+
+  .tree-row.orphan {
+    background: #fffaf2;
+  }
+
+  .tree-expander {
+    color: var(--muted-soft);
+    text-align: center;
+    font-size: 12px;
+  }
+
+  .tree-main {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    overflow: hidden;
+  }
+
+  .tree-main .text {
+    min-width: 0;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
+    line-height: 1.45;
+  }
+
+  .map-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: var(--chip);
+    color: #5f5770;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .tree-footer {
+    padding: 12px 16px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .detail-footer {
+    justify-content: space-between;
+    padding: 14px 18px 18px;
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .detail-footer .right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+
+  @media (max-width: 1220px) {
+    .content {
+      grid-template-columns: 1fr;
+    }
+
+    .list-pane {
+      border-right: none;
+      border-bottom: 1px solid var(--line);
+    }
+  }
+</style>
+</head>
+<body>
+<div>
+  <h1>Reference Detail</h1>
+  <p class="intro">
+    Low-fidelity static mockups for the Reference Detail surface in TBv3. These scenes use the same split-view pattern as Concept Detail and show the two primary states of the right-side panel: Details and Expansion.
+  </p>
+</div>
+
+<section class="scene">
+  <div class="scene-label">Scene 1 - Split view - Details tab</div>
+  <div class="frame">
+    <div class="shell">
+      <div class="shell-left">
+        <div class="search">Search OCL, repositories, and resources...</div>
+      </div>
+      <div class="shell-right">
+        <span class="pill">+ New</span>
+        <span class="pill">Notifications</span>
+        <span class="pill">Profile</span>
+      </div>
+    </div>
+
+    <div class="repo-header">
+      <div class="repo-title">
+        <h2>cascade-04nov25</h2>
+        <p>WHO SMART IG reference dictionary · 12 references · 4 source dependencies</p>
+      </div>
+      <div class="repo-actions">
+        <span class="button">Download</span>
+        <span class="button">Share</span>
+      </div>
+    </div>
+
+    <div class="tab-row">
+      <div class="tab">Concepts</div>
+      <div class="tab">Mappings</div>
+      <div class="tab active">References</div>
+      <div class="tab">Versions + Expansions</div>
+      <div class="tab">About</div>
+    </div>
+
+    <div class="content">
+      <div class="list-pane">
+        <div class="list-toolbar">
+          <div class="repo-meta">
+            <span>12 references</span>
+            <span class="pill">Expansion: autoexpand-v2024-11-01</span>
+          </div>
+          <div class="repo-actions">
+            <span class="button primary">+ Add References</span>
+          </div>
+        </div>
+
+        <div class="table-head">
+          <span>Expression</span>
+          <span>Type</span>
+          <span>Resolved Repo</span>
+          <span>Results</span>
+          <span></span>
+        </div>
+
+        <div class="row selected">
+          <div class="expression">
+            <strong>http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.526.2.1926</strong>
+            <span>Canonical URL · translation reference</span>
+          </div>
+          <span class="chip accent">Intensional</span>
+          <span class="chip">CIEL v2024-10-10</span>
+          <span>8 concepts</span>
+          <span class="kebab">...</span>
+        </div>
+
+        <div class="row">
+          <div class="expression">
+            <strong>/orgs/PIH/sources/PIH/concepts/3843/</strong>
+            <span>Extensional · unversioned</span>
+          </div>
+          <span class="chip">Extensional</span>
+          <span class="chip">PIH v2024-09-15</span>
+          <span>1 concept</span>
+          <span class="kebab">...</span>
+        </div>
+
+        <div class="row">
+          <div class="expression">
+            <strong>/orgs/MSF/sources/MSF-concepts/concepts/1099/?cascade=sourcetoconcepts</strong>
+            <span>Cascade reference · OpenMRS style</span>
+          </div>
+          <span class="chip">Cascade</span>
+          <span class="chip">MSF v2023-01-01</span>
+          <span>1 concept, 5 mappings</span>
+          <span class="kebab">...</span>
+        </div>
+      </div>
+
+      <aside class="detail-pane">
+        <div class="detail-header">
+          <div class="detail-header-top">
+            <div>
+              <div class="detail-id">
+                <span class="detail-dot"></span>
+                <span>Reference 8693392</span>
+              </div>
+              <div class="detail-title">http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.526.2.1926</div>
+            </div>
+            <div class="repo-actions">
+              <span class="close">X</span>
+            </div>
+          </div>
+          <div class="detail-actions">
+            <span class="button">Actions v</span>
+          </div>
+        </div>
+
+        <div class="detail-tabs">
+          <div class="detail-tab active">Reference details</div>
+          <div class="detail-tab">Expansion results</div>
+        </div>
+
+        <div class="detail-body">
+          <div class="card">
+            <div class="card-title">Reference details</div>
+            <div class="card-body field-grid">
+              <div class="label">Type</div>
+              <div class="value">Concepts</div>
+
+              <div class="label">Translation</div>
+              <div class="value">Include latest concepts from http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3</div>
+
+              <div class="label">Source version</div>
+              <div class="value"><span class="chip">2024-10-10</span> <span style="color:#7c738f;">canonical</span></div>
+
+              <div class="label">Cascade method</div>
+              <div class="value">sourcetoconcepts</div>
+
+              <div class="label">Cascade map types</div>
+              <div class="value">Q-AND-A, CONCEPT-SET</div>
+
+              <div class="label">Cascade levels</div>
+              <div class="value">*</div>
+
+              <div class="label">Return map types</div>
+              <div class="value last">*</div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Filters</div>
+            <div class="card-body field-grid">
+              <div class="label">dataType</div>
+              <div class="value">Misc, Text</div>
+
+              <div class="label">conceptClass</div>
+              <div class="value">Red</div>
+
+              <div class="label last">Locale</div>
+              <div class="value last">en</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-footer">
+          <div>Last resolved 2024-10-08T09:59:58.646146Z</div>
+          <div class="right">
+            <span>Download</span>
+            <span>Share</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<section class="scene">
+  <div class="scene-label">Scene 2 - Split view - Expansion tab</div>
+  <div class="frame">
+    <div class="shell">
+      <div class="shell-left">
+        <div class="search">Search OCL, repositories, and resources...</div>
+      </div>
+      <div class="shell-right">
+        <span class="pill">+ New</span>
+        <span class="pill">Notifications</span>
+        <span class="pill">Profile</span>
+      </div>
+    </div>
+
+    <div class="repo-header">
+      <div class="repo-title">
+        <h2>cascade-04nov25</h2>
+        <p>WHO SMART IG reference dictionary · 12 references · 4 source dependencies</p>
+      </div>
+      <div class="repo-actions">
+        <span class="button">Download</span>
+        <span class="button">Share</span>
+      </div>
+    </div>
+
+    <div class="tab-row">
+      <div class="tab">Concepts</div>
+      <div class="tab">Mappings</div>
+      <div class="tab active">References</div>
+      <div class="tab">Versions + Expansions</div>
+      <div class="tab">About</div>
+    </div>
+
+    <div class="content">
+      <div class="list-pane">
+        <div class="list-toolbar">
+          <div class="repo-meta">
+            <span>12 references</span>
+            <span class="pill">Expansion: autoexpand-v2024-11-01</span>
+          </div>
+          <div class="repo-actions">
+            <span class="button primary">+ Add References</span>
+          </div>
+        </div>
+
+        <div class="table-head">
+          <span>Expression</span>
+          <span>Type</span>
+          <span>Resolved Repo</span>
+          <span>Results</span>
+          <span></span>
+        </div>
+
+        <div class="row selected">
+          <div class="expression">
+            <strong>http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.526.2.1926</strong>
+            <span>Canonical URL · translation reference</span>
+          </div>
+          <span class="chip accent">Intensional</span>
+          <span class="chip">CIEL v2024-10-10</span>
+          <span>8 concepts / 42 mappings</span>
+          <span class="kebab">...</span>
+        </div>
+
+        <div class="row">
+          <div class="expression">
+            <strong>/orgs/PIH/sources/PIH/concepts/3843/</strong>
+            <span>Extensional · unversioned</span>
+          </div>
+          <span class="chip">Extensional</span>
+          <span class="chip">PIH v2024-09-15</span>
+          <span>1 concept</span>
+          <span class="kebab">...</span>
+        </div>
+
+        <div class="row">
+          <div class="expression">
+            <strong>/orgs/MSF/sources/MSF-concepts/concepts/1099/?cascade=sourcetoconcepts</strong>
+            <span>Cascade reference · OpenMRS style</span>
+          </div>
+          <span class="chip">Cascade</span>
+          <span class="chip">MSF v2023-01-01</span>
+          <span>1 concept, 5 mappings</span>
+          <span class="kebab">...</span>
+        </div>
+      </div>
+
+      <aside class="detail-pane">
+        <div class="detail-header">
+          <div class="detail-header-top">
+            <div>
+              <div class="detail-id">
+                <span class="detail-dot"></span>
+                <span>Reference 8693392</span>
+              </div>
+              <div class="detail-title">http://cts.nlm.nih.gov/fhir/ValueSet/2.16.840.1.113883.3.526.2.1926</div>
+            </div>
+            <div class="repo-actions">
+              <span class="close">X</span>
+            </div>
+          </div>
+          <div class="detail-actions">
+            <span class="button">Actions v</span>
+          </div>
+        </div>
+
+        <div class="detail-tabs">
+          <div class="detail-tab">Reference details</div>
+          <div class="detail-tab active">Expansion results</div>
+        </div>
+
+        <div class="detail-body">
+          <div class="card">
+            <div class="card-body summary-grid">
+              <div class="summary-item">
+                <span class="meta">Concepts</span>
+                <strong>8</strong>
+              </div>
+              <div class="summary-item">
+                <span class="meta">Mappings</span>
+                <strong>42</strong>
+              </div>
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-title">Resolved resources</div>
+            <div class="card-body">
+              <div class="tree-head">
+                <span></span>
+                <span>Code / display</span>
+                <span>Mappings</span>
+                <span>Repository</span>
+              </div>
+
+              <div class="tree-row">
+                <span class="tree-expander">v</span>
+                <div class="tree-main">
+                  <span class="text">1380 · Nutrition counselling</span>
+                </div>
+                <span>3</span>
+                <span class="chip">CIEL</span>
+              </div>
+
+              <div class="tree-row nested mapping-row">
+                <span class="tree-expander"></span>
+                <div class="tree-main">
+                  <span class="text">[SAME-AS] ICD-11-WHO:423048</span>
+                </div>
+              </div>
+
+              <div class="tree-row nested mapping-row">
+                <span class="tree-expander"></span>
+                <div class="tree-main">
+                  <span class="text">[NARROWER-THAN] SNOMED-CT:1245</span>
+                </div>
+              </div>
+
+              <div class="tree-row nested mapping-row">
+                <span class="tree-expander"></span>
+                <div class="tree-main">
+                  <span class="text">[Q-AND-A] CIEL:09 \"Local answer member\"</span>
+                </div>
+              </div>
+
+              <div class="tree-row">
+                <span class="tree-expander">></span>
+                <div class="tree-main">
+                  <span class="text">5484 · Nutritional support</span>
+                </div>
+                <span>4</span>
+                <span class="chip">CIEL</span>
+              </div>
+
+              <div class="tree-row">
+                <span class="tree-expander">></span>
+                <div class="tree-main">
+                  <span class="text">1107 · Therapeutic feeding</span>
+                </div>
+                <span>4</span>
+                <span class="chip">PIH-EMR-2</span>
+              </div>
+
+              <div class="tree-row orphan">
+                <span class="tree-expander">></span>
+                <div class="tree-main">
+                  <span class="text">Orphaned mappings</span>
+                </div>
+                <span>12</span>
+                <span></span>
+              </div>
+
+              <div class="tree-footer">...and 5 more concepts</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="detail-footer">
+          <div>Last resolved 2024-10-08T09:59:58.646146Z</div>
+          <div class="right">
+            <span>Download</span>
+            <span>Share</span>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+</body>
+</html>

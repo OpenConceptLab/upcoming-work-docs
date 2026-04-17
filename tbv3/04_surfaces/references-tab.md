@@ -6,7 +6,7 @@ Layout and interaction specification for the **References** tab on a Collection 
 
 For the underlying business rules (adding, transforming, removing references), see `02_capabilities/manage-references.md`.
 
-For the visual mockup, see `04_surfaces/mockups/repository-page-references-mockup.html`.
+For the visual mockups, see `04_surfaces/mockups/repository-page-references-mockup.html` and `04_surfaces/mockups/reference-detail-mockup.html`.
 
 ---
 
@@ -72,7 +72,7 @@ Two-tab panel:
 - Filters (if intensional)
 - If present, show cascade map types, cascade levels, and return map types as additional metadata rows
 
-*Tab 2 — Expansion:*
+*Tab 2 — Expansion results:*
 - Resolved concept + mapping counts
 - Source note (which expansion these counts reflect)
 - Expandable concept → mapping tree using the same pattern described in **Expandable row layout (concept sub-rows)** below
@@ -96,8 +96,8 @@ Two-tab panel:
 ```
 ▼  /orgs/CIEL/sources/CIEL/concepts/?conceptClass=Test   Intensional   CIEL v2024-08-01   5,484 concepts   ⋮
       ▼  [1380 · Nutrition counselling | CIEL]                                              1 concept, 2 mappings
-            [SAME-AS]  [QA701 | WHO / ICD-11]                                              Resolved
-            [NARROWER-THAN]  [182006 | SNOMED CT]                                          Resolved
+            [SAME-AS] WHO / ICD-11:QA701
+            [NARROWER-THAN] SNOMED-CT:182006
       ▶  [5484 · Nutritional support | CIEL]                                               1 concept, 1 mapping
       ▶  [3221 · Body weight measurement | CIEL]                                           1 concept, 3 mappings
       …
