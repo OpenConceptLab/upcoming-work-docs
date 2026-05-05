@@ -6,7 +6,7 @@ Layout and interaction specification for the **References** tab on a Collection 
 
 For the underlying business rules (adding, transforming, removing references), see `02_capabilities/manage-references.md`.
 
-For the visual mockups, see `04_surfaces/mockups/repository-page-references-mockup.html` and `04_surfaces/mockups/reference-detail-mockup.html`.
+For the visual mockups, see `04_surfaces/mockups/repository-page-references-mockup.html`, `04_surfaces/mockups/reference-detail-mockup.html`, and `04_surfaces/mockups/reference-transform-workflow.html`.
 
 ---
 
