@@ -638,6 +638,7 @@ Transforms let an editor change the version pinning strategy or expression patte
 - Entry point: Collection -> References tab -> select one or more references with checkboxes -> `Transform`
 - Applies to selected collection references only; no row-level transform action in MVP
 - Supports bulk operation with before/after preview before commit
+- Mixed selections are grouped by reference/pinning type so each group can expose only the transform options that apply to it
 - Preserves reference metadata that is not part of the selected transform, including include/exclude state and cascade settings, unless the transform type explicitly changes it
 - Successful transform queues re-expansion of the collection HEAD
 - Released collection versions are immutable; transform controls are disabled with the same HEAD-only messaging used by Add and Remove
@@ -676,30 +677,53 @@ Transforms let an editor change the version pinning strategy or expression patte
 
 Bulk transforms may include invalid selected references. Invalid references are skipped, not silently changed, and are shown in the preview report with a reason.
 
+### #2433 Mixed Selection Grouping
+
+When selected references include different expression or pinning patterns, the dialog groups them before asking for transform inputs. The grouping should be based on what options are valid, not only on display labels.
+
+| Group | Examples | Available transform options |
+|---|---|---|
+| Unversioned references | `/:owner/sources/:source/concepts/:id/` | Lock to repo version; Expression rewrite |
+| Repo-versioned references | `/:owner/sources/:source/:repoVersion/concepts/:id/` | Unpin to HEAD / non-versioned; Expression rewrite |
+| Deprecated resource-versioned references | `/:owner/sources/:source/concepts/:id/:resourceVersion/` | Unpin to HEAD / non-versioned; Convert deprecated resource-versioned to repo-versioned; Expression rewrite |
+| Intensional/filter references | `/:owner/sources/:source/concepts/?q=...` | Transform options depend on whether the base repo path is pinned; Expression rewrite |
+| Unsupported/unknown references | Expressions that cannot be parsed or classified | No transform; shown as skipped with reason |
+
+Dialog behavior for mixed selections:
+- Show a selected-reference summary by group, e.g. `8 selected: 3 unversioned, 4 repo-versioned, 1 unsupported`
+- Each group has its own transform selector and required inputs
+- A user may transform one group while leaving another group unchanged
+- Groups with no valid transform remain visible as skipped so the user can see why they are not affected
+- The final commit submits only rows that are Ready within groups that have an active transform selected
+
 ### #2433 Transform Dialog
 
 1. User selects references in the References tab
 2. User chooses `Transform`
 3. Dialog opens with:
    - Selected count
-   - Transform type selector
+   - Grouped summary of selected reference types
+   - One expandable panel per reference group
+4. Each group panel shows:
+   - Group count and reference type/pinning pattern
+   - Transform type selector scoped to valid options for that group
    - Target version selector when the selected transform needs a repo version
    - Expression rewrite controls when `Expression rewrite` is selected
-   - Preview table
-4. Preview table shows one row per selected reference:
+   - Preview table for references in that group
+5. Preview table shows one row per selected reference:
    - Current expression
    - Proposed expression
    - Current resolved source/version and result count, when available
    - Proposed resolved source/version and result count, when previewable
-   - Status: Ready, Skipped, Warning, or Error
+   - Status: Ready, Skipped, Warning, Error, Preview pending, or Preview too large
    - Reason for skipped/error rows
-5. Commit button is disabled until at least one selected reference has `Ready` status and all required transform inputs are provided
-6. On commit, only `Ready` rows are submitted; skipped rows are left unchanged
-7. Results are shown inline after submission with counts for transformed, skipped, and failed references
+6. Commit button is disabled until at least one selected reference has `Ready` status and all required transform inputs are provided
+7. On commit, only `Ready` rows are submitted; skipped rows are left unchanged
+8. Results are shown inline after submission with counts for transformed, skipped, and failed references
 
 ### #2433 Preview and Safety Rules
 
-- Preview is required before commit; users must see before/after expressions
+- Preview is required before commit; users must see before/after expressions for every row that will be submitted
 - The dialog must make partial application explicit: `X will be transformed`, `Y will be skipped`, `Z need attention`
 - If a proposed transform changes resolved content count, show a warning rather than blocking by default
 - If a proposed transform resolves to zero resources, show a warning and require explicit confirmation
@@ -707,9 +731,26 @@ Bulk transforms may include invalid selected references. Invalid references are 
 - If every selected reference is invalid for the selected transform, disable commit and explain why
 - Transform preview should use the same reference preview semantics as Add References where possible, so version mismatch and zero-result warnings behave consistently
 
+### #2433 Large Reference Preview Handling
+
+Some references resolve to very large result sets, and OCL may not be able to resolve them synchronously during transform preview. The transform dialog must handle this without timing out or blocking the whole selection.
+
+- The preview has two layers:
+  - **Structural preview**: validate the current expression, proposed expression, transform eligibility, target repo/version, include/exclude state, and cascade metadata without resolving all referenced resources
+  - **Resolution preview**: compare resolved source/version and resolved resource counts when the API can provide them quickly
+- A row can be `Ready` based on structural preview even when full resolution preview is unavailable, provided the expression is valid and the transform is deterministic
+- If full resolution is too expensive, show `Preview too large` or `Resolution preview queued` in the resolution columns instead of an error
+- Large-preview rows must clearly state that resolved counts/content changes could not be confirmed before commit
+- If the API supports async preview jobs, the dialog should poll or refresh job status and update rows from `Preview pending` to Ready, Warning, Error, or Preview too large
+- Async preview must be scoped per row or group so one large reference does not prevent smaller references from becoming Ready
+- If an async preview is still pending, the user can commit only rows whose structural preview is Ready; pending rows remain unsubmitted unless the user explicitly chooses to include structurally ready rows without resolved counts
+- Transform commit should not require downloading or rendering the resolved resource list for very large references
+- After commit, the queued collection re-expansion remains the authoritative confirmation of final resolved content
+
 ### #2433 API Requirements
 
 - Preferred API shape: a bulk transform endpoint that accepts selected reference IDs plus transform parameters and returns per-reference preview/commit results
+- Preview responses should distinguish structural validation from full resolution, including statuses for async pending and too-large-to-resolve references
 - If only lower-level update/delete/add APIs exist, the client must still present the operation as one bulk transform with per-reference results and must avoid losing include/exclude and cascade metadata
 - Commit must be idempotent enough that retrying after a partial failure does not duplicate references
 - The server response must expose enough data to refresh changed reference rows without a full page reload; a full list refresh is acceptable as a fallback
@@ -718,12 +759,14 @@ Bulk transforms may include invalid selected references. Invalid references are 
 
 - [ ] References tab supports checkbox selection for reference rows and a header checkbox for visible rows
 - [ ] Transform control is enabled when one or more references are selected on HEAD and disabled on released versions
+- [ ] Mixed selected references are grouped by reference/pinning type with group-specific transform options
 - [ ] Transform dialog supports Unpin to HEAD / non-versioned reference
 - [ ] Transform dialog supports Lock to repo version
 - [ ] Transform dialog supports converting deprecated resource-versioned references to repo-versioned references
 - [ ] Transform dialog supports expression rewrite with before/after preview
 - [ ] Invalid selected references are skipped with clear reasons
 - [ ] User sees before/after expression, resolved version, and resolved count before commit
+- [ ] Large references that cannot be resolved synchronously show structural preview plus a clear async/too-large resolution status
 - [ ] Commit applies only eligible/ready rows and reports transformed/skipped/failed counts
 - [ ] Successful transform queues or triggers collection HEAD re-expansion and updates the References tab
 
@@ -734,6 +777,8 @@ Bulk transforms may include invalid selected references. Invalid references are 
 - Confirm how to map deprecated resource-level versions to repo versions when more than one released repo version contains the resource version
 - Confirm whether transform should preserve the original reference ID or create a replacement reference with a new ID
 - Confirm whether "Lock to repo version" should default to the expansion's locked version, latest released version, or require explicit user choice when no expansion lock exists
+- Confirm API threshold and status vocabulary for large references that cannot be synchronously resolved during preview
+- Confirm whether users may commit structurally valid transforms when resolved counts are unavailable, or whether that should require an explicit confirmation checkbox
 
 ### Legacy Name Mapping
 

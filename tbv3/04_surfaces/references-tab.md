@@ -41,10 +41,13 @@ For the visual mockups, see `04_surfaces/mockups/repository-page-references-mock
   - Lock to repo version
   - Convert deprecated resource-versioned to repo-versioned
   - Expression rewrite
+- Selected references are grouped by reference/pinning type, with a count per group
+- Each group has its own transform selector and inputs; unsupported groups remain visible as skipped
 - Target version control appears only for transforms that need a repo version
 - Expression rewrite controls appear only for `Expression rewrite`
 - Preview table columns: Current expression | Proposed expression | Current resolution | Proposed resolution | Status
-- Status values: Ready, Skipped, Warning, Error
+- Status values: Ready, Skipped, Warning, Error, Preview pending, Preview too large
+- For references too large to resolve synchronously, show the before/after expression and structural validation immediately, then show `Preview pending` or `Preview too large` in the resolution columns
 - Primary action is disabled until at least one selected reference is Ready and all required transform inputs are valid
 - After submit, dialog shows transformed/skipped/failed counts and leaves failed rows visible with reasons
 
