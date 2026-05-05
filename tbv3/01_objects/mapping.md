@@ -159,6 +159,16 @@ A compact text syntax for encoding one or more mappings in a single string — u
 
 The `[map-type]` bracket token is optional. When omitted, the mapping is treated as a direct (SAME-AS) relationship. Multiple mappings are comma-separated.
 
+**Full relationship display form:**
+
+Use this form when a UI needs to show the whole mapping relationship, not just the target side:
+
+```
+<FROM_SOURCE>:<from-code>[ "<from-name>"] [map-type] <TO_SOURCE>:<to-code>[ "<to-name>"]
+```
+
+This is the preferred compact display for mapping rows in dialogs, relationship lists, and other places where the user needs to see both sides of the mapping. The map type stays in the middle so the direction of the relationship remains clear.
+
 **Examples:**
 
 | Syntax | Meaning |
@@ -169,6 +179,8 @@ The `[map-type]` bracket token is optional. When omitted, the mapping is treated
 | `CIEL(v2024-01-01):1234` | SAME-AS to a specific CIEL version |
 | `[NARROWER-THAN] ICD-10:A01.1` | Directional mapping to ICD-10 |
 | `[NARROWER-THAN] ICD-10:A01.1 "Typhoid fever [en]"` | Same, with name and locale |
+| `CIEL(v2026-04-28):1019 "Complete blood count" [SAME-AS] CIEL(v2026-04-28):1019 "Complete blood count"` | Full relationship display with from concept, map type, and to concept |
+| `CIEL:1019 "Complete blood count" [CONCEPT-SET]  CIEL:1015 "Hematocrit"`| Full relationship display for a directional mapping |
 
 **Multiple mappings (comma-separated):**
 
@@ -176,6 +188,6 @@ The `[map-type]` bracket token is optional. When omitted, the mapping is treated
 [NARROWER-THAN] ICD-10:A01.1, [SAME-AS] ICD-11-WHO:NE02&XA99N3, [SAME-AS] IMO-ProblemIT:22793
 ```
 
-**Source reference:** The `<SOURCE>` token can be a short code (e.g., `CIEL`), a relative OCL URL, or a canonical URL. A specific version is encoded in parentheses: `CIEL(v2024-01-01)`.
+**Source reference:** The `<SOURCE>` token can be a short code (e.g., `CIEL`), a relative OCL URL, or a canonical URL. A specific version is encoded in parentheses: `CIEL(v2024-01-01)`. If a version string already includes the leading `v`, do not add another one.
 
 **Open questions (not yet resolved):** escaping of special characters (brackets, commas, quotes); whether single quotes are valid; whether mapping order is significant.
