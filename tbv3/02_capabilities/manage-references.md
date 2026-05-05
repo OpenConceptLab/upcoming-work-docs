@@ -660,7 +660,9 @@ Transforms change a reference's expression type without changing the content it 
 
 ## Removing References
 
-> **Milestone note:** Bulk Remove is part of MVP scope and is planned for a later MVP milestone rather than the current one.
+> **Ticket:** ocl_issues#2008 — CTA / Reference / Delete ✅ implemented
+
+### Bulk Remove from References Tab
 
 **Entry point:** Collection → References tab → checkbox selection → "Remove selected" (bulk action only; no row action menu)
 
@@ -679,6 +681,30 @@ Transforms change a reference's expression type without changing the content it 
 - Delete button rendered as `toolbarControl` in `Search.jsx` when `resource === 'references'` and items are selected
 - HEAD-only: button is disabled with tooltip "Not available in saved versions. Switch to HEAD to edit." when not on HEAD; derived from `props.url?.includes('/HEAD/')`
 - Reference IDs sourced from selected result objects matched by `r.id`; concept/mapping counts summed from `reference.concepts` and `reference.mappings` fields
+
+---
+
+### Remove from Collection via Concept/Mapping Detail ✅ implemented
+
+A secondary removal path: a user viewing a concept or mapping inside a collection can remove it directly from its detail split view without navigating to the References tab.
+
+**Entry point:** Collection → Concepts/Mappings tab → select concept or mapping → detail panel → "Remove from collection" button (header area)
+
+**Behavior:**
+- Only visible when viewing a concept/mapping in a collection context (URL contains `/collections/`) AND on HEAD AND user has edit access
+- Clicking the button opens `RemoveFromCollectionDialog`, which lists the reference expression(s) that bring this concept/mapping into the collection
+- On confirm, deletes those references via the same `DELETE /references/` API call (using IDs from `concept.references` / `mapping.references`)
+- On success, closes the detail panel
+
+**References section in detail view:**
+When a concept or mapping is fetched in a collection context, the API is called with `includeReferences=true`. The response includes a `references` array on the concept/mapping object. This is rendered as a "References" section at the bottom of the detail view (below checksums), showing each reference expression that brings the item into the collection.
+
+**Implementation (oclweb3):**
+- `RemoveFromCollectionDialog` component: `src/components/collections/RemoveFromCollectionDialog.jsx`
+- `ResourceReferences` display component: `src/components/common/ResourceReferences.jsx` — used in both `ConceptDetails.jsx` and `MappingDetails.jsx`
+- Collection context detected in `ConceptHome` / `MappingHome` via `props.repo?.type?.includes('Collection') || props.url?.includes('/collections/')`
+- Fetch param: `includeReferences: true` added to concept/mapping GET when in collection context
+- Remove button in `ConceptHeader.jsx` / `MappingHeader.jsx` — shown instead of "Add to Collection" when `isInCollection && repo?.version === 'HEAD'`
 
 ---
 
@@ -701,4 +727,5 @@ When a collection is being updated (typically after a new CIEL version is releas
 | Add reference (Add to Collection) | Edit access to the collection |
 | Create new reference (References tab) | Edit access to the collection |
 | Transform reference | Edit access to the collection |
-| Remove reference | Edit access to the collection |
+| Remove reference (bulk, from References tab) | Edit access to the collection |
+| Remove from collection (via Concept/Mapping detail) | Edit access to the collection |
