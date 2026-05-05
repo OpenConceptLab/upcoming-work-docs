@@ -628,33 +628,118 @@ In `AddReferencesDialog.jsx` (to be built as part of #2431):
 
 ## Reference Transforms (HEAD Only)
 
-Transforms change a reference's expression type without changing the content it resolves to. Only available on the HEAD version. Note that this is distinct from Cascade's Transform option.
+> **Ticket:** ocl_issues#2433 - CTA / Reference / Transform
+> **Reference ticket:** ocl_issues#2274 - checkbox-based actions for references
 
-### Available Transforms (per SOW)
+Transforms let an editor change the version pinning strategy or expression pattern for selected collection references in bulk. They are only available on the collection's HEAD version. This is distinct from Cascade's Transform option, which is used while adding references and sends `transformReferences` to the preview/add API.
+
+### #2433 Scope
+
+- Entry point: Collection -> References tab -> select one or more references with checkboxes -> `Transform`
+- Applies to selected collection references only; no row-level transform action in MVP
+- Supports bulk operation with before/after preview before commit
+- Preserves reference metadata that is not part of the selected transform, including include/exclude state and cascade settings, unless the transform type explicitly changes it
+- Successful transform queues re-expansion of the collection HEAD
+- Released collection versions are immutable; transform controls are disabled with the same HEAD-only messaging used by Add and Remove
+
+### #2433 Available Transforms
+
+1. **Unpin to HEAD / non-versioned reference** - Removes source or resource version pinning so the reference resolves dynamically through the collection expansion strategy
+   - Repo-versioned source path: `/:owner/sources/:source/:repoVersion/concepts/:id/` -> `/:owner/sources/:source/concepts/:id/`
+   - Deprecated resource-versioned path: `/:owner/sources/:source/concepts/:id/:resourceVersion/` -> `/:owner/sources/:source/concepts/:id/`
+   - Use when: cleaning up old or overly pinned references, including the #2274 "Transform to non-versioned reference" workflow
+2. **Lock to repo version** - Changes an unversioned reference to a repo-versioned reference
+   - `/:owner/sources/:source/concepts/:id/` -> `/:owner/sources/:source/:repoVersion/concepts/:id/`
+   - Default target version: the collection expansion's currently locked source version for that source, when available
+   - If no locked version exists, user must choose a released source version; default to the latest released version if the API can determine it
+   - Use when: the user wants to freeze selected HEAD-resolving references to a specific released source version
+3. **Convert deprecated resource-versioned reference to repo-versioned reference** - Rewrites old resource-versioned references into the modern repo-versioned pattern
+   - `/:owner/sources/:source/concepts/:id/:resourceVersion/` -> `/:owner/sources/:source/:repoVersion/concepts/:id/`
+   - If the resource version maps to exactly one released repo version, preselect that version
+   - If it maps to multiple possible repo versions, user must choose a target version or rule before preview can be committed
+   - Use when: the user wants to keep version pinning while removing deprecated resource-versioned URLs
+4. **Expression rewrite** - Applies a controlled expression rewrite across selected references
+   - Intended for consistent pattern changes, such as replacing a base repo path, converting a concepts expression to a mappings expression, or updating query parameters on intensional references
+   - Must validate that each rewritten expression is parseable and previewable before commit
+   - Free-form text replacement is allowed only if the preview reports each before/after expression and blocks invalid rewrites
 
 > **Post-v3:** A transform that lets a user update the pinned version of a repo-versioned reference (e.g., from `v2023` to `v2024`) without changing the reference pattern is deferred to post-v3. See `tbv3-deferred-features.md`.
-1. **Transform to Unversioned** — Changes a resource-versioned reference to an unversioned reference
-   - `/:owner/sources/:source/concepts/:id/:resourceVersion/` → `/:owner/sources/:source/concepts/:id/`
-   - Use when: cleaning up deprecated resource-versioned references
-2. **Transform to Repo-Versioned** — Changes a resource-versioned reference to a repo-versioned reference
-   - `/:owner/sources/:source/concepts/:id/:resourceVersion/` → `/:owner/sources/:source/:repoVersion/concepts/:id/`
-   - Use when: the user wants to pin to a source version but use the modern pattern
-3. **Lock to Repo Version** — Changes an unversioned reference to a repo-versioned reference
-   - `/:owner/sources/:source/concepts/:id/` → `/:owner/sources/:source/:repoVersion/concepts/:id/`
-   - Use when: the user wants to freeze the reference to the auto-expansion's current locked source version
 
-### UI Interaction
-- In the current milestone, the reference row action menu contains Preview only
-- Transform actions are available via bulk selection in a later MVP milestone
-- Transform 1 and 2 only available on references that are currently resource-versioned (deprecated pattern)
-- Transform 3 only available on unversioned references
-- Before applying: show preview of the new expression and what it will resolve to, alongside the old expression (before/after comparison in the preview dialog) and what it resolved to
-- After applying: confirmation toast; reference row updates immediately; re-expansion queued
+### #2433 Eligibility
 
-### Bulk Transform
-- Checkbox selection in References list
-- "Transform selected" dropdown with the same options
-- Bulk operations only apply to references where the transform is valid; invalid ones are skipped with a report
+| Transform | Valid selected references | Invalid selected references |
+|---|---|---|
+| Unpin to HEAD / non-versioned | Repo-versioned references; deprecated resource-versioned references | Already unversioned references; references without a source/collection version segment |
+| Lock to repo version | Unversioned source/collection references | Already pinned references; expressions whose target repo/version cannot be identified |
+| Convert deprecated resource-versioned to repo-versioned | Deprecated resource-versioned references | Unversioned references; already repo-versioned references |
+| Expression rewrite | References that match the configured rewrite rule and can be parsed after rewrite | Non-matching references; invalid rewritten expressions; references whose preview fails |
+
+Bulk transforms may include invalid selected references. Invalid references are skipped, not silently changed, and are shown in the preview report with a reason.
+
+### #2433 Transform Dialog
+
+1. User selects references in the References tab
+2. User chooses `Transform`
+3. Dialog opens with:
+   - Selected count
+   - Transform type selector
+   - Target version selector when the selected transform needs a repo version
+   - Expression rewrite controls when `Expression rewrite` is selected
+   - Preview table
+4. Preview table shows one row per selected reference:
+   - Current expression
+   - Proposed expression
+   - Current resolved source/version and result count, when available
+   - Proposed resolved source/version and result count, when previewable
+   - Status: Ready, Skipped, Warning, or Error
+   - Reason for skipped/error rows
+5. Commit button is disabled until at least one selected reference has `Ready` status and all required transform inputs are provided
+6. On commit, only `Ready` rows are submitted; skipped rows are left unchanged
+7. Results are shown inline after submission with counts for transformed, skipped, and failed references
+
+### #2433 Preview and Safety Rules
+
+- Preview is required before commit; users must see before/after expressions
+- The dialog must make partial application explicit: `X will be transformed`, `Y will be skipped`, `Z need attention`
+- If a proposed transform changes resolved content count, show a warning rather than blocking by default
+- If a proposed transform resolves to zero resources, show a warning and require explicit confirmation
+- If a proposed transform cannot be previewed or produces an invalid expression, block that row from commit
+- If every selected reference is invalid for the selected transform, disable commit and explain why
+- Transform preview should use the same reference preview semantics as Add References where possible, so version mismatch and zero-result warnings behave consistently
+
+### #2433 API Requirements
+
+- Preferred API shape: a bulk transform endpoint that accepts selected reference IDs plus transform parameters and returns per-reference preview/commit results
+- If only lower-level update/delete/add APIs exist, the client must still present the operation as one bulk transform with per-reference results and must avoid losing include/exclude and cascade metadata
+- Commit must be idempotent enough that retrying after a partial failure does not duplicate references
+- The server response must expose enough data to refresh changed reference rows without a full page reload; a full list refresh is acceptable as a fallback
+
+### #2433 Acceptance Criteria
+
+- [ ] References tab supports checkbox selection for reference rows and a header checkbox for visible rows
+- [ ] Transform control is enabled when one or more references are selected on HEAD and disabled on released versions
+- [ ] Transform dialog supports Unpin to HEAD / non-versioned reference
+- [ ] Transform dialog supports Lock to repo version
+- [ ] Transform dialog supports converting deprecated resource-versioned references to repo-versioned references
+- [ ] Transform dialog supports expression rewrite with before/after preview
+- [ ] Invalid selected references are skipped with clear reasons
+- [ ] User sees before/after expression, resolved version, and resolved count before commit
+- [ ] Commit applies only eligible/ready rows and reports transformed/skipped/failed counts
+- [ ] Successful transform queues or triggers collection HEAD re-expansion and updates the References tab
+
+### #2433 Open Questions
+
+- Confirm backend endpoint and request/response shape for transform preview and commit
+- Confirm whether expression rewrite is in M42 MVP or should be a later milestone behind the version-lock/unpin transforms
+- Confirm how to map deprecated resource-level versions to repo versions when more than one released repo version contains the resource version
+- Confirm whether transform should preserve the original reference ID or create a replacement reference with a new ID
+- Confirm whether "Lock to repo version" should default to the expansion's locked version, latest released version, or require explicit user choice when no expansion lock exists
+
+### Legacy Name Mapping
+
+- Earlier SOW notes called `Unpin to HEAD / non-versioned reference` "Transform to Unversioned"
+- Earlier SOW notes called `Convert deprecated resource-versioned reference to repo-versioned reference` "Transform to Repo-Versioned"
+- Earlier SOW notes called `Lock to repo version` "Lock to Repo Version"
 
 ---
 

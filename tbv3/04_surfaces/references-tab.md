@@ -25,6 +25,29 @@ For the visual mockups, see `04_surfaces/mockups/repository-page-references-mock
 - `Transform` (enabled when ≥1 reference selected; bulk transform)
 - `Remove` (enabled when ≥1 reference selected; bulk remove)
 
+**Bulk selection state:**
+- Selecting one or more rows shows the selected count in the toolbar, e.g. `3 selected`
+- Header checkbox selects/deselects all currently visible rows, respecting active filters/search
+- Bulk actions operate on selected visible reference rows only; they do not implicitly include filtered-out references
+- `Transform` opens the #2433 transform dialog; it is a dropdown or button that leads to the same dialog workflow
+- `Remove` opens the existing bulk remove confirmation dialog
+- On released collection versions, selection can remain available for inspection, but `Transform` and `Remove` are disabled with tooltip text: `Not available in saved versions. Switch to HEAD to edit.`
+
+**Transform dialog surface (#2433):**
+- Title: `Transform references`
+- Header summary: selected count and collection/version context
+- Transform type selector:
+  - Unpin to HEAD / non-versioned
+  - Lock to repo version
+  - Convert deprecated resource-versioned to repo-versioned
+  - Expression rewrite
+- Target version control appears only for transforms that need a repo version
+- Expression rewrite controls appear only for `Expression rewrite`
+- Preview table columns: Current expression | Proposed expression | Current resolution | Proposed resolution | Status
+- Status values: Ready, Skipped, Warning, Error
+- Primary action is disabled until at least one selected reference is Ready and all required transform inputs are valid
+- After submit, dialog shows transformed/skipped/failed counts and leaves failed rows visible with reasons
+
 **Toolbar (released version):**
 - Same controls, but `+ Add References`, `Transform`, and `Remove` are disabled
 - Version state bar below toolbar: "Viewing v[X]. Switch to HEAD to modify references."
