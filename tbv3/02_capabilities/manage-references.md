@@ -637,6 +637,12 @@ In `AddReferencesDialog.jsx` (to be built as part of #2431):
 
 Transforms let an editor change the version pinning strategy or expression pattern for selected collection references in bulk. They are only available on the collection's HEAD version. This is distinct from Cascade's Transform option, which is used while adding references and sends `transformReferences` to the preview/add API.
 
+> **Design context — scope and audience:** Most users who want to move their collection from one CIEL version to another should use the [Update Collection Source Version workflow](../03_workflows/update-collection-source-version.md) instead. Reference Transforms are a power-user tool for targeted, individual reference changes — not the primary path for collection maintenance. When in doubt, direct users to the source version update workflow first.
+>
+> **Implementation approach:** A wizard-style multi-step flow (one expandable panel per reference group, multiple transform selectors, async preview per group) was reviewed in design discussion and found to be too complex for the common case. The M42 implementation should favor a simpler single-dialog pattern: selected reference summary by group, one transform type selector per group, target version input where needed, and a before/after preview table. The more elaborate per-group wizard UX is post-M42 if it proves necessary.
+>
+> **Resource-versioned reference cleanup — backend-first:** The cleanup of deprecated resource-versioned references (Transform #3 below) is being handled via a backend data migration analysis ([#2504](https://github.com/OpenConceptLab/ocl_issues/issues/2504)) before any UI is built. If the blast radius is contained and references can be unambiguously resolved, Sunny will run a backend migration that eliminates the need for the UI transform entirely. The UI implementation of Transform #3 is **blocked pending #2504 analysis and recommendation**.
+
 ### #2433 Scope
 
 - Entry point: Collection -> References tab -> select one or more references with checkboxes -> `Transform`
@@ -663,7 +669,8 @@ Transforms let an editor change the version pinning strategy or expression patte
    - If the resource version maps to exactly one released repo version, preselect that version
    - If it maps to multiple possible repo versions, user must choose a target version or rule before preview can be committed
    - Use when: the user wants to keep version pinning while removing deprecated resource-versioned URLs
-4. **Expression rewrite** - Applies a controlled expression rewrite across selected references
+   - **Status: blocked pending #2504.** The backend migration analysis will determine whether this transform is needed as a UI feature at all. Do not implement until #2504 is resolved. See design context above.
+4. **Expression rewrite** *(post-M42)* - Applies a controlled expression rewrite across selected references
    - Intended for consistent pattern changes, such as replacing a base repo path, converting a concepts expression to a mappings expression, or updating query parameters on intensional references
    - Must validate that each rewritten expression is parseable and previewable before commit
    - Free-form text replacement is allowed only if the preview reports each before/after expression and blocks invalid rewrites
@@ -676,8 +683,8 @@ Transforms let an editor change the version pinning strategy or expression patte
 |---|---|---|
 | Unpin to HEAD / non-versioned | Repo-versioned references; deprecated resource-versioned references | Already unversioned references; references without a source/collection version segment |
 | Lock to repo version | Unversioned source/collection references | Already pinned references; expressions whose target repo/version cannot be identified |
-| Convert deprecated resource-versioned to repo-versioned | Deprecated resource-versioned references | Unversioned references; already repo-versioned references |
-| Expression rewrite | References that match the configured rewrite rule and can be parsed after rewrite | Non-matching references; invalid rewritten expressions; references whose preview fails |
+| Convert deprecated resource-versioned to repo-versioned *(blocked — see #2504)* | Deprecated resource-versioned references | Unversioned references; already repo-versioned references |
+| Expression rewrite *(post-M42)* | References that match the configured rewrite rule and can be parsed after rewrite | Non-matching references; invalid rewritten expressions; references whose preview fails |
 
 Bulk transforms may include invalid selected references. Invalid references are skipped, not silently changed, and are shown in the preview report with a reason.
 
@@ -687,10 +694,10 @@ When selected references include different expression or pinning patterns, the d
 
 | Group | Examples | Available transform options |
 |---|---|---|
-| Unversioned references | `/:owner/sources/:source/concepts/:id/` | Lock to repo version; Expression rewrite |
-| Repo-versioned references | `/:owner/sources/:source/:repoVersion/concepts/:id/` | Unpin to HEAD / non-versioned; Expression rewrite |
-| Deprecated resource-versioned references | `/:owner/sources/:source/concepts/:id/:resourceVersion/` | Unpin to HEAD / non-versioned; Convert deprecated resource-versioned to repo-versioned; Expression rewrite |
-| Intensional/filter references | `/:owner/sources/:source/concepts/?q=...` | Transform options depend on whether the base repo path is pinned; Expression rewrite |
+| Unversioned references | `/:owner/sources/:source/concepts/:id/` | Lock to repo version; Expression rewrite *(post-M42)* |
+| Repo-versioned references | `/:owner/sources/:source/:repoVersion/concepts/:id/` | Unpin to HEAD / non-versioned; Expression rewrite *(post-M42)* |
+| Deprecated resource-versioned references | `/:owner/sources/:source/concepts/:id/:resourceVersion/` | Unpin to HEAD / non-versioned; Convert deprecated resource-versioned to repo-versioned *(blocked — #2504)*; Expression rewrite *(post-M42)* |
+| Intensional/filter references | `/:owner/sources/:source/concepts/?q=...` | Transform options depend on whether the base repo path is pinned; Expression rewrite *(post-M42)* |
 | Unsupported/unknown references | Expressions that cannot be parsed or classified | No transform; shown as skipped with reason |
 
 Dialog behavior for mixed selections:
@@ -702,28 +709,29 @@ Dialog behavior for mixed selections:
 
 ### #2433 Transform Dialog
 
+> **M42 implementation:** Keep this dialog simple. The goal is a single lightweight dialog, not a per-group wizard. The per-group expandable panel design (described in full below) is post-M42 if the simpler pattern proves insufficient.
+
+**M42 dialog (simple pattern):**
 1. User selects references in the References tab
-2. User chooses `Transform`
+2. User clicks `Transform`
 3. Dialog opens with:
-   - Selected count
-   - Grouped summary of selected reference types
-   - One expandable panel per reference group
-4. Each group panel shows:
-   - Group count and reference type/pinning pattern
-   - Transform type selector scoped to valid options for that group
-   - Target version selector when the selected transform needs a repo version
-   - Expression rewrite controls when `Expression rewrite` is selected
-   - Preview table for references in that group
-5. Preview table shows one row per selected reference:
-   - Current expression
-   - Proposed expression
-   - Current resolved source/version and result count, when available
-   - Proposed resolved source/version and result count, when previewable
-   - Status: Ready, Skipped, Warning, Error, Preview pending, or Preview too large
-   - Reason for skipped/error rows
-6. Commit button is disabled until at least one selected reference has `Ready` status and all required transform inputs are provided
-7. On commit, only `Ready` rows are submitted; skipped rows are left unchanged
-8. Results are shown inline after submission with counts for transformed, skipped, and failed references
+   - Selected count and a summary line grouping references by type (e.g., `8 selected: 5 unversioned, 2 repo-versioned, 1 unsupported`)
+   - For each group with valid transform options: transform type selector + target version input if needed
+   - A before/after preview table (current expression → proposed expression, with resolved version/count where available)
+   - Clear status per row: Ready, Skipped (with reason), Warning, Error
+4. Commit button enabled when at least one row is Ready
+5. On commit: only Ready rows are submitted; results shown inline with transformed/skipped/failed counts; collection HEAD re-expansion is queued
+
+**Post-M42 wizard (full per-group flow):**
+Each reference group gets its own expandable panel with independent transform selector, target version picker, expression rewrite controls, and per-row async preview. This full design is specified in detail in the original #2433 ticket for reference if needed.
+
+Preview table row (both patterns):
+- Current expression
+- Proposed expression
+- Current resolved source/version and result count, when available
+- Proposed resolved source/version and result count, when previewable
+- Status: Ready, Skipped, Warning, Error, Preview pending, or Preview too large
+- Reason for skipped/error rows
 
 ### #2433 Preview and Safety Rules
 
@@ -763,11 +771,11 @@ Some references resolve to very large result sets, and OCL may not be able to re
 
 - [ ] References tab supports checkbox selection for reference rows and a header checkbox for visible rows
 - [ ] Transform control is enabled when one or more references are selected on HEAD and disabled on released versions
-- [ ] Mixed selected references are grouped by reference/pinning type with group-specific transform options
+- [ ] Mixed selected references are grouped by reference/pinning type with a summary line in the dialog
 - [ ] Transform dialog supports Unpin to HEAD / non-versioned reference
 - [ ] Transform dialog supports Lock to repo version
-- [ ] Transform dialog supports converting deprecated resource-versioned references to repo-versioned references
-- [ ] Transform dialog supports expression rewrite with before/after preview
+- [ ] *(Blocked — pending #2504)* Transform dialog supports converting deprecated resource-versioned references to repo-versioned references — implement only if #2504 determines backend migration is insufficient
+- [ ] *(Post-M42)* Transform dialog supports expression rewrite with before/after preview
 - [ ] Invalid selected references are skipped with clear reasons
 - [ ] User sees before/after expression, resolved version, and resolved count before commit
 - [ ] Large references that cannot be resolved synchronously show structural preview plus a clear async/too-large resolution status
@@ -777,8 +785,8 @@ Some references resolve to very large result sets, and OCL may not be able to re
 ### #2433 Open Questions
 
 - Confirm backend endpoint and request/response shape for transform preview and commit
-- Confirm whether expression rewrite is in M42 MVP or should be a later milestone behind the version-lock/unpin transforms
-- Confirm how to map deprecated resource-level versions to repo versions when more than one released repo version contains the resource version
+- ~~Confirm whether expression rewrite is in M42 MVP or should be a later milestone~~ — **resolved: post-M42**
+- ~~Confirm how to map deprecated resource-level versions to repo versions when more than one released repo version contains the resource version~~ — **resolved: blocked pending #2504 analysis; backend migration preferred over UI**
 - Confirm whether transform should preserve the original reference ID or create a replacement reference with a new ID
 - Confirm whether "Lock to repo version" should default to the expansion's locked version, latest released version, or require explicit user choice when no expansion lock exists
 - Confirm API threshold and status vocabulary for large references that cannot be synchronously resolved during preview

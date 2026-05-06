@@ -4,7 +4,9 @@
 
 A Terminology Implementer has an existing concept dictionary (collection) built on CIEL. CIEL has released a new version. The TI wants to review what changed, decide what to accept, and update their dictionary to use the new CIEL version — without breaking their system or silently including unwanted changes.
 
-**This is the primary version locking / collection update use case in the SOW.**
+**This is the primary version locking / collection update use case in the SOW.** When users ask how to "move to a new CIEL version" or "update their collection," direct them here first — not to the Reference Transforms capability, which is a power-user tool for targeted individual reference edits.
+
+> **Prerequisite — deprecated resource-versioned references:** Collections that contain deprecated resource-versioned references (e.g., `/:owner/sources/:source/concepts/:id/:resourceVersion/`) may behave unexpectedly during expansion because those references bypass version locking. A backend migration is being analyzed ([#2504](https://github.com/OpenConceptLab/ocl_issues/issues/2504)) to clean these up system-wide before V3 launch. If a collection owner reports unexpected expansion results, check whether their collection contains resource-versioned references before walking them through this update workflow.
 
 ---
 
