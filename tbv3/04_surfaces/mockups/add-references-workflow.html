@@ -409,6 +409,36 @@
     box-shadow: inset 3px 0 0 var(--blue);
   }
 
+  .tree-table .root-row td {
+    background: #ffffff;
+    font-weight: 650;
+  }
+
+  .tree-table .concept-row td,
+  .tree-table .resource-row td {
+    background: #f8fbff;
+  }
+
+  .tree-table .mapping-row td {
+    background: #ffffff;
+    color: var(--muted);
+  }
+
+  .tree-table .orphan-row td {
+    background: var(--amber-soft);
+    color: #5f3b00;
+  }
+
+  .indent-1 { padding-left: 34px !important; }
+  .indent-2 { padding-left: 58px !important; }
+
+  .expander {
+    display: inline-flex;
+    width: 18px;
+    color: var(--muted);
+    font-weight: 800;
+  }
+
   .mono {
     font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
     font-size: 12px;
@@ -550,6 +580,19 @@
     gap: 12px;
   }
 
+  #customCascadePanel,
+  #advancedPanel {
+    border-left: 2px solid var(--line-strong);
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+
+  #apiPreviewPanel {
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: var(--muted);
+  }
+
   .alert {
     border-radius: 10px;
     padding: 12px 14px;
@@ -626,6 +669,48 @@
     background: var(--blue-soft);
     border-color: #a9c9fa;
     color: var(--blue);
+  }
+
+  .mode-toggle,
+  .preview-tabs {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid var(--line);
+    background: var(--surface-soft);
+    border-radius: 10px;
+  }
+
+  .mode-toggle .button,
+  .preview-tabs .button {
+    min-height: 30px;
+    padding: 6px 10px;
+    background: transparent;
+    border-color: transparent;
+  }
+
+  .mode-toggle .button.active,
+  .preview-tabs .button.active {
+    background: #ffffff;
+    border-color: var(--line-strong);
+    color: var(--blue);
+  }
+
+  .action-strip {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    border: 1px solid var(--line);
+    background: var(--blue-soft);
+    color: #24436c;
+    border-radius: 10px;
+    padding: 12px 14px;
+  }
+
+  .action-strip p {
+    color: #315071;
   }
 
   .validation-list {
@@ -705,7 +790,7 @@
           <div class="eyebrow">Workflow</div>
           <h1>Add References from a collection's References tab</h1>
         </div>
-        <p class="lead">This mockup is for end-user validation before development. It focuses on the M42 scope: direct expression entry, optional source or collection seed, version and reference type selection, Bulk Add for concept or mapping IDs, include/exclude, cascade, preview, and submit feedback.</p>
+        <p class="lead">This mockup is for end-user validation before development. It focuses on the M42 scope: Add by ID(s), optional direct expression entry, source or collection seed, version and reference type selection, include/exclude, cascade, preview, and submit feedback.</p>
 
         <div class="flow">
           <div class="flow-step">
@@ -738,11 +823,11 @@
         <div class="two-col">
           <div class="panel">
             <h3>In scope for this mockup</h3>
-            <p>Expression mode, Bulk Add mode, Concepts and Mappings, Include and Exclude, cascade selection, locked-version warning, preview, and submit completion.</p>
+          <p>Add by ID(s), Expression mode, Concepts and Mappings, Include and Exclude, versionless resolution, CascadeSelector-style cascade/transform controls, manual preview, and submit completion.</p>
           </div>
           <div class="panel">
             <h3>Out of scope for this mockup</h3>
-            <p>Structured intensional filter builder, search-and-select concept browsing, and the final enhanced preview API behavior. Those remain design or API dependencies.</p>
+          <p>Structured intensional filter builder, embedded concept/mapping browsing, released-version editing, and the final enhanced preview API behavior. Those remain design or API dependencies.</p>
           </div>
         </div>
       </section>
@@ -823,14 +908,13 @@
           <div class="eyebrow">Screen 2</div>
           <h2>Interactive Add References dialog</h2>
         </div>
-        <p class="lead">Use the scenario buttons or edit the controls directly. The dialog shows how the same workflow supports direct expressions, concept IDs, mapping IDs, exclusions, and preview warnings.</p>
+        <p class="lead">Use the scenario buttons or edit the controls directly. The dialog defaults to Add by ID(s), supports optional direct expressions, and lets users browse out to the selected source or collection when they need to search first.</p>
 
         <div class="scenario-bar" aria-label="Scenario shortcuts">
           <button class="button active" type="button" data-scenario="conceptBulk">Concept IDs</button>
           <button class="button" type="button" data-scenario="mappingBulk">Mapping IDs</button>
           <button class="button" type="button" data-scenario="directExpression">Direct expression</button>
-          <button class="button" type="button" data-scenario="excludeLatest">Exclude + mismatch</button>
-          <button class="button" type="button" data-scenario="releasedDisabled">Released version</button>
+          <button class="button" type="button" data-scenario="pinMismatch">Pinned mismatch</button>
         </div>
 
         <div class="dialog-scrim">
@@ -844,11 +928,6 @@
             </div>
 
             <div class="dialog-body" id="dialogBody">
-              <div id="releasedBanner" class="alert red hidden">
-                <strong>Viewing released version v2024-08-01.</strong>
-                <span>References can only be added from HEAD. Switch to HEAD to edit.</span>
-              </div>
-
               <div class="form-grid">
                 <div class="field">
                   <label for="seedSelect">Source / Collection</label>
@@ -862,18 +941,25 @@
                 <div class="field">
                   <label for="versionSelect">Version</label>
                   <select id="versionSelect">
-                    <option value="locked">Locked (Currently v2024-08-01)</option>
-                    <option value="latest">Latest (Currently v2024-08-01)</option>
+                    <option value="versionless">Versionless (resolves to CIEL v2024-08-01)</option>
                     <option value="v2023-10-01">v2023-10-01</option>
                     <option value="v2022-06-15">v2022-06-15</option>
                   </select>
-                  <span class="hint">Locked is shown only when the collection expansion has a locked source version.</span>
+                  <span class="hint" id="versionHint">Versionless resolves to the collection's locked version for this source when one is specified; otherwise it resolves to the selected source/collection's latest release.</span>
                 </div>
+              </div>
+
+              <div id="browseStrip" class="action-strip hidden">
+                <div>
+                <strong>Need to search before adding?</strong>
+                  <p id="browseHint">Open the selected source or collection, browse concepts or mappings there, then add directly from that context.</p>
+                </div>
+                <a class="button" href="#" id="browseLink">Open Selected Repo</a>
               </div>
 
               <div id="versionWarning" class="alert amber hidden">
                 <strong>Your collection is pinned to CIEL v2024-08-01.</strong>
-                <span>This reference will differ from the locked version.</span>
+                <span>This pinned reference will differ from the collection's locked versionless resolution.</span>
               </div>
 
               <div class="form-grid">
@@ -893,18 +979,26 @@
                 </div>
               </div>
 
-              <div class="field">
-                <label for="expressionInput">Expression</label>
-                <textarea id="expressionInput" class="expression-input" spellcheck="false"></textarea>
-                <span class="hint">User may append a resource ID or query params, or submit a base path that resolves to all resources in that repo scope.</span>
+              <div class="split-row">
+                <div class="mode-toggle" aria-label="Entry mode">
+                  <button class="button active" type="button" data-mode="bulk">Add by ID(s)</button>
+                  <button class="button" type="button" data-mode="expression">Expression</button>
+                </div>
+                <span class="footnote">Choose one mode. Add by ID(s) and Expression are mutually exclusive.</span>
               </div>
 
-              <div class="toggle-row">
+              <div class="field" id="expressionField">
+                <label for="expressionInput">Expression</label>
+                <textarea id="expressionInput" class="expression-input" spellcheck="false"></textarea>
+                <span class="hint" id="expressionHint">This field reacts to Source / Collection, Version, and Reference Type. Users may still edit it directly in Expression mode.</span>
+              </div>
+
+              <div class="toggle-row hidden" id="bulkCollapsed">
                 <div>
-                  <strong>Bulk Add by ID</strong>
+                  <strong>Add by ID(s)</strong>
                   <span id="bulkHint">Concept or mapping IDs expand from the seeded repo path.</span>
                 </div>
-                <button class="button" type="button" id="bulkToggle">Expand</button>
+                <span class="chip blue">Active mode</span>
               </div>
 
               <div id="bulkPanel" class="bulk-panel hidden">
@@ -913,35 +1007,82 @@
                   <textarea id="bulkIds" spellcheck="false">5089, 5090, 5091, 999999</textarea>
                   <span class="hint" id="bulkExample">Each ID becomes /orgs/CIEL/sources/CIEL/concepts/{id}/.</span>
                 </div>
-                <div id="bulkWarning" class="alert amber">
-                  <strong>These IDs will be submitted instead of the expression above.</strong>
-                  <span>Bulk Add and Expression are mutually exclusive on submit.</span>
+                <div id="bulkWarning" class="alert amber hidden">
+                  <strong>Add by ID(s) mode is active.</strong>
+                  <span>The Expression field is hidden because this workflow submits either one expression or expanded IDs, not both.</span>
                 </div>
               </div>
 
-              <div class="form-grid">
+              <div class="panel" id="cascadePanel">
                 <div class="field">
                   <label for="cascadeSelect">Cascade</label>
                   <select id="cascadeSelect">
                     <option value="none">None</option>
                     <option value="sourcemappings">Source Mappings</option>
-                    <option value="openmrs">OpenMRS</option>
+                    <option value="sourcetoconcepts">All source concepts and mappings</option>
                     <option value="custom">Custom</option>
                   </select>
                 </div>
-                <div class="field">
-                  <label for="transformSelect">Transform</label>
-                  <select id="transformSelect">
-                    <option value="none">None</option>
-                    <option value="openmrs_concept_reference">OpenMRS concept reference</option>
-                  </select>
+
+                <div id="customCascadePanel" class="bulk-panel hidden">
+                  <div class="field">
+                    <label for="customMethod">Method</label>
+                    <select id="customMethod">
+                      <option value="sourcetoconcepts">sourcetoconcepts - traverse to target concepts</option>
+                      <option value="sourcemappings">sourcemappings - mappings only</option>
+                    </select>
+                  </div>
+                  <div class="form-grid">
+                    <div class="field">
+                      <label for="customMapTypes">Map Types</label>
+                      <div class="input mono" id="customMapTypes">Q-AND-A,CONCEPT-SET</div>
+                      <span class="hint">Comma-separated map types to follow during traversal.</span>
+                    </div>
+                    <div class="field">
+                      <label for="customExcludeMapTypes">Exclude Map Types</label>
+                      <div class="input mono" id="customExcludeMapTypes">SAME-AS</div>
+                      <span class="hint">Comma-separated map types to exclude.</span>
+                    </div>
+                  </div>
+                  <div class="form-grid">
+                    <div class="field">
+                      <label for="customCascadeLevels">Cascade Levels</label>
+                      <div class="input mono" id="customCascadeLevels">*</div>
+                      <span class="hint">Number of traversal hops; * = unlimited.</span>
+                    </div>
+                    <div class="field">
+                      <label for="customReturnMapTypes">Return Map Types</label>
+                      <div class="input mono" id="customReturnMapTypes">*</div>
+                      <span class="hint">Which map types to include in results.</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="inline-row">
+                  <button class="button" type="button" id="advancedToggle">Advanced</button>
+                  <button class="button" type="button" id="apiToggle">Preview API call</button>
+                </div>
+
+                <div id="advancedPanel" class="bulk-panel hidden">
+                  <label class="inline-row">
+                    <input type="checkbox" id="openmrsTransform">
+                    <span>Transform</span>
+                    <span class="chip gray">?</span>
+                  </label>
+                  <span class="hint">Applies `transformReferences=openmrs_concept_reference`, matching `CascadeSelector.jsx` Advanced behavior.</span>
+                </div>
+
+                <div id="apiPreviewPanel" class="bulk-panel mono hidden">
+                  PUT /orgs/OCL/collections/CIEL-Starter/references/?method=sourcemappings
+
+                  { "data": { "expressions": ["..."] }, "cascade": "sourcemappings" }
                 </div>
               </div>
 
               <div class="toggle-row">
                 <div>
                   <strong>Preview</strong>
-                  <span>Evaluate references before saving.</span>
+                  <span>Evaluate references on click. Changes do not auto-refresh existing preview results.</span>
                 </div>
                 <button class="button" type="button" id="previewToggle">Show Preview</button>
               </div>
@@ -965,7 +1106,7 @@
           </div>
         </div>
 
-        <div class="note">Validation prompt: Does the relationship between Reference Type and Bulk Add IDs feel clear, especially when switching from Concepts to Mappings?</div>
+        <div class="note">Validation prompt: Does the relationship between Reference Type and Add by ID(s) feel clear, especially when switching from Concepts to Mappings?</div>
       </section>
 
       <section class="slide compact" id="states">
@@ -979,24 +1120,24 @@
             <p>User does not select a source. They type or paste a full expression and add it as a single reference.</p>
           </div>
           <div class="mini-card">
-            <h3>Concept Bulk Add</h3>
+            <h3>Concept Add by ID(s)</h3>
             <p>User selects CIEL, keeps Reference Type as Concepts, pastes IDs, previews duplicates and missing IDs, then submits.</p>
           </div>
           <div class="mini-card">
-            <h3>Mapping Bulk Add</h3>
+            <h3>Mapping Add by ID(s)</h3>
             <p>User switches Reference Type to Mappings and verifies that ID expansion targets /mappings/{id}/, not /concepts/{id}/.</p>
           </div>
           <div class="mini-card">
             <h3>Version mismatch</h3>
-            <p>User changes from Locked to Latest or a specific version and sees a warning before preview and submit.</p>
+            <p>User changes from Versionless to a specific pinned version that differs from the collection's versionless resolution and sees a warning before preview and submit.</p>
           </div>
           <div class="mini-card">
             <h3>Exclude reference</h3>
             <p>User chooses Exclude and confirms that the dialog communicates include: false without changing the rest of the workflow.</p>
           </div>
           <div class="mini-card">
-            <h3>Released version</h3>
-            <p>User views a released collection version and sees why Add References is unavailable until switching to HEAD.</p>
+            <h3>Browse selected repo</h3>
+            <p>User opens the selected source or collection when they need to search for concepts or mappings before adding.</p>
           </div>
         </div>
       </section>
@@ -1009,15 +1150,15 @@
         <div class="three-col">
           <div class="panel">
             <h3>Workflow clarity</h3>
-            <p>Can users predict what will be submitted when both Expression and Bulk Add have values?</p>
+            <p>Can users tell whether they are in Add by ID(s) mode or Expression mode, and why only one can be active?</p>
           </div>
           <div class="panel">
             <h3>Mapping support</h3>
-            <p>Do mapping authors understand that Bulk Add accepts mapping IDs after selecting Reference Type = Mappings?</p>
+            <p>Do mapping authors understand that Add by ID(s) accepts mapping IDs after selecting Reference Type = Mappings?</p>
           </div>
           <div class="panel">
             <h3>Preview trust</h3>
-            <p>Does the preview give enough confidence without implying that all final API behavior is already implemented?</p>
+            <p>Does manual preview plus refresh make it clear when results are current after the user changes fields?</p>
           </div>
         </div>
         <p class="footnote">Mock data is illustrative. Final implementation should use the enhanced references preview endpoint once it supports batch expressions, new/existing grouping, version status, and typed errors.</p>
@@ -1028,37 +1169,52 @@
 <script>
   const state = {
     seed: "ciel",
-    version: "locked",
+    version: "versionless",
     type: "concepts",
     include: "include",
     cascade: "sourcemappings",
-    transform: "none",
-    bulkOpen: true,
-    previewOpen: true,
+    openmrsTransform: false,
+    showAdvanced: false,
+    showApiCall: false,
+    mode: "bulk",
+    previewOpen: false,
+    previewDirty: false,
+    previewMode: "references",
+    previewRowsSnapshot: [],
     submitted: false,
-    released: false
   };
 
   const els = {
     seedSelect: document.getElementById("seedSelect"),
     versionSelect: document.getElementById("versionSelect"),
+    versionHint: document.getElementById("versionHint"),
     typeSelect: document.getElementById("typeSelect"),
     includeSelect: document.getElementById("includeSelect"),
+    expressionField: document.getElementById("expressionField"),
     expressionInput: document.getElementById("expressionInput"),
-    bulkToggle: document.getElementById("bulkToggle"),
     bulkPanel: document.getElementById("bulkPanel"),
+    bulkCollapsed: document.getElementById("bulkCollapsed"),
     bulkIds: document.getElementById("bulkIds"),
     bulkLabel: document.getElementById("bulkLabel"),
     bulkExample: document.getElementById("bulkExample"),
     bulkHint: document.getElementById("bulkHint"),
+    bulkWarning: document.getElementById("bulkWarning"),
     cascadeSelect: document.getElementById("cascadeSelect"),
-    transformSelect: document.getElementById("transformSelect"),
+    customCascadePanel: document.getElementById("customCascadePanel"),
+    advancedToggle: document.getElementById("advancedToggle"),
+    advancedPanel: document.getElementById("advancedPanel"),
+    apiToggle: document.getElementById("apiToggle"),
+    apiPreviewPanel: document.getElementById("apiPreviewPanel"),
+    openmrsTransform: document.getElementById("openmrsTransform"),
     previewToggle: document.getElementById("previewToggle"),
     previewPanel: document.getElementById("previewPanel"),
     submitPanel: document.getElementById("submitPanel"),
     versionWarning: document.getElementById("versionWarning"),
-    releasedBanner: document.getElementById("releasedBanner"),
     dialogSubtitle: document.getElementById("dialogSubtitle"),
+    browseStrip: document.getElementById("browseStrip"),
+    browseHint: document.getElementById("browseHint"),
+    browseLink: document.getElementById("browseLink"),
+    expressionHint: document.getElementById("expressionHint"),
     expressionCount: document.getElementById("expressionCount"),
     requestMode: document.getElementById("requestMode"),
     includeChip: document.getElementById("includeChip"),
@@ -1077,8 +1233,13 @@
   }
 
   function versionSegment() {
-    if (state.version === "locked" || state.version === "latest") return "";
+    if (state.version === "versionless") return "";
     return state.version + "/";
+  }
+
+  function versionlessResolution() {
+    if (state.seed === "openmrs") return "OpenMRS MVP v2024-04-15";
+    return "CIEL v2024-08-01";
   }
 
   function seededExpression() {
@@ -1095,21 +1256,51 @@
   }
 
   function expandedExpressions() {
-    if (state.bulkOpen && bulkIds().length && state.seed) {
+    if (state.mode === "bulk" && bulkIds().length && state.seed) {
       return bulkIds().map(id => seededExpression() + id + "/");
     }
     return [els.expressionInput.value.trim()].filter(Boolean);
   }
 
+  function cascadeParams() {
+    if (state.cascade === "none") return {};
+    if (state.cascade === "sourcemappings") return { method: "sourcemappings" };
+    if (state.cascade === "sourcetoconcepts") {
+      return {
+        method: "sourcetoconcepts",
+        mapTypes: "Q-AND-A,CONCEPT-SET",
+        cascadeLevels: "*",
+        returnMapTypes: "*"
+      };
+    }
+    return {
+      method: "sourcetoconcepts",
+      mapTypes: "Q-AND-A,CONCEPT-SET",
+      excludeMapTypes: "SAME-AS",
+      cascadeLevels: "*",
+      returnMapTypes: "*"
+    };
+  }
+
+  function cascadeQueryString() {
+    const params = cascadeParams();
+    const parts = [];
+    ["method", "mapTypes", "excludeMapTypes", "cascadeLevels", "returnMapTypes"].forEach(key => {
+      if (params[key]) parts.push(`${key}=${params[key]}`);
+    });
+    if (state.openmrsTransform) parts.push("transformReferences=openmrs_concept_reference");
+    return parts.length ? `?${parts.join("&")}` : "";
+  }
+
   function hasVersionMismatch() {
-    return state.seed === "ciel" && state.version !== "locked" && !state.released;
+    return state.seed === "ciel" && state.version !== "versionless";
   }
 
   function previewRows() {
     const ids = bulkIds();
-    if (state.bulkOpen && ids.length) {
+    if (state.mode === "bulk" && ids.length) {
       return ids.map((id, index) => {
-        if (id === "999999") {
+        if (id === "999999" || id === "missing-map") {
           return {
             expression: seededExpression() + id + "/",
             result: "0 resources",
@@ -1148,21 +1339,36 @@
     }];
   }
 
+  function capturePreview() {
+    state.previewRowsSnapshot = previewRows();
+    state.previewDirty = false;
+    state.previewOpen = true;
+  }
+
+  function markChanged() {
+    state.submitted = false;
+    if (state.previewOpen) state.previewDirty = true;
+  }
+
   function setScenario(name) {
     document.querySelectorAll("[data-scenario]").forEach(button => {
       button.classList.toggle("active", button.dataset.scenario === name);
     });
 
     state.submitted = false;
-    state.released = false;
     state.seed = "ciel";
-    state.version = "locked";
+    state.version = "versionless";
     state.type = "concepts";
     state.include = "include";
     state.cascade = "sourcemappings";
-    state.transform = "none";
-    state.bulkOpen = true;
-    state.previewOpen = true;
+    state.openmrsTransform = false;
+    state.showAdvanced = false;
+    state.showApiCall = false;
+    state.mode = "bulk";
+    state.previewOpen = false;
+    state.previewDirty = false;
+    state.previewMode = "references";
+    state.previewRowsSnapshot = [];
     els.bulkIds.value = "5089, 5090, 5091, 999999";
 
     if (name === "mappingBulk") {
@@ -1173,24 +1379,17 @@
 
     if (name === "directExpression") {
       state.seed = "";
-      state.version = "latest";
+      state.version = "versionless";
       state.type = "concepts";
-      state.bulkOpen = false;
-      state.previewOpen = true;
+      state.mode = "expression";
     }
 
-    if (name === "excludeLatest") {
-      state.version = "latest";
+    if (name === "pinMismatch") {
+      state.version = "v2023-10-01";
       state.include = "exclude";
       state.type = "concepts";
-      state.bulkOpen = false;
+      state.mode = "expression";
       state.cascade = "none";
-    }
-
-    if (name === "releasedDisabled") {
-      state.released = true;
-      state.bulkOpen = false;
-      state.previewOpen = false;
     }
 
     syncControls();
@@ -1206,26 +1405,32 @@
     els.typeSelect.value = state.type;
     els.includeSelect.value = state.include;
     els.cascadeSelect.value = state.cascade;
-    els.transformSelect.value = state.transform;
   }
 
   function renderPreview() {
-    if (!state.previewOpen || state.released) {
+    if (!state.previewOpen) {
       els.previewPanel.classList.add("hidden");
       els.previewToggle.textContent = "Show Preview";
       return;
     }
 
-    const rows = previewRows();
+    const rows = state.previewRowsSnapshot.length ? state.previewRowsSnapshot : previewRows();
     const readyCount = rows.filter(row => row.status === "Ready").length;
     const existingCount = rows.filter(row => row.status === "Already exists").length;
     const zeroCount = rows.filter(row => row.status === "Zero result").length;
     const typeLabel = state.type === "mappings" ? "Mappings" : "Concepts";
 
+    const staleWarning = state.previewDirty
+      ? `<div class="alert amber">
+          <strong>Preview results may be out of date.</strong>
+          <span>Fields changed after this preview was run. Click Refresh Preview to evaluate the current values.</span>
+        </div>`
+      : "";
+
     const warning = hasVersionMismatch()
       ? `<div class="alert amber">
           <strong>${rows.length} reference(s) will resolve to a different source version than your collection is pinned to.</strong>
-          <span>Resolves to CIEL latest while the collection is pinned to CIEL v2024-08-01. The submit area should present add/rebuild, add without rebuild, or pin options when the API reports a mismatch.</span>
+          <span>Versionless would resolve to CIEL v2024-08-01, but this reference is pinned to ${state.version}. The submit area should present add/rebuild, add without rebuild, or pin options when the API reports a mismatch.</span>
         </div>`
       : "";
 
@@ -1236,35 +1441,103 @@
         </div>`
       : "";
 
+    const referenceRows = `
+      <table class="table tree-table">
+        <thead>
+          <tr>
+            <th>Reference</th>
+            <th>Resolved concepts / mappings</th>
+            <th>Status</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map((row, index) => `
+            <tr class="root-row">
+              <td class="mono"><span class="expander">▼</span>${row.expression}</td>
+              <td>${row.result}</td>
+              <td><span class="chip ${row.statusClass}">${row.status}</span></td>
+              <td>${row.note}</td>
+            </tr>
+            ${row.status === "Zero result" ? `
+            <tr class="orphan-row">
+              <td class="indent-1" colspan="4"><span class="expander">▶</span>No resolved concepts or mappings for this reference.</td>
+            </tr>` : state.type === "mappings" ? `
+            <tr class="mapping-row">
+              <td class="indent-1"><span class="chip purple">SAME-AS</span> Mapping ${index + 1}</td>
+              <td>Target: WHO / ICD-11:QA70${index + 1}</td>
+              <td><span class="chip ${row.statusClass}">${row.status}</span></td>
+              <td>Mapping sub-row borrowed from References tab expansion pattern.</td>
+            </tr>` : `
+            <tr class="concept-row">
+              <td class="indent-1"><span class="expander">▼</span><span class="chip blue">${5089 + index} · ${index === 0 ? "Nutrition counselling" : "Nutritional support"} | CIEL</span></td>
+              <td>1 concept, ${index + 1} mapping${index === 0 ? "" : "s"}</td>
+              <td><span class="chip ${row.statusClass}">${row.status}</span></td>
+              <td>Concept sub-row</td>
+            </tr>
+            <tr class="mapping-row">
+              <td class="indent-2"><span class="chip purple">SAME-AS</span> WHO / ICD-11:QA70${index + 1}</td>
+              <td>Resolved from parent concept</td>
+              <td><span class="chip gray">Mapping</span></td>
+              <td>Mapping sub-row</td>
+            </tr>
+            ${index === 0 ? `
+              <tr class="orphan-row">
+                <td class="indent-1"><span class="expander">▶</span>Orphaned mappings (1)</td>
+                <td>Not attached to any resolved concept in this reference</td>
+                <td><span class="chip amber">Included</span></td>
+                <td>Expandable group</td>
+              </tr>` : ""}
+            `}
+          `).join("")}
+        </tbody>
+      </table>`;
+
+    const resourceRows = `
+      <table class="table tree-table">
+        <thead>
+          <tr>
+            <th>${state.type === "mappings" ? "Mapping" : "Concept / Mapping"}</th>
+            <th>References</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map((row, index) => `
+            <tr class="${row.status === "Zero result" ? "orphan-row" : "resource-row"}">
+              <td>${row.status === "Zero result" ? `<span class="expander">▶</span>No resolved resources` : state.type === "mappings" ? `<span class="expander">▼</span><span class="chip purple">SAME-AS</span> Mapping ${index + 1}` : `<span class="expander">▼</span><span class="chip blue">${5089 + index} · ${index === 0 ? "Nutrition counselling" : "Nutritional support"} | CIEL</span>`}</td>
+              <td>${row.status === "Zero result" ? `<span class="expander">+</span>1 Reference<div class="mono" style="margin-top:6px;">${row.expression}</div>` : `<span class="expander">+</span>${index === 0 ? 2 : 1} Reference${index === 0 ? "s" : ""}<div class="mono" style="margin-top:6px;">${row.expression}${index === 0 ? `<br>/orgs/CIEL/sources/CIEL/concepts/?conceptClass=Nutrition` : ""}</div>`}</td>
+              <td><span class="chip ${row.statusClass}">${row.status}</span></td>
+            </tr>
+            ${state.type !== "mappings" && row.status !== "Zero result" ? `
+            <tr class="mapping-row">
+              <td class="indent-1"><span class="chip purple">SAME-AS</span> WHO / ICD-11:QA70${index + 1}</td>
+              <td>Included by this concept's cascade</td>
+              <td><span class="chip gray">Mapping</span></td>
+            </tr>` : ""}
+          `).join("")}
+        </tbody>
+      </table>`;
+
     els.previewPanel.innerHTML = `
+      ${staleWarning}
       ${warning}
       ${zeroWarning}
+      <div class="split-row">
+        <div class="preview-tabs" aria-label="Preview view mode">
+          <button class="button ${state.previewMode === "references" ? "active" : ""}" type="button" data-preview-mode="references">References -> Resolved</button>
+          <button class="button ${state.previewMode === "resources" ? "active" : ""}" type="button" data-preview-mode="resources">Concepts/Mappings -> References</button>
+        </div>
+        <button class="button" type="button" data-refresh-preview>Refresh Preview</button>
+      </div>
+      <p class="footnote">Preview rows reuse the References tab expandable row pattern: reference rows expand to concept sub-rows, concept sub-rows expand to mapping sub-rows, and orphaned mappings appear as their own group.</p>
       <div class="summary-grid">
         <div class="summary-tile"><span>Expressions</span><strong>${rows.length}</strong></div>
         <div class="summary-tile"><span>Ready</span><strong>${readyCount}</strong></div>
         <div class="summary-tile"><span>Existing</span><strong>${existingCount}</strong></div>
         <div class="summary-tile"><span>Reference type</span><strong>${typeLabel}</strong></div>
       </div>
-      <table class="table">
-        <thead>
-          <tr>
-            <th>Expression</th>
-            <th>Preview result</th>
-            <th>Status</th>
-            <th>Note</th>
-          </tr>
-        </thead>
-        <tbody>
-          ${rows.map(row => `
-            <tr>
-              <td class="mono">${row.expression}</td>
-              <td>${row.result}</td>
-              <td><span class="chip ${row.statusClass}">${row.status}</span></td>
-              <td>${row.note}</td>
-            </tr>
-          `).join("")}
-        </tbody>
-      </table>
+      ${state.previewMode === "references" ? referenceRows : resourceRows}
     `;
     els.previewPanel.classList.remove("hidden");
     els.previewToggle.textContent = "Hide Preview";
@@ -1307,42 +1580,65 @@
   }
 
   function render() {
-    const disabled = state.released;
     const hasSeed = Boolean(state.seed);
     const expressions = expandedExpressions();
 
-    els.versionSelect.disabled = disabled || !hasSeed;
-    els.typeSelect.disabled = disabled || !hasSeed;
-    els.includeSelect.disabled = disabled;
-    els.expressionInput.disabled = disabled;
-    els.bulkToggle.disabled = disabled || !hasSeed;
-    els.bulkIds.disabled = disabled || !hasSeed;
-    els.cascadeSelect.disabled = disabled;
-    els.transformSelect.disabled = disabled;
-    els.previewToggle.disabled = disabled;
-    els.submitButton.disabled = disabled || expressions.length === 0;
+    els.versionSelect.disabled = !hasSeed;
+    els.typeSelect.disabled = !hasSeed;
+    els.bulkIds.disabled = !hasSeed || state.mode !== "bulk";
+    els.submitButton.disabled = expressions.length === 0;
 
-    els.dialogSubtitle.textContent = disabled
-      ? "CIEL Starter Dictionary - v2024-08-01"
-      : "CIEL Starter Dictionary - HEAD";
+    els.dialogSubtitle.textContent = "CIEL Starter Dictionary - HEAD";
 
-    els.releasedBanner.classList.toggle("hidden", !disabled);
     els.versionWarning.classList.toggle("hidden", !hasVersionMismatch());
-    els.bulkPanel.classList.toggle("hidden", !state.bulkOpen || disabled);
-    els.bulkToggle.textContent = state.bulkOpen ? "Collapse" : "Expand";
+    els.expressionField.classList.toggle("hidden", state.mode === "bulk");
+    els.bulkCollapsed.classList.toggle("hidden", state.mode !== "bulk");
+    els.bulkPanel.classList.toggle("hidden", state.mode !== "bulk");
+    els.bulkWarning.classList.toggle("hidden", state.mode !== "bulk");
+
+    document.querySelectorAll("[data-mode]").forEach(button => {
+      button.classList.toggle("active", button.dataset.mode === state.mode);
+    });
 
     const resourceType = state.type;
     const singular = resourceType === "mappings" ? "Mapping" : "Concept";
+    const versionlessLabel = `Versionless (resolves to ${versionlessResolution()})`;
+    els.versionSelect.options[0].textContent = versionlessLabel;
+    els.versionHint.textContent = state.seed === "openmrs"
+      ? "Versionless resolves to the selected collection's latest release because this collection has no locked version in the current expansion."
+      : "Versionless resolves to the collection's locked version for CIEL: v2024-08-01.";
     els.bulkLabel.textContent = `${singular} IDs (comma-separated)`;
     els.bulkExample.textContent = hasSeed
       ? `Each ID becomes ${seededExpression()}{id}/.`
-      : "Select a source or collection above to use Bulk Add.";
+      : "Select a source or collection above to use Add by ID(s).";
     els.bulkHint.textContent = hasSeed
       ? `${singular} IDs expand under /${resourceType}/{id}/.`
-      : "Bulk Add requires a source or collection seed.";
+      : "Add by ID(s) requires a source or collection seed.";
+
+    els.expressionHint.textContent = state.mode === "bulk"
+      ? "Hidden in Add by ID(s) mode. Source / Collection, Version, and Reference Type still define how each ID is expanded."
+      : "This field reacts to Source / Collection, Version, and Reference Type. Users may still edit it directly in Expression mode.";
+
+    els.browseStrip.classList.toggle("hidden", !hasSeed);
+    if (hasSeed) {
+      const versionLabel = state.version === "versionless" ? versionlessLabel : state.version;
+      els.browseHint.textContent = `Open the selected ${state.seed === "ciel" ? "source" : "collection"} at ${versionLabel} to search ${resourceType}, then add directly from that context if preferred.`;
+      els.browseLink.href = repoBase() + versionSegment();
+      els.browseLink.textContent = `Open ${state.seed === "ciel" ? "CIEL Source" : "OpenMRS Collection"}`;
+    }
+
+    els.customCascadePanel.classList.toggle("hidden", state.cascade !== "custom");
+    els.advancedPanel.classList.toggle("hidden", !state.showAdvanced);
+    els.apiPreviewPanel.classList.toggle("hidden", !state.showApiCall);
+    els.advancedToggle.textContent = state.showAdvanced ? "Hide advanced" : "Advanced";
+    els.apiToggle.textContent = state.showApiCall ? "Hide API call" : "Preview API call";
+    els.openmrsTransform.checked = state.openmrsTransform;
+    const apiEndpoint = `/orgs/OCL/collections/CIEL-Starter/references/${cascadeQueryString()}`;
+    const requestBody = JSON.stringify({ data: { expressions }, cascade: cascadeParams().method || "" }, null, 2);
+    els.apiPreviewPanel.textContent = `PUT ${apiEndpoint}\n\n${requestBody}`;
 
     els.expressionCount.textContent = `${expressions.length || 0} expression${expressions.length === 1 ? "" : "s"}`;
-    els.requestMode.textContent = state.bulkOpen && bulkIds().length && hasSeed ? "Bulk Add mode" : "Expression mode";
+    els.requestMode.textContent = state.mode === "bulk" ? "Add by ID(s) mode" : "Expression mode";
     els.includeChip.textContent = state.include === "exclude" ? "Exclude" : "Include";
     els.includeChip.className = state.include === "exclude" ? "chip red" : "chip blue";
 
@@ -1354,49 +1650,82 @@
     button.addEventListener("click", () => setScenario(button.dataset.scenario));
   });
 
-  ["seedSelect", "versionSelect", "typeSelect", "includeSelect", "cascadeSelect", "transformSelect"].forEach(id => {
+  ["seedSelect", "versionSelect", "typeSelect", "includeSelect", "cascadeSelect"].forEach(id => {
     els[id].addEventListener("change", event => {
       const key = {
         seedSelect: "seed",
         versionSelect: "version",
         typeSelect: "type",
         includeSelect: "include",
-        cascadeSelect: "cascade",
-        transformSelect: "transform"
+        cascadeSelect: "cascade"
       }[id];
       state[key] = event.target.value;
       if (id === "seedSelect" || id === "versionSelect" || id === "typeSelect") {
         els.expressionInput.value = seededExpression();
       }
-      state.submitted = false;
+      markChanged();
       render();
     });
   });
 
   els.expressionInput.addEventListener("input", () => {
-    state.submitted = false;
+    markChanged();
     render();
   });
 
   els.bulkIds.addEventListener("input", () => {
-    state.submitted = false;
-    render();
-  });
-
-  els.bulkToggle.addEventListener("click", () => {
-    state.bulkOpen = !state.bulkOpen;
-    state.submitted = false;
+    markChanged();
     render();
   });
 
   els.previewToggle.addEventListener("click", () => {
-    state.previewOpen = !state.previewOpen;
+    if (state.previewOpen) {
+      state.previewOpen = false;
+    } else {
+      capturePreview();
+    }
+    render();
+  });
+
+  els.previewPanel.addEventListener("click", event => {
+    const modeButton = event.target.closest("[data-preview-mode]");
+    if (modeButton) {
+      state.previewMode = modeButton.dataset.previewMode;
+      render();
+      return;
+    }
+    if (event.target.closest("[data-refresh-preview]")) {
+      capturePreview();
+      render();
+    }
+  });
+
+  document.querySelectorAll("[data-mode]").forEach(button => {
+    button.addEventListener("click", () => {
+      state.mode = button.dataset.mode;
+      markChanged();
+      render();
+    });
+  });
+
+  els.advancedToggle.addEventListener("click", () => {
+    state.showAdvanced = !state.showAdvanced;
+    render();
+  });
+
+  els.apiToggle.addEventListener("click", () => {
+    state.showApiCall = !state.showApiCall;
+    render();
+  });
+
+  els.openmrsTransform.addEventListener("change", event => {
+    state.openmrsTransform = event.target.checked;
+    markChanged();
     render();
   });
 
   els.submitButton.addEventListener("click", () => {
     state.submitted = true;
-    state.previewOpen = true;
     render();
   });
 

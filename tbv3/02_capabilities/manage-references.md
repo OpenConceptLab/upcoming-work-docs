@@ -24,9 +24,9 @@ This is the most common path for Terminology Implementers building a dictionary.
    - **Cascade selector** (rendered via `src/components/common/CascadeSelector.jsx`):
      - **None** — add the concept only; no mappings or target concepts
      - **Source Mappings** — add the concept plus all its mappings within the same source (`method=sourcemappings`)
-     - **OpenMRS** — traverse Q-AND-A and CONCEPT-SET mappings recursively, returning all reachable concepts and mappings (`method=sourcetoconcepts&mapTypes=Q-AND-A,CONCEPT-SET&cascadeLevels=*&returnMapTypes=*`)
+     - **All source concepts and mappings** — traverse Q-AND-A and CONCEPT-SET mappings recursively, returning all reachable concepts and mappings (`method=sourcetoconcepts&mapTypes=Q-AND-A,CONCEPT-SET&cascadeLevels=*&returnMapTypes=*`)
      - **Custom** — expands an inline form (left-bordered) to specify `method`, `mapTypes`, `excludeMapTypes`, `cascadeLevels`, and `returnMapTypes` manually
-   - **Transform** checkbox (default: unchecked) — applies the OpenMRS transform (`transformReferences=openmrs_concept_reference`) on top of the selected cascade. Only relevant for OpenMRS or custom `sourcetoconcepts` cascades. Shown with a `?` help icon tooltip explaining its purpose.
+   - **Advanced → Transform** checkbox (default: unchecked) — applies the OpenMRS transform (`transformReferences=openmrs_concept_reference`) on top of the selected cascade. Shown with a `?` help icon tooltip explaining its purpose.
    - **Preview API call** (default collapsed): toggled by a chip button; shows the full `PUT /:owner/collections/:collection/references/` request with query string and request body, updating live as collection and cascade options change
 3. User confirms → `PUT /[owner]/collections/[collection]/references/` with `data.expressions` containing the concept URL (version stripped) and `cascade` set to the selected method; cascade query params appended as needed
 4. Results displayed inline: successful additions shown in light blue rows (concept ID + message); failures shown in a two-column table (Reference | Error) with human-readable error descriptions unwrapped from the API's expression-keyed envelope, including conflicting reference IDs and conflicting concept names
@@ -63,11 +63,11 @@ Used when the user is already in the collection context and wants to define what
 
 | Feature | M42? |
 |---|---|
-| Expression input field | ✅ M42 |
+| Add by ID(s) mode (comma-separated concept or mapping IDs) | ✅ M42 |
+| Expression mode | ✅ M42 |
 | Source / Collection quick-search seed | ✅ M42 |
 | Version selector (with locked-version warning) | ✅ M42 |
 | Reference Type selector (Concepts / Mappings) | ✅ M42 |
-| Bulk Add (comma-separated concept or mapping IDs) | ✅ M42 |
 | Include / Exclude toggle | ✅ M42 |
 | Cascade selector | ✅ M42 |
 | Preview panel (`ReferencePreviewPanel` — #2007) | ✅ M42 |
@@ -97,21 +97,23 @@ Searchable autocomplete of all sources and collections in OCL — not scoped to 
 - **Optional** — the user can type an expression directly without using the seed at all
 - On selection: Version selector and Reference Type selector appear; the Expression field is populated with the base path
 - **If the user has already typed a non-empty expression** before selecting a source/collection, show a warning inline: *"This will replace the current expression."* — selection only proceeds if the user confirms (or the field is empty)
+- After a source/collection is selected, show an action link to open that source/collection at the selected version context. This lets users browse/search Concepts or Mappings directly and add from that source/collection context if they do not know the IDs to enter.
 
 #### 2. Version Selector
 
-Appears after a source/collection is selected. Shows **Latest** at the top, followed by all released versions in descending order. HEAD is not a selectable option.
+Appears after a source/collection is selected. Shows **Versionless** at the top, followed by all released versions in descending order. HEAD is not a selectable option.
 
 The dropdown options are ordered as follows:
 
-1. **Locked (Currently {locked_version_id})** — only shown when the collection's expansion has already locked this source/collection to a specific version. Selecting this option produces the same unversioned expression path as Latest. Shown as the top and pre-selected option when applicable.
-2. **Latest (Currently {latest_released_version_id})** — always shown. A dynamic pseudo-option, not a pinned version. Produces an **unversioned expression path** (e.g., `/orgs/CIEL/sources/CIEL/`) so the reference resolves against whatever version the expansion is configured to use. The "(Currently vXXX)" label is informational context only.
-3. **Released version IDs** — listed below Latest in descending order. Selecting one produces a version-pinned expression path (e.g., `/orgs/CIEL/sources/CIEL/v2024-08-01/`).
+1. **Versionless (resolves to {resolved_version_id})** — always shown and pre-selected. Produces an **unversioned expression path** (e.g., `/orgs/CIEL/sources/CIEL/`). The resolved version shown in the label is:
+   - The collection's locked source/collection version, if the collection expansion has already locked this source/collection
+   - Otherwise, the latest released version of the selected source/collection
+2. **Released version IDs** — listed below Versionless in descending order. Selecting one produces a version-pinned expression path (e.g., `/orgs/CIEL/sources/CIEL/v2024-08-01/`).
 
-**When the collection has a locked version:** "Locked..." is pre-selected. If the user selects any other option (Latest or a specific version ID), show a warning:
-> ⚠️ *Your collection is pinned to {locked_version_id}. This reference will differ from the locked version.*
+**When the collection has a locked version:** Versionless shows the locked version in its label. If the user selects a specific released version that differs from that locked version, show a warning:
+> ⚠️ *Your collection is pinned to {locked_version_id}. This pinned reference will differ from the versionless resolution.*
 
-**When the collection has no locked version:** "Locked..." is not shown; "Latest..." is pre-selected; no warning on any selection.
+**When the collection has no locked version:** Versionless shows the latest released version of the selected source/collection in its label. No locked-version warning is shown unless the API later reports a version inconsistency.
 
 #### 3. Reference Type Selector
 
@@ -126,11 +128,11 @@ Changing this updates the seeded expression path. If the user has manually edite
 
 #### 4. Expression Field
 
-Always visible and always editable regardless of whether the seed fields are used.
+Visible and editable only in **Expression** mode. Hidden in **Add by ID(s)** mode.
 
 The seeded base path format depends on whether a source or collection was selected:
 
-| Seed type | Seeded format (Latest / unversioned) | Seeded format (specific version) |
+| Seed type | Seeded format (Versionless / unversioned) | Seeded format (specific version) |
 |---|---|---|
 | **Source** | `/{ownerType}/{owner}/sources/{source}/concepts/` | `/{ownerType}/{owner}/sources/{source}/{version}/concepts/` |
 | **Collection** | `/{ownerType}/{owner}/collections/{collection}/concepts/` | `/{ownerType}/{owner}/collections/{collection}/{version}/concepts/` |
@@ -139,22 +141,29 @@ The seeded base path format depends on whether a source or collection was select
 - User may append anything after the base path: a concept or mapping ID, query params (`?conceptClass=Test&locale=en`), etc.
 - Submitting only the base path (e.g., `/orgs/CIEL/sources/CIEL/concepts/`) without further qualification is valid — it creates a reference that resolves to all concepts in that repo at the given version
 
-#### 5. Bulk Add
+#### 5. Add by ID(s) vs. Expression Mode
 
-Collapsed by default; toggled open via `[+ Bulk Add by ID ▼]`.
+The dialog supports two mutually exclusive authoring modes:
+
+| Mode | Behaviour |
+|---|---|
+| **Add by ID(s)** (default) | User pastes comma-separated IDs; the Expression field is hidden and the generated base path context is represented by the upstream Source / Collection, Version, and Reference Type fields |
+| **Expression** | User edits and submits the Expression field as a single reference expression |
+
+Switching Source / Collection, Version, or Reference Type updates the generated Expression/base path. If the user manually edited the Expression field in Expression mode, changing those upstream fields shows the overwrite warning described above.
+
+Add by ID(s) entry:
 
 - **Requires** a source or collection to be seeded (IDs must be expanded into full URLs; not available without a repo context)
 - Textarea accepting comma-separated IDs for the currently selected Reference Type: `1234, 5678, 9012`
 - When Reference Type is **Concepts**, IDs expand under `concepts/`; when Reference Type is **Mappings**, IDs expand under `mappings/`
-- When Bulk Add IDs are present **and** the expression field contains a value beyond the seeded base path, show a warning:
-  > ⚠️ *These IDs will be submitted instead of the expression above.*
 - On submit, each ID is expanded into a separate extensional expression using the seeded repo path:
   - From a source: `/{ownerType}/{owner}/sources/{source}/{version}/{resourceType}/{id}/`
   - From a collection: `/{ownerType}/{owner}/collections/{collection}/{version}/{resourceType}/{id}/`
   - `{resourceType}` is `concepts` or `mappings`, based on the selected Reference Type
 - Submitted as N expressions in a single batch API call; Preview also batches all N
 
-**Bulk Add and Expression are mutually exclusive on submit:** if Bulk Add IDs are present, those N expressions are submitted and the expression field value is ignored.
+**Add by ID(s) and Expression are mutually exclusive:** the user must choose one mode before submit. Add by ID(s) no longer silently takes precedence over Expression.
 
 #### 6. Include / Exclude
 
@@ -171,14 +180,29 @@ Applies to all expressions in the submission — you cannot mix include and excl
 
 Same `CascadeSelector` component used in `AddToCollectionDialog`. Applies to all expressions in the submission.
 
+Use the existing `src/components/common/CascadeSelector.jsx` design pattern:
+
+- Preset dropdown: **None**, **Source Mappings**, **All source concepts and mappings** (`sourcetoconcepts` with OpenMRS Q-AND-A / CONCEPT-SET defaults), and **Custom**
+- **Custom** expands an inline, left-bordered form for `method`, `mapTypes`, `excludeMapTypes`, `cascadeLevels`, and `returnMapTypes`
+- **Advanced** chip toggles the Transform checkbox
+- **Transform** appends `transformReferences=openmrs_concept_reference`, matching the current CascadeSelector behavior
+- **Preview API call** chip toggles a compact request preview for implementation/debug visibility
+
+This Transform checkbox is distinct from broader reference transforms handled by #2433 from the References tab.
+
 #### 8. Preview Panel
 
 `ReferencePreviewPanel` (#2007), collapsed by default, toggled open via `[Preview ▼]`.
 
 - In expression mode: fires on the single expression value
-- In Bulk Add mode: fires on all N expanded expressions as a batch
+- In Add by ID(s) mode: fires on all N expanded expressions as a batch
 - Version mismatch and zero-result warnings are surfaced here (see `§ Reference Preview`)
-- Preview re-fires automatically when the expression, version, or cascade params change while the panel is open (debounce: 500ms)
+- Preview fires only when the user opens Preview or clicks **Refresh Preview**. If expression, version, type, include/exclude, or cascade params change after preview has been run, the existing preview is marked stale until the user refreshes it.
+- Preview supports two display modes:
+  - **References → Resolved Concepts/Mappings**: one expandable row per reference expression with resolved counts and status. Expanding uses the same concept sub-row / mapping sub-row / orphaned mapping group pattern as `04_surfaces/references-tab.md § Expandable row layout (concept sub-rows)`.
+    - Suppress the Orphaned Mappings group when no orphaned mappings exist.
+  - **Concepts/Mappings → References**: one row per resolved resource, with a **References** column that shows an expandable count (e.g., `+ 2 References`) and expands inline to show the contributing reference expressions. Concept rows can still show nested mapping rows using the same References tab expansion pattern.
+    - Nested mapping rows should indicate that the mapping was included by the concept's cascade.
 
 ---
 
@@ -187,11 +211,11 @@ Same `CascadeSelector` component used in `AddToCollectionDialog`. Applies to all
 1. User clicks `+ Add References` from the References tab toolbar
 2. Dialog opens; expression field is empty with placeholder
 3. *(Optional)* User types in the Source / Collection seed field and selects a source
-4. Version selector appears — user confirms or changes the version; locked-version warning shown if applicable
+4. Version selector appears — Versionless is selected by default and shows the version it will resolve to; locked-version warning shown if the user pins to a conflicting specific version
 5. Reference Type selector appears — user selects Concepts or Mappings (default: Concepts)
 6. Expression field is populated with the seeded base path; user edits as needed (adds ID, query params, etc.)
    — *or* —
-   User expands Bulk Add and pastes comma-separated concept or mapping IDs, depending on the selected Reference Type
+   User uses Add by ID(s) and pastes comma-separated concept or mapping IDs, depending on the selected Reference Type
 7. User sets Include/Exclude and cascade options
 8. *(Optional)* User opens Preview panel to evaluate before committing
 9. User clicks **Add Reference(s)**
@@ -206,8 +230,8 @@ Same `CascadeSelector` component used in `AddToCollectionDialog`. Applies to all
 | Mode | `expressions` array |
 |---|---|
 | Expression only | `[expressionFieldValue]` |
-| Bulk Add only | `[/{source}/{version}/{resourceType}/{id1}/, ..., /{source}/{version}/{resourceType}/{idN}/]`, where `{resourceType}` is `concepts` or `mappings` |
-| Both filled | Bulk Add takes precedence; expression field value is **not** submitted (warning shown before submit) |
+| Add by ID(s) only | `[/{source}/{version}/{resourceType}/{id1}/, ..., /{source}/{version}/{resourceType}/{idN}/]`, where `{resourceType}` is `concepts` or `mappings` |
+| Both filled | Not allowed; the dialog must be in either Expression mode or Add by ID(s) mode |
 
 Include/Exclude is sent as `include: false` on the reference body for exclude references. Cascade params appended as query params per `CascadeSelector` output.
 
@@ -215,8 +239,9 @@ Include/Exclude is sent as `include: false` on the reference body for exclude re
 
 ### Validation
 
-- **Add button disabled** when: expression field is empty and no Bulk Add IDs are present
-- **Bulk Add requires a source or collection seed**: the Bulk Add textarea is disabled with tooltip *"Select a source or collection above to use Bulk Add"* until a repo is seeded
+- **Add button disabled** when: expression field is empty in Expression mode or no IDs are present in Add by ID(s) mode
+- **Add by ID(s) requires a source or collection seed**: the ID textarea is disabled with tooltip *"Select a source or collection above to use Add by ID(s)"* until a repo is seeded
+- **Mode exclusivity**: Expression mode hides Add by ID(s) inputs; Add by ID(s) mode hides the Expression field and uses Source / Collection, Version, and Reference Type as the visible generated-path context
 - **Version mismatch**: surfaced non-destructively in the Preview panel; the three action choices (add unversioned + rebuild / add without rebuilding / pin to this version) are presented in the dialog's submit area if a mismatch is detected (same pattern as `AddToCollectionDialog` — see `§ Version Consistency Warning`)
 
 ---
@@ -239,10 +264,10 @@ Clickable workflow mockup: `04_surfaces/mockups/add-references-workflow.html`
 │ Source / Collection                                      │
 │ [🔍 Search sources and collections...           ]       │
 │                                                          │
-│ Expression                                               │
-│ [e.g. /orgs/CIEL/sources/CIEL/concepts/1234/    ]       │
+│ [Add by ID(s)] [Expression]                             │
 │                                                          │
-│ [+ Bulk Add ▼]                                          │
+│ Add by ID(s)                                            │
+│ [Select a source or collection to add by ID(s)]          │
 │                                                          │
 │ Include / Exclude        Cascade                         │
 │ [Include            ▼]  [None               ▼]         │
@@ -262,13 +287,13 @@ Clickable workflow mockup: `04_surfaces/mockups/add-references-workflow.html`
 │ [CIEL (CIEL)                                    ]       │
 │                                                          │
 │ Version                                  Reference Type   │
-│ [Locked (Currently v2024-08-01)    ▼]   [Concepts ▼]   │
+│ [Versionless (resolves to v2024-08-01) ▼] [Concepts ▼] │
 │                                                          │
 │                                                          │
-│ Expression                                               │
-│ [/orgs/CIEL/sources/CIEL/v2024-08-01/concepts/  ]       │
-│                                                          │
-│ [+ Bulk Add ▼]                                          │
+│ [Add by ID(s)] [Expression]                             │
+│ Add by ID(s)                                            │
+│ IDs (comma-separated, for selected Reference Type):      │
+│ [1234, 5678, 9012                               ]       │
 │                                                          │
 │ Include / Exclude        Cascade                         │
 │ [Include            ▼]  [Source Mappings    ▼]         │
@@ -279,19 +304,19 @@ Clickable workflow mockup: `04_surfaces/mockups/add-references-workflow.html`
 └──────────────────────────────────────────────────────────┘
 ```
 
-*User changed away from locked version (selected Latest or a different version ID):*
+*User selected a specific version that differs from the versionless resolution:*
 ```
 │ Version                                                  │
-│ [Latest (Currently v2024-08-01)             ▼]         │
+│ [v2023-10-01                              ▼]           │
 │ ⚠ Your collection is pinned to CIEL v2024-08-01.        │
-│   This reference will differ from the locked version.   │
+│   This pinned reference will differ from the            │
+│   versionless resolution.                               │
 ```
 
 *(Dropdown open — collection has locked version):*
 ```
 │ ┌─────────────────────────────────────────────────────┐ │
-│ │ ✓ Locked (Currently v2024-08-01)                    │ │
-│ │   Latest (Currently v2024-08-01)                    │ │
+│ │ ✓ Versionless (resolves to v2024-08-01)             │ │
 │ │   v2023-10-01                                       │ │
 │ │   v2022-06-15                                       │ │
 │ └─────────────────────────────────────────────────────┘ │
@@ -300,19 +325,18 @@ Clickable workflow mockup: `04_surfaces/mockups/add-references-workflow.html`
 *(Dropdown open — no locked version):*
 ```
 │ ┌─────────────────────────────────────────────────────┐ │
-│ │ ✓ Latest (Currently v2024-08-01)                    │ │
+│ │ ✓ Versionless (resolves to v2024-08-01 latest)      │ │
 │ │   v2023-10-01                                       │ │
 │ │   v2022-06-15                                       │ │
 │ └─────────────────────────────────────────────────────┘ │
 ```
 
-*Bulk Add expanded:*
+*Add by ID(s) mode:*
 ```
-│ [+ Bulk Add ▲]                                          │
+│ Add by ID(s)                                            │
 │ IDs (comma-separated, for selected Reference Type):      │
 │ [1234, 5678, 9012, 3456                         ]       │
-│ ⚠ These IDs will be submitted instead of the           │
-│   expression above.                                     │
+│ Expression is hidden while Add by ID(s) mode is active. │
 ```
 
 ---
@@ -337,7 +361,7 @@ Users can evaluate what a reference expression would resolve to before committin
 
 **Endpoint:** `POST /:ownerType/:owner/collections/:collection/references/preview/`
 
-The endpoint accepts multiple expressions in a single call and returns one result object per expression. This is important for batch operations (e.g., previewing Bulk Add IDs before adding them all at once via the Add References dialog).
+The endpoint accepts multiple expressions in a single call and returns one result object per expression. This is important for batch operations (e.g., previewing Add by ID(s) entries before adding them all at once via the Add References dialog).
 
 **Request body:**
 ```json
@@ -604,8 +628,8 @@ In `AddReferencesDialog.jsx` (to be built as part of #2431):
 
 - "Preview results" toggle below the expression/cascade fields; collapsed by default
 - When open, `ReferencePreviewPanel` is mounted with the current expressions array and cascade params
-- Preview re-fires when expressions or cascade change (debounce: 500ms after last change)
-- Multiple expressions from Bulk Add are passed as a single batch; results are merged in the panel
+- Preview fires on user action only. After changes, show a stale-results warning and a **Refresh Preview** action instead of auto-refreshing.
+- Multiple expressions from Add by ID(s) are passed as a single batch; results are merged in the panel
 
 ---
 
