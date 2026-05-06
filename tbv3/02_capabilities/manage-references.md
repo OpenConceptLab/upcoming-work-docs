@@ -229,6 +229,8 @@ The Intensional reference pattern (`/orgs/:org/sources/:source/concepts/?q=...`)
 
 ### Visual Mockup
 
+Clickable workflow mockup: `04_surfaces/mockups/add-references-workflow.html`
+
 *Default state (no seed selected):*
 ```
 ┌──────────────────────────────────────────────────────────┐

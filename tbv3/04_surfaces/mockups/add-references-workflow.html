@@ -1,0 +1,1406 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Add References Workflow - TBv3</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --page: #f6f7f9;
+    --surface: #ffffff;
+    --surface-soft: #f9fafb;
+    --ink: #18212f;
+    --text: #334155;
+    --muted: #64748b;
+    --quiet: #94a3b8;
+    --line: #dbe3ec;
+    --line-strong: #c5d0dc;
+    --blue: #1f6feb;
+    --blue-soft: #edf5ff;
+    --teal: #047481;
+    --teal-soft: #e8f7f8;
+    --green: #237a48;
+    --green-soft: #edf8f1;
+    --amber: #a86500;
+    --amber-soft: #fff5dd;
+    --red: #b42318;
+    --red-soft: #fff0ed;
+    --purple: #6b4eff;
+    --purple-soft: #f2f0ff;
+    --shadow: 0 18px 52px rgba(15, 23, 42, 0.10);
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-size: 14px;
+    color: var(--text);
+    background: var(--page);
+    line-height: 1.5;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  .deck-shell {
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    min-height: 100vh;
+  }
+
+  .nav {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    padding: 22px 18px;
+    background: #101827;
+    color: #d8e1ee;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .brand {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.14);
+  }
+
+  .brand strong {
+    color: #ffffff;
+    font-size: 16px;
+  }
+
+  .brand span,
+  .nav-note {
+    color: #9fb0c6;
+    font-size: 12px;
+  }
+
+  .nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .nav-list a {
+    display: grid;
+    grid-template-columns: 22px 1fr;
+    align-items: center;
+    gap: 8px;
+    padding: 9px 10px;
+    border-radius: 8px;
+    color: #cdd8e7;
+  }
+
+  .nav-list a:hover,
+  .nav-list a:focus {
+    background: rgba(255, 255, 255, 0.08);
+    outline: none;
+  }
+
+  .nav-num {
+    width: 22px;
+    height: 22px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.10);
+    font-size: 11px;
+    color: #ffffff;
+  }
+
+  .content {
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .slide {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    min-height: calc(100vh - 56px);
+    box-shadow: var(--shadow);
+    padding: 34px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .slide.compact { min-height: auto; }
+
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.10em;
+    text-transform: uppercase;
+    color: var(--blue);
+  }
+
+  h1,
+  h2,
+  h3 {
+    color: var(--ink);
+    line-height: 1.12;
+  }
+
+  h1 { font-size: 42px; max-width: 860px; }
+  h2 { font-size: 30px; }
+  h3 { font-size: 17px; }
+
+  .lead {
+    max-width: 920px;
+    font-size: 17px;
+    color: var(--muted);
+  }
+
+  .two-col {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 18px;
+  }
+
+  .three-col {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .flow {
+    display: grid;
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .flow-step,
+  .panel,
+  .note,
+  .mini-card {
+    background: var(--surface-soft);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+
+  .flow-step {
+    min-height: 142px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .step-num {
+    width: 28px;
+    height: 28px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--blue-soft);
+    color: var(--blue);
+    font-weight: 800;
+  }
+
+  .panel {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .note {
+    padding: 14px 16px;
+    color: var(--muted);
+  }
+
+  .mini-card {
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .mock-window {
+    background: #ffffff;
+    border: 1px solid var(--line-strong);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 12px 34px rgba(15, 23, 42, 0.08);
+  }
+
+  .mock-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    background: #fbfcfe;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .repo-title {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: var(--ink);
+    font-weight: 700;
+  }
+
+  .repo-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 999px;
+    background: var(--teal);
+  }
+
+  .tabs,
+  .toolbar,
+  .dialog-head,
+  .dialog-foot,
+  .inline-row,
+  .split-row {
+    display: flex;
+    align-items: center;
+  }
+
+  .tabs {
+    gap: 2px;
+    padding: 0 18px;
+    background: #ffffff;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .tab {
+    padding: 12px 10px;
+    color: var(--muted);
+    border-bottom: 3px solid transparent;
+  }
+
+  .tab.active {
+    color: var(--blue);
+    border-color: var(--blue);
+    font-weight: 700;
+  }
+
+  .toolbar {
+    justify-content: space-between;
+    gap: 12px;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--line);
+    background: #fbfcfe;
+  }
+
+  .toolbar-left,
+  .toolbar-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .search,
+  .select,
+  .input,
+  .textarea,
+  select,
+  textarea {
+    min-height: 36px;
+    border: 1px solid var(--line-strong);
+    background: #ffffff;
+    border-radius: 8px;
+    color: var(--text);
+  }
+
+  .search {
+    min-width: 230px;
+    padding: 8px 12px;
+    color: var(--quiet);
+  }
+
+  .select,
+  .input {
+    padding: 8px 10px;
+  }
+
+  .button {
+    border: 1px solid var(--line-strong);
+    border-radius: 8px;
+    padding: 8px 12px;
+    background: #ffffff;
+    color: var(--text);
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    min-height: 36px;
+    cursor: pointer;
+  }
+
+  button.button { font: inherit; }
+
+  .button.primary {
+    background: var(--blue);
+    border-color: var(--blue);
+    color: #ffffff;
+  }
+
+  .button.danger {
+    background: var(--red-soft);
+    border-color: #f1b8b0;
+    color: var(--red);
+  }
+
+  .button.disabled,
+  .button:disabled {
+    background: #eef2f6;
+    color: var(--quiet);
+    cursor: not-allowed;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 24px;
+    border-radius: 999px;
+    padding: 3px 9px;
+    font-size: 12px;
+    font-weight: 750;
+    white-space: nowrap;
+  }
+
+  .chip.blue { background: var(--blue-soft); color: var(--blue); }
+  .chip.green { background: var(--green-soft); color: var(--green); }
+  .chip.amber { background: var(--amber-soft); color: var(--amber); }
+  .chip.red { background: var(--red-soft); color: var(--red); }
+  .chip.teal { background: var(--teal-soft); color: var(--teal); }
+  .chip.purple { background: var(--purple-soft); color: var(--purple); }
+  .chip.gray { background: #eef2f6; color: var(--muted); }
+
+  .table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  .table th,
+  .table td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--line);
+    text-align: left;
+    vertical-align: top;
+  }
+
+  .table th {
+    font-size: 12px;
+    color: var(--muted);
+    background: var(--surface-soft);
+    font-weight: 800;
+  }
+
+  .table tr.selected {
+    background: #f7faff;
+    box-shadow: inset 3px 0 0 var(--blue);
+  }
+
+  .mono {
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    font-size: 12px;
+    word-break: break-all;
+  }
+
+  .dialog-scrim {
+    min-height: 720px;
+    padding: 28px;
+    background:
+      linear-gradient(rgba(16, 24, 39, 0.60), rgba(16, 24, 39, 0.60)),
+      #e8edf4;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .dialog {
+    width: min(920px, 100%);
+    background: #ffffff;
+    border-radius: 12px;
+    border: 1px solid var(--line-strong);
+    box-shadow: 0 24px 80px rgba(15, 23, 42, 0.28);
+    overflow: hidden;
+  }
+
+  .dialog-head,
+  .dialog-foot {
+    justify-content: space-between;
+    gap: 12px;
+    padding: 16px 18px;
+    background: #fbfcfe;
+  }
+
+  .dialog-head { border-bottom: 1px solid var(--line); }
+  .dialog-foot { border-top: 1px solid var(--line); }
+
+  .dialog-title {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .dialog-title strong {
+    color: var(--ink);
+    font-size: 18px;
+  }
+
+  .dialog-title span {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .dialog-body {
+    padding: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  .form-grid.three {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .field label {
+    font-size: 12px;
+    color: var(--muted);
+    font-weight: 800;
+  }
+
+  .field .hint {
+    color: var(--quiet);
+    font-size: 12px;
+  }
+
+  select,
+  textarea {
+    width: 100%;
+    padding: 8px 10px;
+    font: inherit;
+  }
+
+  textarea {
+    min-height: 76px;
+    resize: vertical;
+  }
+
+  .textarea {
+    min-height: 76px;
+    padding: 10px;
+  }
+
+  .expression-input {
+    font-family: ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
+    font-size: 13px;
+  }
+
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid var(--line);
+    background: var(--surface-soft);
+    border-radius: 10px;
+  }
+
+  .toggle-row strong {
+    color: var(--ink);
+  }
+
+  .toggle-row span {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .bulk-panel,
+  .preview-panel,
+  .submit-panel {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface-soft);
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .alert {
+    border-radius: 10px;
+    padding: 12px 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .alert.amber {
+    background: var(--amber-soft);
+    color: #5f3b00;
+    border: 1px solid #f4cf86;
+  }
+
+  .alert.red {
+    background: var(--red-soft);
+    color: var(--red);
+    border: 1px solid #f1b8b0;
+  }
+
+  .alert.green {
+    background: var(--green-soft);
+    color: var(--green);
+    border: 1px solid #b9dec8;
+  }
+
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .summary-tile {
+    background: #ffffff;
+    border: 1px solid var(--line);
+    border-radius: 9px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .summary-tile span {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .summary-tile strong {
+    color: var(--ink);
+    font-size: 22px;
+  }
+
+  .inline-row {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .split-row {
+    justify-content: space-between;
+    gap: 10px;
+  }
+
+  .scenario-bar {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  .scenario-bar .button {
+    background: #ffffff;
+  }
+
+  .scenario-bar .button.active {
+    background: var(--blue-soft);
+    border-color: #a9c9fa;
+    color: var(--blue);
+  }
+
+  .validation-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+  }
+
+  .validation-list .mini-card {
+    min-height: 120px;
+  }
+
+  .footnote {
+    color: var(--muted);
+    font-size: 12px;
+  }
+
+  .hidden { display: none !important; }
+
+  @media (max-width: 1100px) {
+    .deck-shell { grid-template-columns: 1fr; }
+    .nav {
+      position: relative;
+      height: auto;
+    }
+    .nav-list {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .two-col,
+    .three-col,
+    .form-grid,
+    .form-grid.three,
+    .summary-grid,
+    .validation-list {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 720px) {
+    .content { padding: 14px; }
+    .slide { padding: 20px; }
+    h1 { font-size: 32px; }
+    h2 { font-size: 24px; }
+    .dialog-scrim { padding: 12px; }
+    .toolbar,
+    .dialog-head,
+    .dialog-foot,
+    .split-row {
+      align-items: stretch;
+      flex-direction: column;
+    }
+  }
+</style>
+</head>
+<body>
+  <div class="deck-shell">
+    <aside class="nav">
+      <div class="brand">
+        <strong>Add References Workflow</strong>
+        <span>TBv3 validation mockup</span>
+      </div>
+      <nav class="nav-list" aria-label="Mockup sections">
+        <a href="#overview"><span class="nav-num">1</span><span>Workflow</span></a>
+        <a href="#entry"><span class="nav-num">2</span><span>Entry point</span></a>
+        <a href="#dialog"><span class="nav-num">3</span><span>Dialog prototype</span></a>
+        <a href="#states"><span class="nav-num">4</span><span>States to validate</span></a>
+        <a href="#questions"><span class="nav-num">5</span><span>Review questions</span></a>
+      </nav>
+      <p class="nav-note">Open this file directly in a browser. The prototype runs locally with no server or build step.</p>
+    </aside>
+
+    <main class="content">
+      <section class="slide compact" id="overview">
+        <div>
+          <div class="eyebrow">Workflow</div>
+          <h1>Add References from a collection's References tab</h1>
+        </div>
+        <p class="lead">This mockup is for end-user validation before development. It focuses on the M42 scope: direct expression entry, optional source or collection seed, version and reference type selection, Bulk Add for concept or mapping IDs, include/exclude, cascade, preview, and submit feedback.</p>
+
+        <div class="flow">
+          <div class="flow-step">
+            <span class="step-num">1</span>
+            <strong>Open from HEAD</strong>
+            <p>User starts on a collection's References tab and clicks Add References.</p>
+          </div>
+          <div class="flow-step">
+            <span class="step-num">2</span>
+            <strong>Seed or type</strong>
+            <p>User can select a source or collection to create a base path, or type an expression directly.</p>
+          </div>
+          <div class="flow-step">
+            <span class="step-num">3</span>
+            <strong>Choose target</strong>
+            <p>Version and Reference Type determine whether IDs expand as concepts or mappings.</p>
+          </div>
+          <div class="flow-step">
+            <span class="step-num">4</span>
+            <strong>Preview</strong>
+            <p>Preview evaluates expressions and surfaces version mismatch, zero-result, and duplicate context.</p>
+          </div>
+          <div class="flow-step">
+            <span class="step-num">5</span>
+            <strong>Add</strong>
+            <p>The dialog submits expressions, then shows success and failure rows inline.</p>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="panel">
+            <h3>In scope for this mockup</h3>
+            <p>Expression mode, Bulk Add mode, Concepts and Mappings, Include and Exclude, cascade selection, locked-version warning, preview, and submit completion.</p>
+          </div>
+          <div class="panel">
+            <h3>Out of scope for this mockup</h3>
+            <p>Structured intensional filter builder, search-and-select concept browsing, and the final enhanced preview API behavior. Those remain design or API dependencies.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide" id="entry">
+        <div>
+          <div class="eyebrow">Screen 1</div>
+          <h2>References tab entry point</h2>
+        </div>
+        <p class="lead">The Add References action is visible for editors on HEAD. Released versions retain the context, but editing actions are disabled.</p>
+
+        <div class="mock-window">
+          <div class="mock-topbar">
+            <div class="repo-title"><span class="repo-dot"></span><span>CIEL Starter Dictionary</span><span class="chip green">HEAD</span></div>
+            <span class="chip gray">Collection</span>
+          </div>
+          <div class="tabs">
+            <div class="tab">Overview</div>
+            <div class="tab">Concepts</div>
+            <div class="tab">Mappings</div>
+            <div class="tab active">References</div>
+            <div class="tab">Versions + Expansions</div>
+          </div>
+          <div class="toolbar">
+            <div class="toolbar-left">
+              <strong>124 references</strong>
+              <span class="search">Search references...</span>
+              <span class="select">Expansion: Auto HEAD</span>
+              <span class="select">Display: Expression</span>
+            </div>
+            <div class="toolbar-right">
+              <span class="button primary">Add References</span>
+              <span class="button disabled">Transform</span>
+              <span class="button disabled">Remove</span>
+            </div>
+          </div>
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Expression</th>
+                <th>Ref type</th>
+                <th>Resolved repo</th>
+                <th>Results</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td class="mono">/orgs/CIEL/sources/CIEL/concepts/5089/</td>
+                <td><span class="chip blue">Extensional</span></td>
+                <td><span class="chip teal">CIEL v2024-08-01</span></td>
+                <td>1 concept, 2 mappings</td>
+                <td><span class="button">Preview</span></td>
+              </tr>
+              <tr>
+                <td class="mono">/orgs/CIEL/sources/CIEL/concepts/?conceptClass=Diagnosis</td>
+                <td><span class="chip blue">Intensional</span></td>
+                <td><span class="chip teal">CIEL v2024-08-01</span></td>
+                <td>218 concepts</td>
+                <td><span class="button">Preview</span></td>
+              </tr>
+              <tr>
+                <td class="mono">/orgs/OpenMRS/sources/MVP-CIEL/mappings/omrs-123/</td>
+                <td><span class="chip purple">Mapping</span></td>
+                <td><span class="chip teal">OpenMRS latest</span></td>
+                <td>1 mapping</td>
+                <td><span class="button">Preview</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="note">Validation prompt: Is the Add References entry point obvious enough from the References tab toolbar, and does it read as a HEAD-only editing action?</div>
+      </section>
+
+      <section class="slide" id="dialog">
+        <div>
+          <div class="eyebrow">Screen 2</div>
+          <h2>Interactive Add References dialog</h2>
+        </div>
+        <p class="lead">Use the scenario buttons or edit the controls directly. The dialog shows how the same workflow supports direct expressions, concept IDs, mapping IDs, exclusions, and preview warnings.</p>
+
+        <div class="scenario-bar" aria-label="Scenario shortcuts">
+          <button class="button active" type="button" data-scenario="conceptBulk">Concept IDs</button>
+          <button class="button" type="button" data-scenario="mappingBulk">Mapping IDs</button>
+          <button class="button" type="button" data-scenario="directExpression">Direct expression</button>
+          <button class="button" type="button" data-scenario="excludeLatest">Exclude + mismatch</button>
+          <button class="button" type="button" data-scenario="releasedDisabled">Released version</button>
+        </div>
+
+        <div class="dialog-scrim">
+          <div class="dialog" role="region" aria-label="Add References dialog mockup">
+            <div class="dialog-head">
+              <div class="dialog-title">
+                <strong>Add References</strong>
+                <span id="dialogSubtitle">CIEL Starter Dictionary - HEAD</span>
+              </div>
+              <button class="button" type="button">Close</button>
+            </div>
+
+            <div class="dialog-body" id="dialogBody">
+              <div id="releasedBanner" class="alert red hidden">
+                <strong>Viewing released version v2024-08-01.</strong>
+                <span>References can only be added from HEAD. Switch to HEAD to edit.</span>
+              </div>
+
+              <div class="form-grid">
+                <div class="field">
+                  <label for="seedSelect">Source / Collection</label>
+                  <select id="seedSelect">
+                    <option value="">Type expression directly</option>
+                    <option value="ciel">CIEL Source (CIEL)</option>
+                    <option value="openmrs">OpenMRS MVP Collection</option>
+                  </select>
+                  <span class="hint">Optional. Selecting a repo seeds the base expression path.</span>
+                </div>
+                <div class="field">
+                  <label for="versionSelect">Version</label>
+                  <select id="versionSelect">
+                    <option value="locked">Locked (Currently v2024-08-01)</option>
+                    <option value="latest">Latest (Currently v2024-08-01)</option>
+                    <option value="v2023-10-01">v2023-10-01</option>
+                    <option value="v2022-06-15">v2022-06-15</option>
+                  </select>
+                  <span class="hint">Locked is shown only when the collection expansion has a locked source version.</span>
+                </div>
+              </div>
+
+              <div id="versionWarning" class="alert amber hidden">
+                <strong>Your collection is pinned to CIEL v2024-08-01.</strong>
+                <span>This reference will differ from the locked version.</span>
+              </div>
+
+              <div class="form-grid">
+                <div class="field">
+                  <label for="typeSelect">Reference Type</label>
+                  <select id="typeSelect">
+                    <option value="concepts">Concepts</option>
+                    <option value="mappings">Mappings</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="includeSelect">Include / Exclude</label>
+                  <select id="includeSelect">
+                    <option value="include">Include</option>
+                    <option value="exclude">Exclude</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="field">
+                <label for="expressionInput">Expression</label>
+                <textarea id="expressionInput" class="expression-input" spellcheck="false"></textarea>
+                <span class="hint">User may append a resource ID or query params, or submit a base path that resolves to all resources in that repo scope.</span>
+              </div>
+
+              <div class="toggle-row">
+                <div>
+                  <strong>Bulk Add by ID</strong>
+                  <span id="bulkHint">Concept or mapping IDs expand from the seeded repo path.</span>
+                </div>
+                <button class="button" type="button" id="bulkToggle">Expand</button>
+              </div>
+
+              <div id="bulkPanel" class="bulk-panel hidden">
+                <div class="field">
+                  <label for="bulkIds" id="bulkLabel">Concept IDs (comma-separated)</label>
+                  <textarea id="bulkIds" spellcheck="false">5089, 5090, 5091, 999999</textarea>
+                  <span class="hint" id="bulkExample">Each ID becomes /orgs/CIEL/sources/CIEL/concepts/{id}/.</span>
+                </div>
+                <div id="bulkWarning" class="alert amber">
+                  <strong>These IDs will be submitted instead of the expression above.</strong>
+                  <span>Bulk Add and Expression are mutually exclusive on submit.</span>
+                </div>
+              </div>
+
+              <div class="form-grid">
+                <div class="field">
+                  <label for="cascadeSelect">Cascade</label>
+                  <select id="cascadeSelect">
+                    <option value="none">None</option>
+                    <option value="sourcemappings">Source Mappings</option>
+                    <option value="openmrs">OpenMRS</option>
+                    <option value="custom">Custom</option>
+                  </select>
+                </div>
+                <div class="field">
+                  <label for="transformSelect">Transform</label>
+                  <select id="transformSelect">
+                    <option value="none">None</option>
+                    <option value="openmrs_concept_reference">OpenMRS concept reference</option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="toggle-row">
+                <div>
+                  <strong>Preview</strong>
+                  <span>Evaluate references before saving.</span>
+                </div>
+                <button class="button" type="button" id="previewToggle">Show Preview</button>
+              </div>
+
+              <div id="previewPanel" class="preview-panel hidden"></div>
+
+              <div id="submitPanel" class="submit-panel hidden"></div>
+            </div>
+
+            <div class="dialog-foot">
+              <div class="inline-row">
+                <span class="chip gray" id="expressionCount">1 expression</span>
+                <span class="chip gray" id="requestMode">Expression mode</span>
+                <span class="chip blue" id="includeChip">Include</span>
+              </div>
+              <div class="inline-row">
+                <button class="button" type="button">Cancel</button>
+                <button class="button primary" type="button" id="submitButton">Add Reference(s)</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="note">Validation prompt: Does the relationship between Reference Type and Bulk Add IDs feel clear, especially when switching from Concepts to Mappings?</div>
+      </section>
+
+      <section class="slide compact" id="states">
+        <div>
+          <div class="eyebrow">Validation states</div>
+          <h2>Specific cases to walk through with users</h2>
+        </div>
+        <div class="validation-list">
+          <div class="mini-card">
+            <h3>Direct expression</h3>
+            <p>User does not select a source. They type or paste a full expression and add it as a single reference.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Concept Bulk Add</h3>
+            <p>User selects CIEL, keeps Reference Type as Concepts, pastes IDs, previews duplicates and missing IDs, then submits.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Mapping Bulk Add</h3>
+            <p>User switches Reference Type to Mappings and verifies that ID expansion targets /mappings/{id}/, not /concepts/{id}/.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Version mismatch</h3>
+            <p>User changes from Locked to Latest or a specific version and sees a warning before preview and submit.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Exclude reference</h3>
+            <p>User chooses Exclude and confirms that the dialog communicates include: false without changing the rest of the workflow.</p>
+          </div>
+          <div class="mini-card">
+            <h3>Released version</h3>
+            <p>User views a released collection version and sees why Add References is unavailable until switching to HEAD.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="slide compact" id="questions">
+        <div>
+          <div class="eyebrow">Review questions</div>
+          <h2>What we need to learn before development</h2>
+        </div>
+        <div class="three-col">
+          <div class="panel">
+            <h3>Workflow clarity</h3>
+            <p>Can users predict what will be submitted when both Expression and Bulk Add have values?</p>
+          </div>
+          <div class="panel">
+            <h3>Mapping support</h3>
+            <p>Do mapping authors understand that Bulk Add accepts mapping IDs after selecting Reference Type = Mappings?</p>
+          </div>
+          <div class="panel">
+            <h3>Preview trust</h3>
+            <p>Does the preview give enough confidence without implying that all final API behavior is already implemented?</p>
+          </div>
+        </div>
+        <p class="footnote">Mock data is illustrative. Final implementation should use the enhanced references preview endpoint once it supports batch expressions, new/existing grouping, version status, and typed errors.</p>
+      </section>
+    </main>
+  </div>
+
+<script>
+  const state = {
+    seed: "ciel",
+    version: "locked",
+    type: "concepts",
+    include: "include",
+    cascade: "sourcemappings",
+    transform: "none",
+    bulkOpen: true,
+    previewOpen: true,
+    submitted: false,
+    released: false
+  };
+
+  const els = {
+    seedSelect: document.getElementById("seedSelect"),
+    versionSelect: document.getElementById("versionSelect"),
+    typeSelect: document.getElementById("typeSelect"),
+    includeSelect: document.getElementById("includeSelect"),
+    expressionInput: document.getElementById("expressionInput"),
+    bulkToggle: document.getElementById("bulkToggle"),
+    bulkPanel: document.getElementById("bulkPanel"),
+    bulkIds: document.getElementById("bulkIds"),
+    bulkLabel: document.getElementById("bulkLabel"),
+    bulkExample: document.getElementById("bulkExample"),
+    bulkHint: document.getElementById("bulkHint"),
+    cascadeSelect: document.getElementById("cascadeSelect"),
+    transformSelect: document.getElementById("transformSelect"),
+    previewToggle: document.getElementById("previewToggle"),
+    previewPanel: document.getElementById("previewPanel"),
+    submitPanel: document.getElementById("submitPanel"),
+    versionWarning: document.getElementById("versionWarning"),
+    releasedBanner: document.getElementById("releasedBanner"),
+    dialogSubtitle: document.getElementById("dialogSubtitle"),
+    expressionCount: document.getElementById("expressionCount"),
+    requestMode: document.getElementById("requestMode"),
+    includeChip: document.getElementById("includeChip"),
+    submitButton: document.getElementById("submitButton"),
+    dialogBody: document.getElementById("dialogBody")
+  };
+
+  function repoBase() {
+    if (state.seed === "openmrs") {
+      return "/orgs/OpenMRS/collections/MVP-CIEL/";
+    }
+    if (state.seed === "ciel") {
+      return "/orgs/CIEL/sources/CIEL/";
+    }
+    return "";
+  }
+
+  function versionSegment() {
+    if (state.version === "locked" || state.version === "latest") return "";
+    return state.version + "/";
+  }
+
+  function seededExpression() {
+    const base = repoBase();
+    if (!base) return "/orgs/CIEL/sources/CIEL/concepts/5089/";
+    return base + versionSegment() + state.type + "/";
+  }
+
+  function bulkIds() {
+    return els.bulkIds.value
+      .split(",")
+      .map(id => id.trim())
+      .filter(Boolean);
+  }
+
+  function expandedExpressions() {
+    if (state.bulkOpen && bulkIds().length && state.seed) {
+      return bulkIds().map(id => seededExpression() + id + "/");
+    }
+    return [els.expressionInput.value.trim()].filter(Boolean);
+  }
+
+  function hasVersionMismatch() {
+    return state.seed === "ciel" && state.version !== "locked" && !state.released;
+  }
+
+  function previewRows() {
+    const ids = bulkIds();
+    if (state.bulkOpen && ids.length) {
+      return ids.map((id, index) => {
+        if (id === "999999") {
+          return {
+            expression: seededExpression() + id + "/",
+            result: "0 resources",
+            status: "Zero result",
+            statusClass: "amber",
+            note: "Will save as an empty reference if submitted."
+          };
+        }
+        if (index === 1) {
+          return {
+            expression: seededExpression() + id + "/",
+            result: state.type === "mappings" ? "1 existing mapping" : "1 existing concept",
+            status: "Already exists",
+            statusClass: "gray",
+            note: "No duplicate extensional reference will be added."
+          };
+        }
+        return {
+          expression: seededExpression() + id + "/",
+          result: state.type === "mappings" ? "1 new mapping" : "1 new concept, 2 mappings",
+          status: "Ready",
+          statusClass: "green",
+          note: "Ready to add."
+        };
+      });
+    }
+
+    const expr = els.expressionInput.value.trim() || seededExpression();
+    const isQuery = expr.includes("?");
+    return [{
+      expression: expr,
+      result: isQuery ? "218 concepts" : state.type === "mappings" ? "1 mapping" : "1 concept, 2 mappings",
+      status: "Ready",
+      statusClass: "green",
+      note: isQuery ? "Intensional expression authored directly." : "Single expression mode."
+    }];
+  }
+
+  function setScenario(name) {
+    document.querySelectorAll("[data-scenario]").forEach(button => {
+      button.classList.toggle("active", button.dataset.scenario === name);
+    });
+
+    state.submitted = false;
+    state.released = false;
+    state.seed = "ciel";
+    state.version = "locked";
+    state.type = "concepts";
+    state.include = "include";
+    state.cascade = "sourcemappings";
+    state.transform = "none";
+    state.bulkOpen = true;
+    state.previewOpen = true;
+    els.bulkIds.value = "5089, 5090, 5091, 999999";
+
+    if (name === "mappingBulk") {
+      state.type = "mappings";
+      state.cascade = "none";
+      els.bulkIds.value = "same-as-5089, q-and-a-5090, set-5091, missing-map";
+    }
+
+    if (name === "directExpression") {
+      state.seed = "";
+      state.version = "latest";
+      state.type = "concepts";
+      state.bulkOpen = false;
+      state.previewOpen = true;
+    }
+
+    if (name === "excludeLatest") {
+      state.version = "latest";
+      state.include = "exclude";
+      state.type = "concepts";
+      state.bulkOpen = false;
+      state.cascade = "none";
+    }
+
+    if (name === "releasedDisabled") {
+      state.released = true;
+      state.bulkOpen = false;
+      state.previewOpen = false;
+    }
+
+    syncControls();
+    els.expressionInput.value = name === "directExpression"
+      ? "/orgs/CIEL/sources/CIEL/concepts/?conceptClass=Diagnosis"
+      : seededExpression();
+    render();
+  }
+
+  function syncControls() {
+    els.seedSelect.value = state.seed;
+    els.versionSelect.value = state.version;
+    els.typeSelect.value = state.type;
+    els.includeSelect.value = state.include;
+    els.cascadeSelect.value = state.cascade;
+    els.transformSelect.value = state.transform;
+  }
+
+  function renderPreview() {
+    if (!state.previewOpen || state.released) {
+      els.previewPanel.classList.add("hidden");
+      els.previewToggle.textContent = "Show Preview";
+      return;
+    }
+
+    const rows = previewRows();
+    const readyCount = rows.filter(row => row.status === "Ready").length;
+    const existingCount = rows.filter(row => row.status === "Already exists").length;
+    const zeroCount = rows.filter(row => row.status === "Zero result").length;
+    const typeLabel = state.type === "mappings" ? "Mappings" : "Concepts";
+
+    const warning = hasVersionMismatch()
+      ? `<div class="alert amber">
+          <strong>${rows.length} reference(s) will resolve to a different source version than your collection is pinned to.</strong>
+          <span>Resolves to CIEL latest while the collection is pinned to CIEL v2024-08-01. The submit area should present add/rebuild, add without rebuild, or pin options when the API reports a mismatch.</span>
+        </div>`
+      : "";
+
+    const zeroWarning = zeroCount
+      ? `<div class="alert amber">
+          <strong>${zeroCount} reference(s) resolve to 0 resources.</strong>
+          <span>This is valid for intensional references and does not block saving.</span>
+        </div>`
+      : "";
+
+    els.previewPanel.innerHTML = `
+      ${warning}
+      ${zeroWarning}
+      <div class="summary-grid">
+        <div class="summary-tile"><span>Expressions</span><strong>${rows.length}</strong></div>
+        <div class="summary-tile"><span>Ready</span><strong>${readyCount}</strong></div>
+        <div class="summary-tile"><span>Existing</span><strong>${existingCount}</strong></div>
+        <div class="summary-tile"><span>Reference type</span><strong>${typeLabel}</strong></div>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Expression</th>
+            <th>Preview result</th>
+            <th>Status</th>
+            <th>Note</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(row => `
+            <tr>
+              <td class="mono">${row.expression}</td>
+              <td>${row.result}</td>
+              <td><span class="chip ${row.statusClass}">${row.status}</span></td>
+              <td>${row.note}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+    els.previewPanel.classList.remove("hidden");
+    els.previewToggle.textContent = "Hide Preview";
+  }
+
+  function renderSubmit() {
+    if (!state.submitted) {
+      els.submitPanel.classList.add("hidden");
+      return;
+    }
+
+    const rows = previewRows();
+    const successes = rows.filter(row => row.status === "Ready").length;
+    const skipped = rows.filter(row => row.status === "Already exists").length;
+    const warnings = rows.filter(row => row.status === "Zero result").length;
+
+    els.submitPanel.innerHTML = `
+      <div class="alert green">
+        <strong>References submitted.</strong>
+        <span>${successes} added, ${skipped} skipped as existing, ${warnings} saved with warnings.</span>
+      </div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Reference</th>
+            <th>Result</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows.map(row => `
+            <tr>
+              <td class="mono">${row.expression}</td>
+              <td>${row.status === "Ready" ? "Added to HEAD" : row.status === "Already exists" ? "Skipped" : "Saved as empty reference"}</td>
+            </tr>
+          `).join("")}
+        </tbody>
+      </table>
+    `;
+    els.submitPanel.classList.remove("hidden");
+  }
+
+  function render() {
+    const disabled = state.released;
+    const hasSeed = Boolean(state.seed);
+    const expressions = expandedExpressions();
+
+    els.versionSelect.disabled = disabled || !hasSeed;
+    els.typeSelect.disabled = disabled || !hasSeed;
+    els.includeSelect.disabled = disabled;
+    els.expressionInput.disabled = disabled;
+    els.bulkToggle.disabled = disabled || !hasSeed;
+    els.bulkIds.disabled = disabled || !hasSeed;
+    els.cascadeSelect.disabled = disabled;
+    els.transformSelect.disabled = disabled;
+    els.previewToggle.disabled = disabled;
+    els.submitButton.disabled = disabled || expressions.length === 0;
+
+    els.dialogSubtitle.textContent = disabled
+      ? "CIEL Starter Dictionary - v2024-08-01"
+      : "CIEL Starter Dictionary - HEAD";
+
+    els.releasedBanner.classList.toggle("hidden", !disabled);
+    els.versionWarning.classList.toggle("hidden", !hasVersionMismatch());
+    els.bulkPanel.classList.toggle("hidden", !state.bulkOpen || disabled);
+    els.bulkToggle.textContent = state.bulkOpen ? "Collapse" : "Expand";
+
+    const resourceType = state.type;
+    const singular = resourceType === "mappings" ? "Mapping" : "Concept";
+    els.bulkLabel.textContent = `${singular} IDs (comma-separated)`;
+    els.bulkExample.textContent = hasSeed
+      ? `Each ID becomes ${seededExpression()}{id}/.`
+      : "Select a source or collection above to use Bulk Add.";
+    els.bulkHint.textContent = hasSeed
+      ? `${singular} IDs expand under /${resourceType}/{id}/.`
+      : "Bulk Add requires a source or collection seed.";
+
+    els.expressionCount.textContent = `${expressions.length || 0} expression${expressions.length === 1 ? "" : "s"}`;
+    els.requestMode.textContent = state.bulkOpen && bulkIds().length && hasSeed ? "Bulk Add mode" : "Expression mode";
+    els.includeChip.textContent = state.include === "exclude" ? "Exclude" : "Include";
+    els.includeChip.className = state.include === "exclude" ? "chip red" : "chip blue";
+
+    renderPreview();
+    renderSubmit();
+  }
+
+  document.querySelectorAll("[data-scenario]").forEach(button => {
+    button.addEventListener("click", () => setScenario(button.dataset.scenario));
+  });
+
+  ["seedSelect", "versionSelect", "typeSelect", "includeSelect", "cascadeSelect", "transformSelect"].forEach(id => {
+    els[id].addEventListener("change", event => {
+      const key = {
+        seedSelect: "seed",
+        versionSelect: "version",
+        typeSelect: "type",
+        includeSelect: "include",
+        cascadeSelect: "cascade",
+        transformSelect: "transform"
+      }[id];
+      state[key] = event.target.value;
+      if (id === "seedSelect" || id === "versionSelect" || id === "typeSelect") {
+        els.expressionInput.value = seededExpression();
+      }
+      state.submitted = false;
+      render();
+    });
+  });
+
+  els.expressionInput.addEventListener("input", () => {
+    state.submitted = false;
+    render();
+  });
+
+  els.bulkIds.addEventListener("input", () => {
+    state.submitted = false;
+    render();
+  });
+
+  els.bulkToggle.addEventListener("click", () => {
+    state.bulkOpen = !state.bulkOpen;
+    state.submitted = false;
+    render();
+  });
+
+  els.previewToggle.addEventListener("click", () => {
+    state.previewOpen = !state.previewOpen;
+    render();
+  });
+
+  els.submitButton.addEventListener("click", () => {
+    state.submitted = true;
+    state.previewOpen = true;
+    render();
+  });
+
+  setScenario("conceptBulk");
+</script>
+</body>
+</html>
