@@ -68,7 +68,7 @@ These features are implemented but not spec'd — the KB should document them.
 - **Add to Collection from outside** — No "Add to Collection" CTA on concept detail, search results, hierarchy view, or any entry point
 - **Version consistency warning** — No warning dialog when concept source version ≠ collection canonical version
 - **Cascade option in Add to Collection dialog** — None/Source Mappings/custom options
-- **Create Reference from inside collection** — No "New Reference" button; no Extensional/Intensional form
+- **Add References within collection** — No `+ Add References` dialog for direct expression entry, Bulk Add, cascade, or preview
 - **Reference Preview (non-destructive)** — No preview before saving; spec complete in `manage-references.md § Reference Preview` (#2007)
 - **Reference Detail drawer** — Clicking reference rows does nothing (`SearchResults.jsx` explicitly returns early for references)
 - **Reference Transforms** — No Transform to Unversioned / Repo-Versioned / Lock to Repo Version
@@ -430,7 +430,7 @@ Several areas show oclweb3 making deliberate architectural choices that differ f
 ## Recommended Next Steps
 
 ### Greenfield (must be built from scratch)
-1. **Manage References** — Add-to-Collection dialog, New Reference form, preview, transforms, remove (blocks dictionary-building workflow)
+1. **Manage References** — Add-to-Collection dialog, Add References dialog, preview, transforms, remove (blocks dictionary-building workflow)
 2. **Expansions domain** — ExpansionForm, ExpansionList, Needs Refresh indicator, rebuild; foundational for Versions+Expansions tab
 3. **Missing repository tabs** — About tab (wire `RepoOverview.jsx`), Versions+Expansions tab, Settings tab
 4. **"Add to Collection" CTA** on concept detail — core user action for Terminology Implementers

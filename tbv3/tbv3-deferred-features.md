@@ -180,7 +180,7 @@ A structured UI for building intensional reference expressions without typing ra
 
 A mode within the Add References dialog that lets users browse or search a source's concepts and select individual ones to add, rather than typing expressions or pasting IDs. Selected concepts would be queued and submitted as a batch of extensional expressions.
 
-**Post-M42 rationale:** Significant additional UI work on top of the expression input and Bulk Add modes already in M42 scope. Bulk Add (comma-separated IDs) covers the most common multi-concept case for now.
+**Post-M42 rationale:** Significant additional UI work on top of the expression input and Bulk Add modes already in M42 scope. Bulk Add (comma-separated concept or mapping IDs, based on the selected Reference Type) covers the most common multi-resource case for now.
 
 ---
 

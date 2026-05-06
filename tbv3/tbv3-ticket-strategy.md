@@ -101,7 +101,7 @@ These KB-specified features have no corresponding actionable ticket. File these 
 
 | New Ticket Title | KB Source | Priority |
 |---|---|---|
-| CTA / Reference / Add (from outside — full Add References dialog with preview) | `manage-references.md` §Add from Outside Source | P1 |
+| CTA / Reference / Add (within collection — Add References dialog with preview) | `manage-references.md` §Add References (Within Collection) | P1 |
 | Consumer: Reference Detail (drawer view, two-tab panel, resolved resource display) | `manage-references.md` §Reference Detail | P1 |
 | CTA / Reference / Transform (bulk transform, expression rewrite) | `manage-references.md` §Transforms | P1 |
 

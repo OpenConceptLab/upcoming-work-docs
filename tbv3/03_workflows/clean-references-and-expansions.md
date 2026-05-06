@@ -60,7 +60,7 @@ Many of the benefits of collection expansions — particularly around staying cu
 
 - Extensional references created via a cascade transform are a snapshot in time; they do not pick up new content when re-expanded
 - For each such reference group, remove the extensional references and re-add them as a single cascaded (intensional or dynamic unversioned) reference
-- Use the **New Reference** flow (see `02_capabilities/manage-references.md` → "Creating References from Inside") to create the replacement dynamic reference with the appropriate cascade option
+- Use the **Add References** flow (see `02_capabilities/manage-references.md` → "Add References (Within Collection)") to create the replacement dynamic reference with the appropriate cascade option
 - Preview the new reference before saving to confirm it resolves to the expected content
 
 ---

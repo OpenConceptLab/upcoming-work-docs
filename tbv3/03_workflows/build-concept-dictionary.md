@@ -60,14 +60,14 @@ The user browses or searches CIEL to find concepts they need.
 
 **Path C — Add from a saved list:**
 
-Used when the TI already has a known list of concept IDs (e.g., from a spreadsheet, a prior system, or a shared concept set) and wants to add them all to the collection at once.
+Used when the TI already has a known list of concept or mapping IDs (e.g., from a spreadsheet, a prior system, or a shared concept set) and wants to add them all to the collection at once.
 
-1. Navigate to collection → References tab → "New Reference"
-2. Select **Bulk Add by Concept IDs**
+1. Navigate to collection → References tab → **+ Add References**
+2. Select the Reference Type (**Concepts** or **Mappings**) and expand **Bulk Add by ID**
 3. In the dialog:
    - **Source**: select the target source (e.g., CIEL)
    - **Source Version**: select a specific released version, or leave blank to use the collection's canonical source version
-   - **Concept IDs**: paste a comma-separated list of concept IDs (e.g., `1234, 5678, 91011`)
+   - **IDs**: paste a comma-separated list of concept or mapping IDs for the selected Reference Type (e.g., `1234, 5678, 91011`)
 4. Click **Preview** — the system resolves each ID and shows:
    - ✅ Found and will be added
    - ⚠️ Already in this collection (will be skipped — duplicate references with the same extensional target are not added)

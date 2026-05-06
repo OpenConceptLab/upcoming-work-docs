@@ -377,8 +377,8 @@ Only options valid for the selected references are enabled; invalid ones are ski
 
 ### Add References Entry Points
 
-- **"+ Add References" button**: opens the Add References dialog — search and select concepts/mappings from outside the collection, configure cascade, preview before adding. See `02_capabilities/manage-references.md`.
-- **"New Reference"** (in ⋮ More menu): opens the New Reference dialog — manual expression entry, supports intensional (filter-based) references. See `02_capabilities/manage-references.md`.
+- **"+ Add References" button**: opens the Add References dialog — seed from a source or collection, enter expressions directly, Bulk Add concept or mapping IDs, configure cascade, and preview before adding. See `02_capabilities/manage-references.md`.
+- Manual expression entry and intensional query-param authoring are part of the same Add References dialog; there is no separate "New Reference" surface for M42.
 
 ---
 

@@ -67,7 +67,7 @@ Used when the user is already in the collection context and wants to define what
 | Source / Collection quick-search seed | ✅ M42 |
 | Version selector (with locked-version warning) | ✅ M42 |
 | Reference Type selector (Concepts / Mappings) | ✅ M42 |
-| Bulk Add (comma-separated concept IDs) | ✅ M42 |
+| Bulk Add (comma-separated concept or mapping IDs) | ✅ M42 |
 | Include / Exclude toggle | ✅ M42 |
 | Cascade selector | ✅ M42 |
 | Preview panel (`ReferencePreviewPanel` — #2007) | ✅ M42 |
@@ -144,12 +144,14 @@ The seeded base path format depends on whether a source or collection was select
 Collapsed by default; toggled open via `[+ Bulk Add by ID ▼]`.
 
 - **Requires** a source or collection to be seeded (IDs must be expanded into full URLs; not available without a repo context)
-- Textarea accepting comma-separated concept IDs: `1234, 5678, 9012`
+- Textarea accepting comma-separated IDs for the currently selected Reference Type: `1234, 5678, 9012`
+- When Reference Type is **Concepts**, IDs expand under `concepts/`; when Reference Type is **Mappings**, IDs expand under `mappings/`
 - When Bulk Add IDs are present **and** the expression field contains a value beyond the seeded base path, show a warning:
   > ⚠️ *These IDs will be submitted instead of the expression above.*
 - On submit, each ID is expanded into a separate extensional expression using the seeded repo path:
-  - From a source: `/{ownerType}/{owner}/sources/{source}/{version}/concepts/{id}/`
-  - From a collection: `/{ownerType}/{owner}/collections/{collection}/{version}/concepts/{id}/`
+  - From a source: `/{ownerType}/{owner}/sources/{source}/{version}/{resourceType}/{id}/`
+  - From a collection: `/{ownerType}/{owner}/collections/{collection}/{version}/{resourceType}/{id}/`
+  - `{resourceType}` is `concepts` or `mappings`, based on the selected Reference Type
 - Submitted as N expressions in a single batch API call; Preview also batches all N
 
 **Bulk Add and Expression are mutually exclusive on submit:** if Bulk Add IDs are present, those N expressions are submitted and the expression field value is ignored.
@@ -189,7 +191,7 @@ Same `CascadeSelector` component used in `AddToCollectionDialog`. Applies to all
 5. Reference Type selector appears — user selects Concepts or Mappings (default: Concepts)
 6. Expression field is populated with the seeded base path; user edits as needed (adds ID, query params, etc.)
    — *or* —
-   User expands Bulk Add and pastes comma-separated concept IDs
+   User expands Bulk Add and pastes comma-separated concept or mapping IDs, depending on the selected Reference Type
 7. User sets Include/Exclude and cascade options
 8. *(Optional)* User opens Preview panel to evaluate before committing
 9. User clicks **Add Reference(s)**
@@ -204,7 +206,7 @@ Same `CascadeSelector` component used in `AddToCollectionDialog`. Applies to all
 | Mode | `expressions` array |
 |---|---|
 | Expression only | `[expressionFieldValue]` |
-| Bulk Add only | `[/{source}/{version}/concepts/{id1}/, ..., /{source}/{version}/concepts/{idN}/]` |
+| Bulk Add only | `[/{source}/{version}/{resourceType}/{id1}/, ..., /{source}/{version}/{resourceType}/{idN}/]`, where `{resourceType}` is `concepts` or `mappings` |
 | Both filled | Bulk Add takes precedence; expression field value is **not** submitted (warning shown before submit) |
 
 Include/Exclude is sent as `include: false` on the reference body for exclude references. Cascade params appended as query params per `CascadeSelector` output.
@@ -214,7 +216,7 @@ Include/Exclude is sent as `include: false` on the reference body for exclude re
 ### Validation
 
 - **Add button disabled** when: expression field is empty and no Bulk Add IDs are present
-- **Bulk Add requires a source seed**: the Bulk Add textarea is disabled with tooltip *"Select a source above to use Bulk Add"* until a source is seeded
+- **Bulk Add requires a source or collection seed**: the Bulk Add textarea is disabled with tooltip *"Select a source or collection above to use Bulk Add"* until a repo is seeded
 - **Version mismatch**: surfaced non-destructively in the Preview panel; the three action choices (add unversioned + rebuild / add without rebuilding / pin to this version) are presented in the dialog's submit area if a mismatch is detected (same pattern as `AddToCollectionDialog` — see `§ Version Consistency Warning`)
 
 ---
@@ -305,7 +307,7 @@ The Intensional reference pattern (`/orgs/:org/sources/:source/concepts/?q=...`)
 *Bulk Add expanded:*
 ```
 │ [+ Bulk Add ▲]                                          │
-│ Concept IDs (comma-separated):                          │
+│ IDs (comma-separated, for selected Reference Type):      │
 │ [1234, 5678, 9012, 3456                         ]       │
 │ ⚠ These IDs will be submitted instead of the           │
 │   expression above.                                     │
@@ -324,7 +326,7 @@ Users can evaluate what a reference expression would resolve to before committin
 | Entry Point | M42? |
 |---|---|
 | Preview panel within the Add to Collection dialog (`AddToCollectionDialog.jsx`) | ✅ M42 |
-| Preview panel within the New Reference dialog (`AddReferencesDialog.jsx`) | ✅ M42 (built as part of #2431) |
+| Preview panel within the Add References dialog (`AddReferencesDialog.jsx`) | ✅ M42 (built as part of #2431) |
 | Preview action on an existing reference row in the References list | ✅ M42 |
 
 ---
@@ -333,7 +335,7 @@ Users can evaluate what a reference expression would resolve to before committin
 
 **Endpoint:** `POST /:ownerType/:owner/collections/:collection/references/preview/`
 
-The endpoint accepts multiple expressions in a single call and returns one result object per expression. This is important for batch operations (e.g., previewing a search-result selection before adding them all at once via the New Reference dialog).
+The endpoint accepts multiple expressions in a single call and returns one result object per expression. This is important for batch operations (e.g., previewing Bulk Add IDs before adding them all at once via the Add References dialog).
 
 **Request body:**
 ```json
@@ -594,14 +596,14 @@ In `AddToCollectionDialog.jsx`:
 
 ---
 
-### Integration: New Reference Dialog
+### Integration: Add References Dialog
 
 In `AddReferencesDialog.jsx` (to be built as part of #2431):
 
 - "Preview results" toggle below the expression/cascade fields; collapsed by default
 - When open, `ReferencePreviewPanel` is mounted with the current expressions array and cascade params
 - Preview re-fires when expressions or cascade change (debounce: 500ms after last change)
-- Multiple expressions (from search-and-select mode) are passed as a single batch; results are merged in the panel
+- Multiple expressions from Bulk Add are passed as a single batch; results are merged in the panel
 
 ---
 

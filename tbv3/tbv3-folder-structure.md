@@ -70,7 +70,7 @@ Load: `04_surfaces/design-system.md` + relevant `02_capabilities/` + relevant `0
 | Collection Versions + Expansions Tab | 48 | `02_capabilities/manage-versions-and-expansions.md`, `04_surfaces/` (TBD) |
 | Concept Proposals MVP | 27 | `01_objects/concept-proposal.md`, `02_capabilities/manage-concept-proposals.md`, `03_workflows/manage-concept-proposals-workflow.md` |
 | Add to Collection (from outside) | 49 | `02_capabilities/manage-references.md` → "Adding from Outside" |
-| New Reference (from inside) | 50 | `02_capabilities/manage-references.md` → "Creating from Inside" |
+| Add References (within collection) | 50 | `02_capabilities/manage-references.md` → "Add References (Within Collection)" |
 | Reference preview | 64, 58 | `02_capabilities/manage-references.md` → "Reference Preview" |
 | Resolve to HEAD on updates | 60 | `02_capabilities/manage-references.md` → "Linked Source", `03_workflows/update-collection-source-version.md` |
 | Reference transforms (HEAD only) | 61 | `02_capabilities/manage-references.md` → "Reference Transforms" |

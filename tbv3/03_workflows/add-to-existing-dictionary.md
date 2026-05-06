@@ -47,12 +47,12 @@ Same as Build workflow step 3. Version consistency warning applies if the user i
 
 ---
 
-### 3. Add via New Reference (for Intensional/Bulk Additions)
+### 3. Add via Add References (for Intensional/Bulk Additions)
 
 If the user needs to add all concepts of a specific class or matching a query:
-1. Collection → References tab → "New Reference"
-2. Select: Intensional reference
-3. Configure the query (e.g., source = CIEL, concept_class = "Diagnosis", name contains "Malaria")
+1. Collection → References tab → **+ Add References**
+2. Seed the target source or collection, then author the expression directly
+3. Configure the query by typing query params into the expression field (e.g., source = CIEL, `conceptClass=Diagnosis`, name contains "Malaria")
 4. Preview results before saving
 5. Save → references added to HEAD; auto-expansion updated
 

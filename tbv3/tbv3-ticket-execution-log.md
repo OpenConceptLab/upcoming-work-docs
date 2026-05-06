@@ -117,7 +117,7 @@ Comment added to each: FHIR subtype architecture questions (ConceptMap/CodeSyste
 
 | New # | Title | Milestone | Notes |
 |---|---|---|---|
-| [#2431](https://github.com/OpenConceptLab/ocl_issues/issues/2431) | CTA / Reference / Add | TermBrowser v3 MVP | Full Add References dialog with preview; greenfield build |
+| [#2431](https://github.com/OpenConceptLab/ocl_issues/issues/2431) | CTA / Reference / Add | TermBrowser v3 MVP | Add References dialog within collection context with preview; supports direct expression entry and Bulk Add for concept or mapping IDs |
 | [#2432](https://github.com/OpenConceptLab/ocl_issues/issues/2432) | Consumer: Reference Detail | TermBrowser v3 MVP | Drawer view with two-tab panel; greenfield build |
 | [#2433](https://github.com/OpenConceptLab/ocl_issues/issues/2433) | CTA / Reference / Transform | TermBrowser v3 MVP | Bulk transform with before/after preview; greenfield build |
 
