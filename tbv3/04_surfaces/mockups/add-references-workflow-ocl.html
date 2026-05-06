@@ -1,0 +1,556 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Add References · OCL-styled workflow mockup</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --primary-main: #4836ff;
+    --primary-95: #f2efff;
+    --primary-90: #e2dfff;
+    --primary-80: #c3c0ff;
+    --primary-20: #1d00a5;
+    --secondary-main: #5e5c71;
+    --secondary-90: #e3e0f9;
+    --secondary-80: #c7c4dd;
+    --surface-main: #fcf8fd;
+    --surface-dark: #1c1b1f;
+    --surface-n96: #f6f2f7;
+    --surface-n94: #f0edf1;
+    --surface-n92: #ebe7ec;
+    --surface-n90: #e5e1e6;
+    --surface-nv80: #c8c5d0;
+    --text-gray: #47464f;
+    --error-main: #ba1a1a;
+    --error-95: #ffedea;
+    --white: #fff;
+    --shadow: 0 2px 8px rgba(28, 27, 31, .14);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Roboto, Arial, sans-serif;
+    background: var(--surface-n96);
+    color: var(--text-gray);
+    font-size: 14px;
+  }
+
+  .mono { font-family: "Roboto Mono", Consolas, monospace; font-size: 12px; }
+  .page { min-height: 100vh; }
+  .appbar {
+    height: 64px;
+    background: var(--white);
+    border-bottom: 1px solid var(--surface-n90);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    color: var(--primary-main);
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .logo {
+    width: 84px;
+    height: 31px;
+    fill: var(--primary-main);
+  }
+  .app-actions { display: flex; align-items: center; gap: 10px; }
+
+  .shell {
+    max-width: 1220px;
+    margin: 24px auto;
+    padding: 0 20px;
+  }
+  .repo {
+    background: var(--surface-main);
+    border-radius: 10px 10px 0 0;
+    padding: 16px;
+  }
+  .repo-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 16px;
+  }
+  .repo-chip, .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 26px;
+    padding: 2px 10px;
+    border-radius: 16px;
+    border: 1px solid var(--surface-nv80);
+    background: transparent;
+    color: var(--text-gray);
+    font-size: 13px;
+    font-weight: 500;
+  }
+  .chip.primary { color: var(--primary-main); border-color: var(--primary-80); background: var(--primary-95); }
+  .chip.secondary { color: var(--secondary-main); background: var(--secondary-90); border-color: var(--secondary-80); }
+  .chip.error { color: var(--error-main); background: var(--error-95); border-color: #ffb4ab; }
+  .repo-title {
+    margin: 10px 0 0;
+    font-size: 28px;
+    color: var(--surface-dark);
+    font-weight: 600;
+  }
+  .canonical { margin-left: 8px; font-size: 14px; color: var(--secondary-main); font-weight: 400; }
+
+  .content-card {
+    background: var(--white);
+    border: 1px solid var(--surface-n90);
+    border-top: 0;
+    box-shadow: var(--shadow);
+  }
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid var(--surface-n90);
+  }
+  .tab {
+    min-height: 48px;
+    display: inline-flex;
+    align-items: center;
+    padding: 0 18px;
+    color: var(--text-gray);
+    border-bottom: 2px solid transparent;
+    font-weight: 500;
+  }
+  .tab.active { color: var(--primary-main); border-color: var(--primary-main); }
+  .toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--surface-n90);
+  }
+  .toolbar-left, .toolbar-right { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .field-like {
+    min-height: 40px;
+    min-width: 220px;
+    border: 1px solid var(--surface-nv80);
+    border-radius: 4px;
+    background: var(--white);
+    padding: 10px 12px;
+    color: var(--secondary-main);
+  }
+
+  .button {
+    min-height: 40px;
+    border-radius: 100px;
+    border: 0;
+    padding: 0 16px;
+    background: var(--surface-n96);
+    color: var(--text-gray);
+    font: inherit;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+  }
+  .button.primary { background: var(--primary-main); color: var(--white); }
+  .button.outlined { background: var(--white); border: 1px solid var(--surface-nv80); }
+  .button.text { background: transparent; color: var(--surface-dark); }
+  .button:disabled { opacity: .55; cursor: not-allowed; }
+
+  table { width: 100%; border-collapse: collapse; }
+  th, td {
+    text-align: left;
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--surface-n90);
+    vertical-align: top;
+  }
+  th { font-size: 12px; color: var(--secondary-main); font-weight: 700; background: var(--surface-n96); }
+
+  .scrim {
+    margin-top: 26px;
+    min-height: 760px;
+    background: rgba(28, 27, 31, .36);
+    border-radius: 10px;
+    padding: 34px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+  .dialog {
+    width: min(960px, 100%);
+    background: var(--white);
+    border-radius: 28px;
+    box-shadow: 0 12px 36px rgba(28, 27, 31, .28);
+    overflow: hidden;
+  }
+  .dialog-head, .dialog-foot {
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .dialog-head { border-bottom: 1px solid var(--surface-n90); }
+  .dialog-foot { border-top: 1px solid var(--surface-n90); background: var(--surface-main); }
+  .dialog-title { font-size: 22px; color: var(--surface-dark); font-weight: 500; }
+  .dialog-subtitle { margin-top: 2px; color: var(--secondary-main); font-size: 13px; }
+  .dialog-body { padding: 20px 24px; display: flex; flex-direction: column; gap: 16px; }
+
+  .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  label { color: var(--secondary-main); font-size: 12px; font-weight: 500; }
+  select, textarea, .input {
+    min-height: 40px;
+    width: 100%;
+    border: 1px solid var(--surface-nv80);
+    border-radius: 4px;
+    background: var(--white);
+    color: var(--text-gray);
+    font: inherit;
+    padding: 9px 12px;
+  }
+  textarea { min-height: 84px; resize: vertical; }
+  .hint { color: var(--secondary-main); font-size: 12px; }
+  .mode {
+    display: inline-flex;
+    border-radius: 24px;
+    background: var(--surface-n96);
+    padding: 3px;
+    gap: 3px;
+  }
+  .mode .button { min-height: 34px; background: transparent; }
+  .mode .button.active { background: var(--white); color: var(--primary-main); box-shadow: 0 1px 2px rgba(0,0,0,.10); }
+  .notice {
+    border-radius: 4px;
+    padding: 12px 14px;
+    background: var(--primary-95);
+    border: 1px solid var(--primary-80);
+    color: var(--primary-20);
+  }
+  .notice.warn { background: #fffbdd; border-color: #f0d77b; color: #5e4a00; }
+
+  .cascade {
+    border: 1px solid var(--surface-n90);
+    border-radius: 8px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .collapse-panel {
+    border-left: 2px solid var(--surface-nv80);
+    padding-left: 14px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .chip-action {
+    border: 1px solid var(--surface-nv80);
+    border-radius: 16px;
+    min-height: 28px;
+    padding: 0 10px;
+    background: var(--white);
+    color: var(--text-gray);
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .api-call {
+    background: var(--surface-n96);
+    border-radius: 4px;
+    padding: 10px;
+    white-space: pre-wrap;
+    word-break: break-all;
+    color: var(--secondary-main);
+  }
+  .hidden { display: none !important; }
+
+  .preview-tabs { display: inline-flex; gap: 6px; }
+  .preview-table .root td { background: var(--white); font-weight: 500; }
+  .preview-table .child td { background: var(--surface-n96); }
+  .preview-table .mapping td { color: var(--secondary-main); }
+  .indent-1 { padding-left: 36px !important; }
+  .indent-2 { padding-left: 62px !important; }
+  .expander { display: inline-flex; width: 18px; color: var(--secondary-main); font-weight: 700; }
+  .footer-left { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+
+  @media (max-width: 840px) {
+    .grid { grid-template-columns: 1fr; }
+    .toolbar, .dialog-head, .dialog-foot { align-items: stretch; flex-direction: column; }
+    .scrim { padding: 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="appbar">
+    <div class="brand">
+      <svg class="logo" viewBox="0 0 306.14 111.63" aria-hidden="true"><g><circle cx="54.09" cy="55.33" r="54.09"/><path d="M177.31,109.42c-29.87,0-54.09-24.22-54.09-54.09s24.22-54.09,54.09-54.09"/><circle cx="222.74" cy="28.04" r="27.04"/><circle cx="222.74" cy="84.4" r="27.04"/><circle cx="279.1" cy="84.4" r="27.04"/></g></svg>
+      <span>TermBrowser</span>
+    </div>
+    <div class="app-actions">
+      <span class="field-like">Search OCL...</span>
+      <span class="chip secondary">Jamie</span>
+    </div>
+  </header>
+
+  <main class="shell">
+    <section class="repo">
+      <div class="repo-row">
+        <div>
+          <span class="repo-chip">🏢 Open Concept Lab</span>
+          <span class="repo-chip">📁 CIEL Starter Dictionary</span>
+          <span class="chip primary">HEAD</span>
+        </div>
+        <button class="button text">Manage ▾</button>
+      </div>
+      <div class="repo-title">CIEL Starter Dictionary <span class="canonical">https://ocl.org/collections/ciel-starter</span></div>
+    </section>
+
+    <section class="content-card">
+      <nav class="tabs">
+        <span class="tab">Overview</span>
+        <span class="tab">Concepts</span>
+        <span class="tab">Mappings</span>
+        <span class="tab active">References</span>
+        <span class="tab">Versions + Expansions</span>
+      </nav>
+      <div class="toolbar">
+        <div class="toolbar-left">
+          <strong>124 references</strong>
+          <span class="field-like">Search references...</span>
+          <span class="repo-chip">Expansion: Auto HEAD</span>
+          <span class="repo-chip">Display: Expression</span>
+        </div>
+        <div class="toolbar-right">
+          <button class="button primary">Add References</button>
+          <button class="button" disabled>Transform</button>
+          <button class="button" disabled>Remove</button>
+        </div>
+      </div>
+      <table>
+        <thead><tr><th>Expression</th><th>Ref type</th><th>Resolved repo</th><th>Results</th><th></th></tr></thead>
+        <tbody>
+          <tr><td class="mono">/orgs/CIEL/sources/CIEL/concepts/5089/</td><td><span class="chip primary">Extensional</span></td><td>CIEL v2024-08-01</td><td>1 concept, 2 mappings</td><td><button class="chip-action">Preview</button></td></tr>
+          <tr><td class="mono">/orgs/CIEL/sources/CIEL/concepts/?conceptClass=Diagnosis</td><td><span class="chip primary">Intensional</span></td><td>CIEL v2024-08-01</td><td>218 concepts</td><td><button class="chip-action">Preview</button></td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <section class="scrim">
+      <div class="dialog">
+        <div class="dialog-head">
+          <div>
+            <div class="dialog-title">Add References</div>
+            <div class="dialog-subtitle">CIEL Starter Dictionary - HEAD</div>
+          </div>
+          <button class="button text">Close</button>
+        </div>
+        <div class="dialog-body">
+          <div class="grid">
+            <div class="field">
+              <label>Source / Collection</label>
+              <select id="seed"><option value="ciel">CIEL Source (CIEL)</option><option value="openmrs">OpenMRS MVP Collection</option><option value="">Type expression directly</option></select>
+              <span class="hint">Optional seed, matching the repo autocomplete role in oclweb3.</span>
+            </div>
+            <div class="field">
+              <label>Version</label>
+              <select id="version"><option value="versionless">Versionless (resolves to CIEL v2024-08-01)</option><option value="v2023-10-01">v2023-10-01</option><option value="v2022-06-15">v2022-06-15</option></select>
+              <span class="hint" id="versionHint">Versionless resolves to the collection's locked version for CIEL: v2024-08-01.</span>
+            </div>
+          </div>
+
+          <div class="notice" id="browse">Need to search first? <button class="chip-action" id="browseButton">Open CIEL Source</button></div>
+          <div class="notice warn hidden" id="versionWarning">Your collection is pinned to CIEL v2024-08-01. This pinned reference differs from versionless resolution.</div>
+
+          <div class="grid">
+            <div class="field">
+              <label>Reference Type</label>
+              <select id="resourceType"><option value="concepts">Concepts</option><option value="mappings">Mappings</option></select>
+            </div>
+            <div class="field">
+              <label>Include / Exclude</label>
+              <select id="include"><option value="include">Include</option><option value="exclude">Exclude</option></select>
+            </div>
+          </div>
+
+          <div>
+            <div class="mode">
+              <button class="button active" type="button" data-mode="ids">Add by ID(s)</button>
+              <button class="button" type="button" data-mode="expression">Expression</button>
+            </div>
+          </div>
+
+          <div id="idsPanel" class="field">
+            <label id="idsLabel">Concept IDs</label>
+            <textarea id="ids" class="mono">5089, 5090, 5091, 999999</textarea>
+            <span class="hint" id="idsHint">Each ID becomes /orgs/CIEL/sources/CIEL/concepts/{id}/.</span>
+          </div>
+
+          <div id="expressionPanel" class="field hidden">
+            <label>Expression</label>
+            <textarea id="expression" class="mono">/orgs/CIEL/sources/CIEL/concepts/?conceptClass=Diagnosis</textarea>
+            <span class="hint">This field reacts to Source / Collection, Version, and Reference Type; users may edit it directly in Expression mode.</span>
+          </div>
+
+          <div class="cascade">
+            <div class="field">
+              <label>Cascade</label>
+              <select id="cascade"><option value="none">None</option><option value="sourcemappings" selected>Source Mappings</option><option value="sourcetoconcepts">All source concepts and mappings</option><option value="custom">Custom</option></select>
+            </div>
+            <div id="customPanel" class="collapse-panel hidden">
+              <div class="field"><label>Method</label><select><option>sourcetoconcepts - traverse to target concepts</option><option>sourcemappings - mappings only</option></select></div>
+              <div class="grid">
+                <div class="field"><label>Map Types</label><div class="input mono">Q-AND-A,CONCEPT-SET</div></div>
+                <div class="field"><label>Exclude Map Types</label><div class="input mono">SAME-AS</div></div>
+                <div class="field"><label>Cascade Levels</label><div class="input mono">*</div></div>
+                <div class="field"><label>Return Map Types</label><div class="input mono">*</div></div>
+              </div>
+            </div>
+            <div>
+              <button class="chip-action" id="advancedToggle" type="button">Advanced</button>
+              <button class="chip-action" id="apiToggle" type="button">Preview API call</button>
+            </div>
+            <div id="advancedPanel" class="collapse-panel hidden">
+              <label><input type="checkbox" id="transform"> Transform <span class="chip secondary">?</span></label>
+              <span class="hint">Appends transformReferences=openmrs_concept_reference, as in CascadeSelector.jsx.</span>
+            </div>
+            <div id="apiPanel" class="api-call mono hidden"></div>
+          </div>
+
+          <div>
+            <button class="button outlined" id="previewToggle" type="button">Show Preview</button>
+          </div>
+          <div id="preview" class="hidden"></div>
+        </div>
+        <div class="dialog-foot">
+          <div class="footer-left"><span class="chip secondary" id="countChip">4 expressions</span><span class="chip secondary" id="modeChip">Add by ID(s) mode</span><span class="chip primary" id="includeChip">Include</span></div>
+          <div><button class="button text">Cancel</button> <button class="button primary">Add Reference(s)</button></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+  const state = { mode: "ids", previewOpen: false, previewMode: "refs", stale: false };
+  const $ = id => document.getElementById(id);
+
+  function basePath() {
+    const seed = $("seed").value;
+    const type = $("resourceType").value;
+    if (!seed) return `/orgs/CIEL/sources/CIEL/${type}/`;
+    const repo = seed === "openmrs" ? "/orgs/OpenMRS/collections/MVP-CIEL/" : "/orgs/CIEL/sources/CIEL/";
+    const version = $("version").value === "versionless" ? "" : $("version").value + "/";
+    return repo + version + type + "/";
+  }
+
+  function expressions() {
+    if (state.mode === "expression") return [$("expression").value.trim()].filter(Boolean);
+    return $("ids").value.split(",").map(x => x.trim()).filter(Boolean).map(id => basePath() + id + "/");
+  }
+
+  function rows() {
+    return expressions().map((expr, index) => {
+      const zero = expr.includes("999999") || expr.includes("missing-map");
+      return {
+        expr,
+        status: zero ? "Zero result" : index === 1 ? "Already exists" : "Ready",
+        result: zero ? "0 resources" : $("resourceType").value === "mappings" ? "1 mapping" : "1 concept, 2 mappings"
+      };
+    });
+  }
+
+  function renderPreview() {
+    if (!state.previewOpen) { $("preview").classList.add("hidden"); $("previewToggle").textContent = "Show Preview"; return; }
+    const data = rows();
+    const warning = state.stale ? `<div class="notice warn">Preview may be out of date. <button class="chip-action" data-refresh>Refresh Preview</button></div>` : "";
+    const tabs = `<div class="preview-tabs"><button class="chip-action" data-view="refs">References -> Resolved</button><button class="chip-action" data-view="resources">Concepts/Mappings -> References</button></div>`;
+    const table = state.previewMode === "refs" ? refsTable(data) : resourcesTable(data);
+    $("preview").innerHTML = warning + tabs + table;
+    $("preview").classList.remove("hidden");
+    $("previewToggle").textContent = "Hide Preview";
+  }
+
+  function refsTable(data) {
+    return `<table class="preview-table"><thead><tr><th>Reference</th><th>Resolved</th><th>Status</th></tr></thead><tbody>${data.map((r, i) => `
+      <tr class="root"><td class="mono"><span class="expander">▼</span>${r.expr}</td><td>${r.result}</td><td>${chip(r.status)}</td></tr>
+      ${r.status === "Zero result" ? `<tr class="child"><td colspan="3" class="indent-1">No resolved concepts or mappings for this reference.</td></tr>` : `<tr class="child"><td class="indent-1"><span class="chip primary">${5089+i} · Nutrition counselling | CIEL</span></td><td>Included by reference</td><td>${chip("Concept")}</td></tr><tr class="mapping"><td class="indent-2"><span class="chip secondary">SAME-AS</span> WHO / ICD-11:QA70${i+1}</td><td>Resolved from parent concept</td><td>${chip("Mapping")}</td></tr>`}
+    `).join("")}</tbody></table>`;
+  }
+
+  function resourcesTable(data) {
+    return `<table class="preview-table"><thead><tr><th>Concept / Mapping</th><th>References</th><th>Status</th></tr></thead><tbody>${data.map((r, i) => `
+      <tr class="root"><td>${r.status === "Zero result" ? `<span class="expander">▶</span>No resolved resources` : `<span class="expander">▼</span><span class="chip primary">${5089+i} · Nutrition counselling | CIEL</span>`}</td><td><span class="expander">+</span>${i === 0 ? 2 : 1} Reference${i === 0 ? "s" : ""}<div class="mono" style="margin-top:6px">${r.expr}${i === 0 ? "<br>/orgs/CIEL/sources/CIEL/concepts/?conceptClass=Nutrition" : ""}</div></td><td>${chip(r.status)}</td></tr>
+      ${r.status !== "Zero result" && $("resourceType").value !== "mappings" ? `<tr class="mapping"><td class="indent-1"><span class="chip secondary">SAME-AS</span> WHO / ICD-11:QA70${i+1}</td><td>Included by this concept's cascade</td><td>${chip("Mapping")}</td></tr>` : ""}
+    `).join("")}</tbody></table>`;
+  }
+
+  function chip(label) {
+    const klass = label === "Ready" ? "primary" : label === "Zero result" ? "error" : "secondary";
+    return `<span class="chip ${klass}">${label}</span>`;
+  }
+
+  function markStale() { if (state.previewOpen) state.stale = true; render(); }
+
+  function render() {
+    const seed = $("seed").value;
+    const isIds = state.mode === "ids";
+    $("idsPanel").classList.toggle("hidden", !isIds);
+    $("expressionPanel").classList.toggle("hidden", isIds);
+    document.querySelectorAll("[data-mode]").forEach(btn => btn.classList.toggle("active", btn.dataset.mode === state.mode));
+    $("version").disabled = !seed;
+    $("resourceType").disabled = !seed;
+    $("browse").classList.toggle("hidden", !seed);
+    $("versionWarning").classList.toggle("hidden", $("version").value === "versionless" || seed !== "ciel");
+    $("idsLabel").textContent = $("resourceType").value === "mappings" ? "Mapping IDs" : "Concept IDs";
+    $("idsHint").textContent = seed ? `Each ID becomes ${basePath()}{id}/.` : "Select a source or collection to use Add by ID(s).";
+    $("version").options[0].textContent = seed === "openmrs" ? "Versionless (resolves to OpenMRS MVP v2024-04-15)" : "Versionless (resolves to CIEL v2024-08-01)";
+    $("versionHint").textContent = seed === "openmrs" ? "Versionless resolves to the selected collection's latest release." : "Versionless resolves to the collection's locked version for CIEL: v2024-08-01.";
+    $("browseButton").textContent = seed === "openmrs" ? "Open OpenMRS Collection" : "Open CIEL Source";
+    $("customPanel").classList.toggle("hidden", $("cascade").value !== "custom");
+    $("advancedPanel").classList.toggle("hidden", !$("advancedPanel").dataset.open);
+    $("apiPanel").classList.toggle("hidden", !$("apiPanel").dataset.open);
+    $("apiPanel").textContent = `PUT /orgs/OCL/collections/CIEL-Starter/references/${queryString()}\n\n${JSON.stringify({ data: { expressions: expressions() }, cascade: cascadeParams().method || "" }, null, 2)}`;
+    $("countChip").textContent = `${expressions().length} expression${expressions().length === 1 ? "" : "s"}`;
+    $("modeChip").textContent = isIds ? "Add by ID(s) mode" : "Expression mode";
+    $("includeChip").textContent = $("include").value === "exclude" ? "Exclude" : "Include";
+    $("includeChip").className = $("include").value === "exclude" ? "chip error" : "chip primary";
+    renderPreview();
+  }
+
+  function cascadeParams() {
+    if ($("cascade").value === "none") return {};
+    if ($("cascade").value === "sourcemappings") return { method: "sourcemappings" };
+    return { method: "sourcetoconcepts", mapTypes: "Q-AND-A,CONCEPT-SET", cascadeLevels: "*", returnMapTypes: "*" };
+  }
+
+  function queryString() {
+    const params = cascadeParams();
+    const parts = Object.entries(params).map(([k, v]) => `${k}=${v}`);
+    if ($("transform").checked) parts.push("transformReferences=openmrs_concept_reference");
+    return parts.length ? "?" + parts.join("&") : "";
+  }
+
+  document.querySelectorAll("[data-mode]").forEach(btn => btn.addEventListener("click", () => { state.mode = btn.dataset.mode; markStale(); }));
+  ["seed", "version", "resourceType", "include", "cascade", "ids", "expression", "transform"].forEach(id => $(id).addEventListener("input", markStale));
+  $("previewToggle").addEventListener("click", () => { state.previewOpen = !state.previewOpen; state.stale = false; render(); });
+  $("advancedToggle").addEventListener("click", () => { $("advancedPanel").dataset.open = $("advancedPanel").dataset.open ? "" : "true"; render(); });
+  $("apiToggle").addEventListener("click", () => { $("apiPanel").dataset.open = $("apiPanel").dataset.open ? "" : "true"; render(); });
+  $("preview").addEventListener("click", event => {
+    const view = event.target.closest("[data-view]");
+    if (view) { state.previewMode = view.dataset.view; render(); }
+    if (event.target.closest("[data-refresh]")) { state.stale = false; render(); }
+  });
+  render();
+</script>
+</body>
+</html>

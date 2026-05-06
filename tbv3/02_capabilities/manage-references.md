@@ -254,7 +254,9 @@ The Intensional reference pattern (`/orgs/:org/sources/:source/concepts/?q=...`)
 
 ### Visual Mockup
 
-Clickable workflow mockup: `04_surfaces/mockups/add-references-workflow.html`
+Clickable workflow mockups:
+- `04_surfaces/mockups/add-references-workflow.html`
+- `04_surfaces/mockups/add-references-workflow-ocl.html` (OCL-styled copy using oclweb3/design-system cues)
 
 *Default state (no seed selected):*
 ```
