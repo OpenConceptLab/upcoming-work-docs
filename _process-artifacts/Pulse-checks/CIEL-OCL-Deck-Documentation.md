@@ -54,33 +54,45 @@ Each milestone in this repo with a `[CIEL ...]` prefix represents a showcase dem
 - Open and closed issue counts
 - State (open/closed)
 
-**Milestones tracked (18 + 1 pending creation):**
+**Milestones tracked — refreshed from GitHub May 7, 2026:**
 
 | # | Status | Bucket | Title | % | Due | Issues |
 |---|--------|--------|-------|---|-----|--------|
-| 41 | ✅ Closed | [CIEL Bridge] | ICD11 Technical Demo E2E Workflow | 100% | Feb 26 | 20/20 |
-| 42 | 🔄 In Progress | [CIEL Implementers] | Collection & Reference Creation E2E | 53% | May 7 | 14c/12o |
-| 43 | ⬜ Upcoming | [CIEL Implementers] | Team-based Mapping & Left Panel E2E | ? | TBD | — |
-| 44 | ⬜ Upcoming | [CIEL Implementers] | Collection Maintenance E2E (+ CIEL Release) | ? | TBD | — |
+| 41 | ✅ Closed | [CIEL Bridge] | ICD11 Technical Demo E2E Workflow | 100% | Feb 26 | 20c/0o |
+| 42 | 🔄 Overdue/In Progress | [CIEL Implementers] | Collection & Reference Creation E2E | 67% | Apr 30 | 20c/10o |
+| 43 | 🔄 In Progress | [CIEL Implementers] | Team-based Mapping & Left Panel E2E Showcase | 13% | May 15 | 1c/7o |
+| 44 | 🔄 In Progress | [CIEL Implementers] | Collection Maintenance E2E (Responds to CIEL Release) | 20% | May 15 | 3c/12o |
 | 45 | ⬜ Upcoming | [CIEL Implementers] | Concept Proposals E2E Workflow | 0% | May 29 | 0c/4o |
 | 46 | ⬜ Upcoming | [CIEL Implementers] | Mapping Decision Memory Showcase | 0% | Jun 26 | 0c/3o |
-| 47 | ⬜ Upcoming | *(Mapper)* | Mapper Public Showcase — Wrap-up & Release Prep | ? | Jul | — |
-| 48 | ✅ Closed | [CIEL Source Mgmt] | CIEL Lab v2 Concept Manager — Filipe | 100% | Mar 5 | 5/5 |
-| 49 | ✅ Closed | [CIEL Source Mgmt] | CIEL Lab v2 Mock E2E — Andy | 95% | Mar 19 | 22/23 |
-| 51 | 🔴 Overdue | [CIEL Bridge] | ICD11 E2E on pre-publication dataset | 0% | Apr 2 | 0c/13o |
-| 52 | ✅ Closed | [CIEL Content] | Showcase CIEL Content E2E Technical Workflow | — | Apr 9 | — |
-| 53 | ✅ Closed | [CIEL Source Mgmt] | CIEL Source Mgmt QA Workflows | 2/2 | Apr 2 | — |
-| 54 | 🔄 In Progress | [CIEL Source Mgmt] | CIEL Release E2E Workflow — Filipe leads | 0% | May 7 | 5o |
+| 47 | ⬜ Upcoming | *(Mapper)* | Mapper Public Showcase — Wrap-up & Release Prep | 0% | Jul 8 | 0c/5o |
+| 48 | ✅ Closed | [CIEL Source Mgmt] | CIEL Lab v2 Concept Manager — Filipe | 100% | Mar 5 | 5c/0o |
+| 49 | ✅ Closed | [CIEL Source Mgmt] | CIEL Lab v2 Mock E2E — Andy | 96% | Mar 19 | 22c/1o |
+| 51 | 🔄 Due Today | [CIEL Bridge] | ICD11 E2E on pre-publication dataset | 67% | May 7 | 10c/5o |
+| 52 | ✅ Closed | [CIEL Content] | Showcase CIEL Content E2E Technical Workflow | 100% | Apr 9 | 4c/0o |
+| 53 | ✅ Closed | [CIEL Source Mgmt] | CIEL Source Mgmt QA Workflows | 100% | Apr 2 | 2c/0o |
+| 54 | 🔴 Overdue | [CIEL Source Mgmt] | CIEL Release E2E Workflow — Filipe leads | 0% | Apr 30 | 0c/8o |
 | 55 | 🔄 In Progress | [CIEL Bridge] | ICD11 E2E evaluation on country dataset | 50% | May 28 | 1c/1o |
-| 56 | ⬜ Upcoming | [CIEL Source Mgmt] | Real-life CIEL Release using CIEL Labs v2 | ? | Jun 11 | — |
-| 57 | ⬜ Upcoming | [CIEL Bridge] | CIEL Bridge Showcase (all target repos) | ? | Jun 11 | 1o |
-| 58 | ⬜ Upcoming | [CIEL Content] | Showcase Completed CIEL Content Curation | 0% | Jun 25 | — |
-| 59 | 🔄 In Progress | [CIEL Bridge] | ICD11 E2E on evaluation dataset | 25% | May 7 | 1c/3o |
+| 56 | ⬜ Upcoming | [CIEL Source Mgmt] | Real-life CIEL Release using CIEL Labs v2 | — | Jun 11 | 0c/0o |
+| 57 | ⬜ Upcoming | [CIEL Bridge] | CIEL Bridge Showcase (all target repos) | — | Jun 11 | 0c/0o |
+| 58 | ⬜ Upcoming | [CIEL Content] | Showcase Completed CIEL Content Curation | — | Jun 25 | 0c/0o |
+| 59 | 🔄 Due Today | [CIEL Bridge] | ICD11 E2E on evaluation dataset | 33% | May 7 | 2c/4o |
+| 60 | ⬜ Upcoming | [CIEL Bridge] | Mini-event: Research Presentation to DBMI | — | May 18 | 0c/0o |
 | TBD | ⬜ To Be Created | [CIEL Bridge] | ICD-11 Geneva Connectathon Prep | — | ~May 28 | — |
 
-**Summary (as of May 7 review):** 5 closed · 1 overdue · 4 in progress · 8 upcoming · 1 to be created
+**Summary (live as of May 7, 2026):** 5 closed · 1 overdue · 6 in progress (2 due today) · 7 upcoming · 1 to be created
 
-*Note: #50 is omitted — it was closed/merged into #41. The initial deck (April 29) incorrectly showed #52 and #53 as overdue; both are confirmed closed as of May 7. See team review notes below.*
+**Notable changes from the April 29 deck snapshot:**
+- #51 jumped from 0% → 67% (10 of 15 issues closed) — no longer stalled, close to deliverable
+- #42 advanced from 53% → 67% (20c/10o)
+- #59 advanced from 25% → 33% (2c/4o)
+- #43 and #44 now have confirmed due dates (May 15) and active work (13% and 20%)
+- #42 and #54 are now overdue (past Apr 30 due date)
+- **New: #60** — Mini-event: Research Presentation to DBMI, due May 18
+- Geneva Connectathon milestone still to be created
+- #47 now has 5 open issues linked (was 0)
+- #56 and #57 still have no issues linked
+
+*Note: #50 is omitted — it was closed/merged into #41. Percentages calculated as closed ÷ (closed + open). Data fetched from `OpenConceptLab/ocl_issues` via GitHub API on May 7, 2026.*
 
 ### 3. GitHub Project Board
 **URL:** https://github.com/orgs/OpenConceptLab/projects/11
@@ -168,11 +180,12 @@ Anonymous exports were blocked at end of January 2026; all exports now require a
 - Merge mapper information model refactoring PR (after Sunny review)
 
 ### Core Delivery (May–Jun)
+- MS#42: Finish Collection & Reference Creation E2E (overdue, 67% done — 10 issues remain)
+- MS#43: Team-based Mapping & Left Panel E2E (May 15, 13% — 7 issues open)
+- MS#44: Collection Maintenance E2E (May 15, 20% — 12 issues open)
 - MS#55: ICD11 E2E on country dataset (May 28)
 - CIEL Lab v2 release pipeline (#2474) → MS#56
-- Collection maintenance E2E (TBv3) → MS#44
-- Add References within Collection (#2431) → close MS#42
-- Concept Proposals MVP (#SOW-27) → MS#45
+- Concept Proposals MVP (#SOW-27) → MS#45 (May 29)
 - Save to Collection in Mapper (#SOW-40)
 
 ### Stretch / Strategic (Jun–Jul)
@@ -223,4 +236,4 @@ Phase bar progress fills are estimates based on milestone completion percentages
 - **The "In Progress" status** on the milestone tracker is inferred — GitHub does not have a native "in progress" state for milestones. A milestone is classified as in-progress here if it is open and has at least one closed issue.
 - **Phase bar fills on the timeline** are editorial estimates and should be treated as directional, not precise.
 - **Deck vs. reality lag:** The April 29 deck was reviewed on May 7 and found to be out of date in several places. Most notably, #52 and #53 were confirmed closed during the review despite showing as overdue in the tracker. The milestone tracker slide should always be regenerated from live GitHub data immediately before a team review.
-- **Data freshness:** Milestone data in the original deck was fetched on April 29, 2026. This document reflects corrections and additions made during the May 7 team review.
+- **Data freshness:** The original deck was built from April 29 data. The milestone table in this document was refreshed from the GitHub API on May 7, 2026 during the team review. Fetch again before the next review using: `gh api "repos/OpenConceptLab/ocl_issues/milestones?state=open&per_page=50"`
