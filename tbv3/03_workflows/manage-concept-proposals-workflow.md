@@ -6,6 +6,8 @@ Covers the full lifecycle of a concept proposal — from a community member iden
 
 **This is the Concept Proposals MVP per the SOW [Tracker: 27].**
 
+> **MVP scope (2026-05-07):** The current build targets **Part 2 (admin queue management)** and the structured internal proposal creation path. Part 1 (open public submission from any authenticated user) is **post-MVP** — the global submission workflow will connect to the admin infrastructure once it exists, but building the public-facing intake is deferred. Term Browser and OCL Mapper are the two supported proposal input points for MVP. Proposals are stored in sandboxed DB tables separate from the main concept index. Confirm final scope with Andy.
+
 ---
 
 ## Roles

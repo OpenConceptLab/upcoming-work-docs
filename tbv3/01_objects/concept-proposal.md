@@ -2,6 +2,12 @@
 
 A Concept Proposal is a formal request to add or modify a concept in a source that the proposer does not own. It is a first-class resource tracked with status, comments, and audit trail. Proposals from TBv3 and from OCL Mapper are stored in the same database and managed by source administrators in TBv3.
 
+> **MVP scope (2026-05-07):** The current build targets the **admin-side structured proposal workflow** — source administrators creating, reviewing, and acting on structured proposals within their own namespace. The public-facing global submission model (open submissions from anyone in the world, GitHub-issue-style, public/private visibility controls) is **explicitly out of scope** for the current MVP. Term Browser and OCL Mapper are the two supported input points for the MVP. Confirm final scoping with Andy before implementation.
+>
+> **Architectural constraint:** Proposals must be stored in **separate database tables and a separate index** from the main concept/mapping store. They must not be included in the main concept search index. This sandboxing is required so that a high volume of proposals does not slow down or pollute production search.
+>
+> **Patch model for edit proposals:** Edit concept proposals store only the fields that differ from the existing concept (analogous to HTTP PATCH). The full concept is not re-submitted — only the delta. This makes proposals lightweight and makes the diff review straightforward.
+
 "?" represents optional (non-required) attributes
 
 ## Schema

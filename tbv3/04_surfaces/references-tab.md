@@ -153,6 +153,8 @@ Expanding the orphaned group shows the individual orphaned mapping sub-rows in t
 
 **Ticket:** TBD (see `tbv3-ticket-execution-log.md` Section 6)
 
+> **Priority note (2026-05-07):** Group by Source is the preferred primary display for the manage references interface — not just an optional toggle. Jonathan described wanting references grouped by system as the baseline view, since the source header gives the shared context and individual rows become simpler. This is the "easy win" relative to the full unified manage/view interface. Treat this as a near-term priority, not a deferred enhancement.
+
 **What it is:** A view mode toggle in the toolbar that collapses the flat reference list into source-grouped sections. Designed for collections with many extensional references to the same source that differ only by concept ID and cascade setting.
 
 **Toolbar change:** "Group by: Source ▾" control; highlighted (active state) when enabled.

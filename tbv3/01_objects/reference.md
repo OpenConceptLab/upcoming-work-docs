@@ -2,12 +2,30 @@
 
 A Reference is a pointer from a Collection to content in a Source (or another Collection). References are the building blocks of a collection's "definition" — they specify what content should be included when the collection is expanded.
 
+## Inline vs. Expanded Reference Syntax
+
+OCL supports two representations of a reference. **The expanded syntax is OCL's canonical internal model.** The inline syntax is a shorthand used for data entry and display when it's sufficient.
+
+| | Inline (simplified) | Expanded |
+|---|---|---|
+| Structure | Single URL string (expression) | Per-field: system, version, code, include, cascade, etc. |
+| FHIR compatible | No | Yes |
+| Supports canonical URLs | Limited | Yes |
+| OCL feature coverage | Subset | Full |
+| Bidirectional | Can convert to expanded | Simplified display of expanded |
+
+**Design implication:** TBv3 reference management tools should be designed around the expanded model. The simplified string expression is a useful shorthand for display and quick entry, but it should not be the structural basis for the manage references interface.
+
+The expanded reference syntax specification lives in the **Resolve Reference operation** docs.
+
+---
+
 ## Schema
 
 ```
 reference:
   id: string                    # System-assigned
-  expression: string            # The URL or query that defines this reference (see types below)
+  expression: string            # Inline shorthand (see Inline vs. Expanded above)
   reference_type: string        # "Concept", "Mapping", "Source", "Collection"
   include: boolean              # true = include (default); false = exclude
   cascade: string               # Cascade option: "none" | "sourcemappings" | custom string

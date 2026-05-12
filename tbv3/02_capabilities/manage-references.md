@@ -59,6 +59,10 @@ This is the most common path for Terminology Implementers building a dictionary.
 
 Used when the user is already in the collection context and wants to define what content to include. The primary tools are a direct expression input field and an optional source/collection seed that builds the base path automatically.
 
+> **Design direction (2026-05-07):** This dialog should evolve toward a **manage references** interface — a unified surface where adding new references and editing existing ones are both possible in-context, rather than two separate views. The long-term model is closer to in-line spreadsheet editing (grouped by source) than a standalone add dialog. The current dialog is the M42 starting point; the manage/view unification is a near-term follow-on.
+>
+> **Expanded reference syntax:** OCL's underlying data model uses the **expanded reference syntax** (per-field: system, version, code, include, cascade), not the simplified inline URL string. The simplified syntax is a display/data-entry shorthand. This tool should be designed around the expanded model — it is compatible with everything OCL can do, including canonical URLs and FHIR. See the Resolve Reference operation doc for the full expanded syntax spec.
+
 ### M42 Scope
 
 | Feature | M42? |
@@ -66,11 +70,11 @@ Used when the user is already in the collection context and wants to define what
 | Add by ID(s) mode (comma-separated concept or mapping IDs) | ✅ M42 |
 | Expression mode | ✅ M42 |
 | Source / Collection quick-search seed | ✅ M42 |
-| Version selector (with locked-version warning) | ✅ M42 |
+| Version hidden by default; "Pin to a specific version" toggle | ✅ M42 |
 | Reference Type selector (Concepts / Mappings) | ✅ M42 |
 | Include / Exclude toggle | ✅ M42 |
 | Cascade selector | ✅ M42 |
-| Preview panel (`ReferencePreviewPanel` — #2007) | ✅ M42 |
+| Preview panel (`ReferencePreviewPanel` — #2007) | ⬜ Post-M42 |
 | Intensional filter builder (Property / Operator / Value) | ⬜ Post-M42 |
 | Search-and-select individual concepts from a source | ⬜ Post-M42 |
 
@@ -99,21 +103,23 @@ Searchable autocomplete of all sources and collections in OCL — not scoped to 
 - **If the user has already typed a non-empty expression** before selecting a source/collection, show a warning inline: *"This will replace the current expression."* — selection only proceeds if the user confirms (or the field is empty)
 - After a source/collection is selected, show an action link to open that source/collection at the selected version context. This lets users browse/search Concepts or Mappings directly and add from that source/collection context if they do not know the IDs to enter.
 
-#### 2. Version Selector
+#### 2. Version (hidden by default)
 
-Appears after a source/collection is selected. Shows **Versionless** at the top, followed by all released versions in descending order. HEAD is not a selectable option.
+References default to **versionless** — no version control is shown after a source is selected. Versionless is the strongly encouraged best practice, and the UI should not create friction around it.
 
-The dropdown options are ordered as follows:
+A **"Pin to a specific version"** checkbox appears below the source/collection selector, unchecked by default. When unchecked, a muted helper text is shown:
+> *Resolves to {resolved_version_id} via the collection's expansion strategy.*
 
-1. **Versionless (resolves to {resolved_version_id})** — always shown and pre-selected. Produces an **unversioned expression path** (e.g., `/orgs/CIEL/sources/CIEL/`). The resolved version shown in the label is:
-   - The collection's locked source/collection version, if the collection expansion has already locked this source/collection
-   - Otherwise, the latest released version of the selected source/collection
-2. **Released version IDs** — listed below Versionless in descending order. Selecting one produces a version-pinned expression path (e.g., `/orgs/CIEL/sources/CIEL/v2024-08-01/`).
+(The resolved version shown is the collection's locked source version if one exists, or the latest released version of the selected source/collection otherwise.)
 
-**When the collection has a locked version:** Versionless shows the locked version in its label. If the user selects a specific released version that differs from that locked version, show a warning:
+Checking "Pin to a specific version" reveals the version dropdown:
+- **Released version IDs** — listed in descending order. Selecting one produces a version-pinned expression path (e.g., `/orgs/CIEL/sources/CIEL/v2024-08-01/`).
+- HEAD is not a selectable option.
+
+**When the collection has a locked version and the user pins to a different version:** show a warning inline below the dropdown:
 > ⚠️ *Your collection is pinned to {locked_version_id}. This pinned reference will differ from the versionless resolution.*
 
-**When the collection has no locked version:** Versionless shows the latest released version of the selected source/collection in its label. No locked-version warning is shown unless the API later reports a version inconsistency.
+**When the collection has no locked version:** No locked-version warning is shown unless the API later reports a version inconsistency.
 
 #### 3. Reference Type Selector
 
@@ -190,7 +196,9 @@ Use the existing `src/components/common/CascadeSelector.jsx` design pattern:
 
 This Transform checkbox is distinct from broader reference transforms handled by #2433 from the References tab.
 
-#### 8. Preview Panel
+#### 8. Preview Panel (Post-M42)
+
+> **Deferred (2026-05-07):** Previewing a set of references in the Add References dialog is complex and not required for M42 MVP. The per-reference preview (clicking an existing reference row in the References tab to see its resolved results in the detail split view) is the M42 model. The bulk preview panel below is specified for future reference but should not be built as part of the initial Add References dialog.
 
 `ReferencePreviewPanel` (#2007), collapsed by default, toggled open via `[Preview ▼]`.
 
@@ -211,14 +219,13 @@ This Transform checkbox is distinct from broader reference transforms handled by
 1. User clicks `+ Add References` from the References tab toolbar
 2. Dialog opens; expression field is empty with placeholder
 3. *(Optional)* User types in the Source / Collection seed field and selects a source
-4. Version selector appears — Versionless is selected by default and shows the version it will resolve to; locked-version warning shown if the user pins to a conflicting specific version
+4. Helper text appears below the source: *"Resolves to {version} via the collection's expansion strategy."* The "Pin to a specific version" checkbox is shown unchecked. User checks it only if they want to pin to a specific released version; locked-version warning shown if the pinned version differs from the collection's expansion-locked version.
 5. Reference Type selector appears — user selects Concepts or Mappings (default: Concepts)
 6. Expression field is populated with the seeded base path; user edits as needed (adds ID, query params, etc.)
    — *or* —
    User uses Add by ID(s) and pastes comma-separated concept or mapping IDs, depending on the selected Reference Type
 7. User sets Include/Exclude and cascade options
-8. *(Optional)* User opens Preview panel to evaluate before committing
-9. User clicks **Add Reference(s)**
+8. User clicks **Add Reference(s)**
 10. `PUT /:ownerType/:owner/collections/:collection/references/` with `{ data: { expressions: [...] } }` + cascade query params
 11. Results displayed inline: successes in light blue rows; failures in a Reference / Error table (same pattern as `AddToCollectionDialog`)
 12. Form locks on completion; user closes
@@ -242,7 +249,7 @@ Include/Exclude is sent as `include: false` on the reference body for exclude re
 - **Add button disabled** when: expression field is empty in Expression mode or no IDs are present in Add by ID(s) mode
 - **Add by ID(s) requires a source or collection seed**: the ID textarea is disabled with tooltip *"Select a source or collection above to use Add by ID(s)"* until a repo is seeded
 - **Mode exclusivity**: Expression mode hides Add by ID(s) inputs; Add by ID(s) mode hides the Expression field and uses Source / Collection, Version, and Reference Type as the visible generated-path context
-- **Version mismatch**: surfaced non-destructively in the Preview panel; the three action choices (add unversioned + rebuild / add without rebuilding / pin to this version) are presented in the dialog's submit area if a mismatch is detected (same pattern as `AddToCollectionDialog` — see `§ Version Consistency Warning`)
+- **Version mismatch**: when the user has checked "Pin to a specific version" and selected a version that differs from the collection's locked source version, the warning is shown inline below the version dropdown. The three action choices (add unversioned + rebuild / add without rebuilding / pin to this version) are presented in the dialog's submit area if a mismatch is detected (same pattern as `AddToCollectionDialog` — see `§ Version Consistency Warning`)
 
 ---
 
@@ -280,17 +287,17 @@ Clickable workflow mockups:
 └──────────────────────────────────────────────────────────┘
 ```
 
-*After source selected (collection has a locked version):*
+*After source selected (collection has a locked version — versionless default):*
 ```
 ┌──────────────────────────────────────────────────────────┐
 │ Add References                                      [X]  │
 ├──────────────────────────────────────────────────────────┤
 │ Source / Collection                                      │
 │ [CIEL (CIEL)                                    ]       │
+│ Resolves to v2024-08-01 via the collection's expansion  │
 │                                                          │
-│ Version                                  Reference Type   │
-│ [Versionless (resolves to v2024-08-01) ▼] [Concepts ▼] │
-│                                                          │
+│ [ ] Pin to a specific version          Reference Type    │
+│                                        [Concepts      ▼] │
 │                                                          │
 │ [Add by ID(s)] [Expression]                             │
 │ Add by ID(s)                                            │
@@ -300,34 +307,30 @@ Clickable workflow mockups:
 │ Include / Exclude        Cascade                         │
 │ [Include            ▼]  [Source Mappings    ▼]         │
 │                                                          │
-│ [Preview ▼]                                             │
 ├──────────────────────────────────────────────────────────┤
 │                          [Cancel]  [Add Reference(s)]   │
 └──────────────────────────────────────────────────────────┘
 ```
 
-*User selected a specific version that differs from the versionless resolution:*
+*After checking "Pin to a specific version":*
 ```
-│ Version                                                  │
-│ [v2023-10-01                              ▼]           │
+│ [✓] Pin to a specific version          Reference Type    │
+│ [v2024-08-01                        ▼] [Concepts      ▼] │
+```
+
+*User pinned to a version that differs from the collection's locked version:*
+```
+│ [✓] Pin to a specific version                            │
+│ [v2023-10-01                        ▼]                  │
 │ ⚠ Your collection is pinned to CIEL v2024-08-01.        │
 │   This pinned reference will differ from the            │
 │   versionless resolution.                               │
 ```
 
-*(Dropdown open — collection has locked version):*
+*(Version dropdown open):*
 ```
 │ ┌─────────────────────────────────────────────────────┐ │
-│ │ ✓ Versionless (resolves to v2024-08-01)             │ │
-│ │   v2023-10-01                                       │ │
-│ │   v2022-06-15                                       │ │
-│ └─────────────────────────────────────────────────────┘ │
-```
-
-*(Dropdown open — no locked version):*
-```
-│ ┌─────────────────────────────────────────────────────┐ │
-│ │ ✓ Versionless (resolves to v2024-08-01 latest)      │ │
+│ │ ✓ v2024-08-01                                       │ │
 │ │   v2023-10-01                                       │ │
 │ │   v2022-06-15                                       │ │
 │ └─────────────────────────────────────────────────────┘ │
