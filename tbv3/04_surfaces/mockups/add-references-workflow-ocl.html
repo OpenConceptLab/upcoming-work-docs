@@ -355,21 +355,28 @@
           <button class="button text">Close</button>
         </div>
         <div class="dialog-body">
-          <div class="grid">
-            <div class="field">
-              <label>Source / Collection</label>
-              <select id="seed"><option value="ciel">CIEL Source (CIEL)</option><option value="openmrs">OpenMRS MVP Collection</option><option value="">Type expression directly</option></select>
-              <span class="hint">Optional seed, matching the repo autocomplete role in oclweb3.</span>
+          <div class="field">
+            <label>Source / Collection</label>
+            <select id="seed"><option value="ciel">CIEL Source (CIEL)</option><option value="openmrs">OpenMRS MVP Collection</option><option value="">Type expression directly</option></select>
+            <span class="hint">Optional seed, matching the repo autocomplete role in oclweb3.</span>
+          </div>
+
+          <div id="versionRow" class="hidden" style="display: flex; flex-direction: column; gap: 8px;">
+            <span class="hint" id="versionHint">Resolves to CIEL v2024-08-01 via the collection's expansion strategy.</span>
+            <label style="display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--text-gray); font-weight: 400; cursor: pointer;">
+              <input type="checkbox" id="pinVersion"> Pin to a specific version
+            </label>
+            <div id="versionDropdown" class="hidden">
+              <select id="version" style="width: 100%;">
+                <option value="v2024-08-01">v2024-08-01</option>
+                <option value="v2023-10-01">v2023-10-01</option>
+                <option value="v2022-06-15">v2022-06-15</option>
+              </select>
             </div>
-            <div class="field">
-              <label>Version</label>
-              <select id="version"><option value="versionless">Versionless (resolves to CIEL v2024-08-01)</option><option value="v2023-10-01">v2023-10-01</option><option value="v2022-06-15">v2022-06-15</option></select>
-              <span class="hint" id="versionHint">Versionless resolves to the collection's locked version for CIEL: v2024-08-01.</span>
-            </div>
+            <div class="notice warn hidden" id="versionWarning">⚠ Your collection is pinned to CIEL v2024-08-01. This pinned reference will differ from the versionless resolution.</div>
           </div>
 
           <div class="notice" id="browse">Need to search first? <button class="chip-action" id="browseButton">Open CIEL Source</button></div>
-          <div class="notice warn hidden" id="versionWarning">Your collection is pinned to CIEL v2024-08-01. This pinned reference differs from versionless resolution.</div>
 
           <div class="grid">
             <div class="field">
@@ -426,10 +433,6 @@
             <div id="apiPanel" class="api-call mono hidden"></div>
           </div>
 
-          <div>
-            <button class="button outlined" id="previewToggle" type="button">Show Preview</button>
-          </div>
-          <div id="preview" class="hidden"></div>
         </div>
         <div class="dialog-foot">
           <div class="footer-left"><span class="chip secondary" id="countChip">4 expressions</span><span class="chip secondary" id="modeChip">Add by ID(s) mode</span><span class="chip primary" id="includeChip">Include</span></div>
@@ -441,7 +444,7 @@
 </div>
 
 <script>
-  const state = { mode: "ids", previewOpen: false, previewMode: "refs", stale: false };
+  const state = { mode: "ids" };
   const $ = id => document.getElementById(id);
 
   function basePath() {
@@ -449,7 +452,7 @@
     const type = $("resourceType").value;
     if (!seed) return `/orgs/CIEL/sources/CIEL/${type}/`;
     const repo = seed === "openmrs" ? "/orgs/OpenMRS/collections/MVP-CIEL/" : "/orgs/CIEL/sources/CIEL/";
-    const version = $("version").value === "versionless" ? "" : $("version").value + "/";
+    const version = $("pinVersion").checked ? $("version").value + "/" : "";
     return repo + version + type + "/";
   }
 
@@ -458,73 +461,45 @@
     return $("ids").value.split(",").map(x => x.trim()).filter(Boolean).map(id => basePath() + id + "/");
   }
 
-  function rows() {
-    return expressions().map((expr, index) => {
-      const zero = expr.includes("999999") || expr.includes("missing-map");
-      return {
-        expr,
-        status: zero ? "Zero result" : index === 1 ? "Already exists" : "Ready",
-        result: zero ? "0 resources" : $("resourceType").value === "mappings" ? "1 mapping" : "1 concept, 2 mappings"
-      };
-    });
-  }
-
-  function renderPreview() {
-    if (!state.previewOpen) { $("preview").classList.add("hidden"); $("previewToggle").textContent = "Show Preview"; return; }
-    const data = rows();
-    const warning = state.stale ? `<div class="notice warn">Preview may be out of date. <button class="chip-action" data-refresh>Refresh Preview</button></div>` : "";
-    const tabs = `<div class="preview-tabs"><button class="chip-action" data-view="refs">References -> Resolved</button><button class="chip-action" data-view="resources">Concepts/Mappings -> References</button></div>`;
-    const table = state.previewMode === "refs" ? refsTable(data) : resourcesTable(data);
-    $("preview").innerHTML = warning + tabs + table;
-    $("preview").classList.remove("hidden");
-    $("previewToggle").textContent = "Hide Preview";
-  }
-
-  function refsTable(data) {
-    return `<table class="preview-table"><thead><tr><th>Reference</th><th>Resolved</th><th>Status</th></tr></thead><tbody>${data.map((r, i) => `
-      <tr class="root"><td class="mono"><span class="expander">▼</span>${r.expr}</td><td>${r.result}</td><td>${chip(r.status)}</td></tr>
-      ${r.status === "Zero result" ? `<tr class="child"><td colspan="3" class="indent-1">No resolved concepts or mappings for this reference.</td></tr>` : `<tr class="child"><td class="indent-1"><span class="chip primary">${5089+i} · Nutrition counselling | CIEL</span></td><td>Included by reference</td><td>${chip("Concept")}</td></tr><tr class="mapping"><td class="indent-2"><span class="chip secondary">SAME-AS</span> WHO / ICD-11:QA70${i+1}</td><td>Resolved from parent concept</td><td>${chip("Mapping")}</td></tr>`}
-    `).join("")}</tbody></table>`;
-  }
-
-  function resourcesTable(data) {
-    return `<table class="preview-table"><thead><tr><th>Concept / Mapping</th><th>References</th><th>Status</th></tr></thead><tbody>${data.map((r, i) => `
-      <tr class="root"><td>${r.status === "Zero result" ? `<span class="expander">▶</span>No resolved resources` : `<span class="expander">▼</span><span class="chip primary">${5089+i} · Nutrition counselling | CIEL</span>`}</td><td><span class="expander">+</span>${i === 0 ? 2 : 1} Reference${i === 0 ? "s" : ""}<div class="mono" style="margin-top:6px">${r.expr}${i === 0 ? "<br>/orgs/CIEL/sources/CIEL/concepts/?conceptClass=Nutrition" : ""}</div></td><td>${chip(r.status)}</td></tr>
-      ${r.status !== "Zero result" && $("resourceType").value !== "mappings" ? `<tr class="mapping"><td class="indent-1"><span class="chip secondary">SAME-AS</span> WHO / ICD-11:QA70${i+1}</td><td>Included by this concept's cascade</td><td>${chip("Mapping")}</td></tr>` : ""}
-    `).join("")}</tbody></table>`;
-  }
-
-  function chip(label) {
-    const klass = label === "Ready" ? "primary" : label === "Zero result" ? "error" : "secondary";
-    return `<span class="chip ${klass}">${label}</span>`;
-  }
-
-  function markStale() { if (state.previewOpen) state.stale = true; render(); }
-
   function render() {
     const seed = $("seed").value;
     const isIds = state.mode === "ids";
+    const pinned = $("pinVersion").checked;
+
+    // Mode toggle
     $("idsPanel").classList.toggle("hidden", !isIds);
     $("expressionPanel").classList.toggle("hidden", isIds);
     document.querySelectorAll("[data-mode]").forEach(btn => btn.classList.toggle("active", btn.dataset.mode === state.mode));
-    $("version").disabled = !seed;
-    $("resourceType").disabled = !seed;
+
+    // Version row: shown when a source is seeded; dropdown revealed when pin checkbox is checked
+    $("versionRow").classList.toggle("hidden", !seed);
+    $("versionDropdown").classList.toggle("hidden", !pinned);
+    const resolvedVersion = seed === "openmrs" ? "OpenMRS MVP v2024-04-15" : "CIEL v2024-08-01";
+    $("versionHint").textContent = `Resolves to ${resolvedVersion} via the collection's expansion strategy.`;
+    // Warning: pinned to a version that differs from the collection's locked version
+    const lockedVersion = "v2024-08-01";
+    $("versionWarning").classList.toggle("hidden", !pinned || $("version").value === lockedVersion || seed !== "ciel");
+
+    // Browse notice
     $("browse").classList.toggle("hidden", !seed);
-    $("versionWarning").classList.toggle("hidden", $("version").value === "versionless" || seed !== "ciel");
+    $("browseButton").textContent = seed === "openmrs" ? "Open OpenMRS Collection" : "Open CIEL Source";
+
+    // Reference type + IDs
+    $("resourceType").disabled = !seed;
     $("idsLabel").textContent = $("resourceType").value === "mappings" ? "Mapping IDs" : "Concept IDs";
     $("idsHint").textContent = seed ? `Each ID becomes ${basePath()}{id}/.` : "Select a source or collection to use Add by ID(s).";
-    $("version").options[0].textContent = seed === "openmrs" ? "Versionless (resolves to OpenMRS MVP v2024-04-15)" : "Versionless (resolves to CIEL v2024-08-01)";
-    $("versionHint").textContent = seed === "openmrs" ? "Versionless resolves to the selected collection's latest release." : "Versionless resolves to the collection's locked version for CIEL: v2024-08-01.";
-    $("browseButton").textContent = seed === "openmrs" ? "Open OpenMRS Collection" : "Open CIEL Source";
+
+    // Cascade panels
     $("customPanel").classList.toggle("hidden", $("cascade").value !== "custom");
     $("advancedPanel").classList.toggle("hidden", !$("advancedPanel").dataset.open);
     $("apiPanel").classList.toggle("hidden", !$("apiPanel").dataset.open);
     $("apiPanel").textContent = `PUT /orgs/OCL/collections/CIEL-Starter/references/${queryString()}\n\n${JSON.stringify({ data: { expressions: expressions() }, cascade: cascadeParams().method || "" }, null, 2)}`;
+
+    // Footer chips
     $("countChip").textContent = `${expressions().length} expression${expressions().length === 1 ? "" : "s"}`;
     $("modeChip").textContent = isIds ? "Add by ID(s) mode" : "Expression mode";
     $("includeChip").textContent = $("include").value === "exclude" ? "Exclude" : "Include";
     $("includeChip").className = $("include").value === "exclude" ? "chip error" : "chip primary";
-    renderPreview();
   }
 
   function cascadeParams() {
@@ -540,16 +515,12 @@
     return parts.length ? "?" + parts.join("&") : "";
   }
 
-  document.querySelectorAll("[data-mode]").forEach(btn => btn.addEventListener("click", () => { state.mode = btn.dataset.mode; markStale(); }));
-  ["seed", "version", "resourceType", "include", "cascade", "ids", "expression", "transform"].forEach(id => $(id).addEventListener("input", markStale));
-  $("previewToggle").addEventListener("click", () => { state.previewOpen = !state.previewOpen; state.stale = false; render(); });
+  document.querySelectorAll("[data-mode]").forEach(btn => btn.addEventListener("click", () => { state.mode = btn.dataset.mode; render(); }));
+  ["seed", "resourceType", "include", "cascade", "ids", "expression", "transform"].forEach(id => $(id).addEventListener("input", render));
+  $("pinVersion").addEventListener("change", render);
+  $("version").addEventListener("change", render);
   $("advancedToggle").addEventListener("click", () => { $("advancedPanel").dataset.open = $("advancedPanel").dataset.open ? "" : "true"; render(); });
   $("apiToggle").addEventListener("click", () => { $("apiPanel").dataset.open = $("apiPanel").dataset.open ? "" : "true"; render(); });
-  $("preview").addEventListener("click", event => {
-    const view = event.target.closest("[data-view]");
-    if (view) { state.previewMode = view.dataset.view; render(); }
-    if (event.target.closest("[data-refresh]")) { state.stale = false; render(); }
-  });
   render();
 </script>
 </body>
