@@ -1,54 +1,170 @@
 # CIEL-Based Collection Management in OCL TBv3
 
-## Overview
+Terminology Implementers (e.g. the OpenMRS community) need to build and maintain concept dictionaries that reference CIEL — and keep them current as CIEL evolves. Today this requires significant technical expertise. TBv3 makes it a first-class browser workflow across two phases: building the collection, and staying up to date over time.
 
-The core funded outcome of TBv3 is enabling a Terminology Implementer — typically an OpenMRS or DHIS2 project lead — to build and maintain a concept dictionary that references CIEL content, entirely within the browser. Today that workflow requires direct API calls, manual reference management, and significant technical expertise. TBv3 makes it accessible: browsing CIEL, selecting concepts, configuring cascade, managing versions, and updating to new CIEL releases are all first-class UI workflows.
+---
 
-## MVP Workflow
-
-**Build a new collection.** The implementer creates a new collection repository (type: Dictionary), selects a validation schema (typically OpenMRS), and begins adding concepts. They can search globally for a term, filter by Source = CIEL, and add concepts one at a time from the concept detail panel. Or they navigate directly to CIEL's source page and browse by concept class. Or they paste a list of concept IDs into a bulk-add dialog that previews what will be added, what's already included, and what couldn't be resolved.
-
-When adding the first concept from CIEL, the system records the resolved CIEL version as the collection's canonical source version. All subsequent unversioned references to CIEL resolve to that same version — keeping the collection internally consistent even as CIEL continues releasing new versions.
-
-**Configure cascade.** CIEL organizes drug regimens, question-answer sets, and concept sets using internal mappings (Q-AND-A, CONCEPT-SET). When adding a concept to their collection, the implementer selects a cascade option: None (just this concept), Source Mappings (concept + its direct mappings), or Source to Concepts (full recursive traversal — the right choice for OpenMRS Q-AND-A structures). The system adds the cascaded concepts and mappings automatically, and the expansion reflects the complete logical set.
-
-**Preview before saving.** Before committing any reference, the implementer can preview what it resolves to — how many new concepts and mappings it would add, which are already in the collection, and whether there are any version consistency warnings. This lets them test intensional references (e.g., "all CIEL diagnoses with 'malaria' in the name") before they're persisted.
-
-**Manage references.** The References tab lists all defining references for the collection — extensional (specific concept IDs) and intensional (query-based rules). From here the implementer can remove references in bulk, transform their version-pinning behavior (unpin, lock to a specific version), or rebuild the expansion after manual changes.
-
-**Version and release.** When the collection is ready to share, the implementer creates a named version (e.g., `v2024-Q3`), optionally marks it Released, and the system auto-computes the expansion asynchronously. The released version is immutable and available downstream (e.g., via FHIR API for an OpenMRS instance).
-
-**Update to a new CIEL release.** When CIEL publishes a new version, collection owners are notified. They can review a diff showing which of their included concepts changed, were retired, or are new in CIEL. They accept the update (advancing their canonical CIEL version and triggering a re-expansion) or stay on their current version. This gives implementers a structured, non-breaking path to staying current.
-
-## Mockup — Adding a Concept to a Collection
+## Workflow Overview
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│  CIEL  >  Malaria, confirmed                                    │
-│  Concept Class: Diagnosis  |  Datatype: N/A  |  ID: 167840     │
-│                                                                 │
-│  Names                          Mappings                        │
-│  ─────────────────────          ─────────────────────────────  │
-│  Malaria, confirmed (FSN, en)   SAME-AS  ICD-10: B54           │
-│  Malaria confirmée  (FSN, fr)   SAME-AS  SNOMED: 61462000      │
-│                                                                 │
-│  [ Add to Collection ▼ ]   [ Compare ]   [ Share ]             │
-└─────────────────────────────────────────────────────────────────┘
-                              │
-                              ▼
-┌────────────────────────────────────────────────────────────────┐
-│  Add to Collection                                      ✕      │
-│                                                                │
-│  Collection  [ My Org Dictionary 2024           ▼ ]           │
-│              ↳ Locked to CIEL v2024-08-01                      │
-│                                                                │
-│  Cascade     ○ None                                            │
-│              ○ Source Mappings                                 │
-│              ● Source to Concepts (OpenMRS Q-AND-A)   ← rec.  │
-│              ○ Custom                                          │
-│                                                                │
-│  Preview:  + 1 concept   + 5 mappings   0 already included     │
-│                                                                │
-│            [ Cancel ]         [ Add to Collection ]            │
-└────────────────────────────────────────────────────────────────┘
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  PHASE 1: Build                                                          │
+  │                                                                          │
+  │  Browse / Search CIEL  ──►  Open Concept Detail  ──►  Add to Collection │
+  │                                                         (choose cascade) │
+  │                                                              │           │
+  │  Bulk Add by ID list   ──────────────────────────────────────┤           │
+  │                                                              ▼           │
+  │                                                    Preview results       │
+  │                                                    (new / existing /     │
+  │                                                     version warnings)    │
+  │                                                              │           │
+  │                                                              ▼           │
+  │                                                    Expansion rebuilds    │
+  │                                                              │           │
+  │                                                              ▼           │
+  │                                                    Release named version │
+  │                                                    (immutable, FHIR-     │
+  │                                                     accessible)          │
+  └──────────────────────────────────────────────────────────────────────────┘
+
+  ┌──────────────────────────────────────────────────────────────────────────┐
+  │  PHASE 2: Maintain (repeats each time CIEL releases a new version)       │
+  │                                                                          │
+  │  CIEL releases new version                                               │
+  │           │                                                              │
+  │           ▼                                                              │
+  │  Notification → "CIEL v2025-01 available, you're on v2024-08-01"        │
+  │           │                                                              │
+  │           ▼                                                              │
+  │  Review diff — scoped to YOUR collection:                                │
+  │     · Which concepts in your collection changed?                         │
+  │     · Which were retired?                                                │
+  │     · What new content is now available?                                 │
+  │           │                                                              │
+  │     ┌─────┴──────────┐                                                  │
+  │     ▼                ▼                                                   │
+  │  Accept update    Stay on current version                                │
+  │  → advance CIEL      (no changes, no risk)                               │
+  │    version lock                                                          │
+  │  → rebuild expansion                                                     │
+  │  → release new version                                                   │
+  └──────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Screen 1 — Adding a Concept from CIEL
+
+*The implementer finds a concept in CIEL search or browse, opens the detail panel, and adds it to their collection with cascade configured for OpenMRS Q-AND-A structures.*
+
+```
+┌─────────────────────────────────────────────────────────────────────┐
+│  CIEL  ›  Malaria, confirmed                               [ × ]   │
+│  ─────────────────────────────────────────────────────────────────  │
+│  Class: Diagnosis   Datatype: N/A   ID: 167840                      │
+│                                                                     │
+│  NAMES                              MAPPINGS                        │
+│  Malaria, confirmed    FSN  en      SAME-AS   ICD-10-WHO   B54      │
+│  Malaria confirmée     FSN  fr      SAME-AS   SNOMED CT    61462000 │
+│  Malaria iliyothibitishwa  FSN  sw  NARROWER  ICD-11       1F40     │
+│                                                                     │
+│  ┌─────────────────────────────────────────────────────────────┐   │
+│  │  Add to Collection                                    ✕     │   │
+│  │                                                             │   │
+│  │  Collection   [ PIH Haiti Dictionary 2024        ▼ ]       │   │
+│  │               ↳ Locked to CIEL v2024-08-01                  │   │
+│  │                                                             │   │
+│  │  Cascade      ○ None                                        │   │
+│  │               ○ Source Mappings                             │   │
+│  │               ● Source to Concepts  (OpenMRS)  ← recommended│   │
+│  │               ○ Custom                                      │   │
+│  │                                                             │   │
+│  │  Preview      ✅ +1 concept   ✅ +5 mappings                │   │
+│  │               ⚠️  0 already in collection                   │   │
+│  │                                                             │   │
+│  │               [ Cancel ]      [ Add to Collection ]         │   │
+│  └─────────────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Screen 2 — Collection References Tab
+
+*All references defining the collection's content live here — both specific concept IDs (extensional) and query-based rules (intensional). Version consistency is tracked per source.*
+
+```
+┌────────────────────────────────────────────────────────────────────────────┐
+│  PIH Haiti Dictionary 2024  [HEAD]                                         │
+│  Overview   Concepts   Mappings   References   Versions + Expansions       │
+│  ─────────────────────────────────────────────────────────────────────     │
+│                                          [ + Add References ]  [ Rebuild ] │
+│                                                                            │
+│  ☐  Expression                                        Type       Status    │
+│  ─  ─────────────────────────────────────────────── ─────────── ────────  │
+│  ☐  /orgs/CIEL/sources/CIEL/concepts/167840/          Concept    ✅ OK     │
+│  ☐  /orgs/CIEL/sources/CIEL/concepts/1284/            Concept    ✅ OK     │
+│  ☐  /orgs/CIEL/sources/CIEL/concepts/?conceptClass=   Concept    ✅ OK     │
+│       Diagnosis&q=malaria                              Intensional         │
+│  ☐  /orgs/PIH/sources/PIH/concepts/10045/             Concept    ✅ OK     │
+│  ☐  /orgs/CIEL/sources/CIEL/concepts/1234/6789/       Concept    ⚠️ Pinned │
+│                                                                            │
+│  3 selected  [ Remove ]  [ Transform ▼ ]                                   │
+│                                                                            │
+│  Canonical source versions:  CIEL → v2024-08-01   PIH → HEAD (linked)     │
+│  Expansion:  1,847 concepts · 4,203 mappings  ·  Last built 2h ago        │
+└────────────────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## Screens 3 & 4 — CIEL Version Update: Notification → Diff Review
+
+*When CIEL publishes a new release, collection owners are notified with a summary scoped to their specific collection content — not CIEL as a whole.*
+
+```
+┌────────────────────────────────────────────────────────────────────────┐
+│  🔔  CIEL Update Available                                             │
+│  ─────────────────────────────────────────────────────────────────     │
+│  CIEL v2025-01 has been released.                                      │
+│  Your collection is pinned to CIEL v2024-08-01.                       │
+│                                                                        │
+│  Impact on PIH Haiti Dictionary 2024                                   │
+│  ──────────────────────────────────────────────────────               │
+│   ✅  12 concepts now available that match your references             │
+│   ⚠️   3 concepts in your collection were retired in CIEL              │
+│   📝  47 concepts have content changes (names, mappings, etc.)         │
+│                                                                        │
+│  [ View detailed diff ]                                                │
+│                                                                        │
+│  ─────────────────────────────────────────────────────────────────     │
+│  [ Stay on v2024-08-01 ]          [ Update to v2025-01 → ]            │
+└────────────────────────────────────────────────────────────────────────┘
+```
+
+*Clicking "View detailed diff" opens a filterable table of every concept in the collection that is affected by the new CIEL version — retired concepts require the most attention.*
+
+```
+┌──────────────────────────────────────────────────────────────────────────────┐
+│  PIH Haiti Dictionary 2024  ›  CIEL v2024-08-01 → v2025-01 diff             │
+│  ──────────────────────────────────────────────────────────────────────────  │
+│  Filter:  [ All changes ▼ ]    [ All classes ▼ ]     62 concepts affected   │
+│                                                                              │
+│  ID       Concept Name                   Class        Change                 │
+│  ───────  ─────────────────────────────  ───────────  ───────────────────── │
+│  167840   Malaria, confirmed             Diagnosis    📝 Name added (sw)     │
+│  1284     Cholera                        Diagnosis    📝 Mapping updated     │
+│  141      Typhoid fever                  Diagnosis    📝 Mapping updated     │
+│  5089     COUGH                          Finding      ⚠️  Retired            │
+│  1740     SHORTNESS OF BREATH            Finding      ⚠️  Retired            │
+│  113      Typhoid fever, NOS             Diagnosis    ⚠️  Retired            │
+│  80       WEIGHT (KG)                    Misc         ✅ Now available       │
+│  ...      ...                            ...          ...                    │
+│                                                                              │
+│  ⚠️  3 retired concepts need attention — they remain in your collection but  │
+│     will not resolve in a new expansion. Review before updating.             │
+│                                                                              │
+│  [ Cancel ]    [ Stay on v2024-08-01 ]    [ Accept & Update to v2025-01 → ] │
+└──────────────────────────────────────────────────────────────────────────────┘
 ```
