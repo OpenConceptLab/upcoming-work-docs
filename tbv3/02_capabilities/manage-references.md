@@ -881,12 +881,56 @@ When a concept or mapping is fetched in a collection context, the API is called 
 
 ## Linked Source: Resolve to HEAD During Updates
 
-> **Open question:** Whether HEAD-resolution during updates applies only to sources the user owns, or also to sources they do not own (e.g., CIEL), is still unresolved and requires a dedicated design decision. This is one of multiple workflow design areas that deserve dedicated time in the near term.
+> **Decision (2026-05-13, ADR-007):** HEAD-resolution is allowed for any source — not limited to sources the user owns — provided the source has explicitly enabled it via a repository-level setting (`allow_head_as_linked_source: true`). Source owners control this opt-in; it is off by default.
 
-When a collection is being updated (typically after a new CIEL version is released):
-- Unversioned references that previously resolved to a released version now need to be evaluated against HEAD of the source (to pick up new content) and then locked again when a new collection version is created
-- This is part of the Update Collection to Latest Source Version workflow (see `03_workflows/`)
-- The UI presents this as a guided flow, not a raw reference management task (see workflow doc for details)
+### What Linked Source Does
+
+A **linked source** is a per-collection, per-source configuration that overrides which version of a source is used when resolving unversioned references during expansion. By default, unversioned references resolve against the collection's locked source version. Linked source lets the collection point at a different version — including HEAD.
+
+Primary use cases:
+- **Pre-release testing:** A source administrator tests new unreleased content in a collection before a formal source release
+- **Continuous integration:** A collection that intentionally tracks upstream HEAD (e.g., a CIEL development test collection)
+
+Linked source is **not** the recommended path for Terminology Implementers doing routine collection updates. The standard Update Collection workflow ([`update-collection-source-version.md`](../03_workflows/update-collection-source-version.md)) is the correct path for responding to a new CIEL release.
+
+### Source-Level Setting: `allow_head_as_linked_source`
+
+Source repositories have a boolean setting `allow_head_as_linked_source` (default: `false`).
+
+- When `false`: collections may only link to a specific released version of this source; HEAD is not available as a linked source target
+- When `true`: collections may link to this source's HEAD, resolving unversioned references against live (unreleased) content
+
+Source owners configure this in the repository Settings tab under "Advanced." CIEL's public source has this off; private/development source repos typically have it on.
+
+### Linked Source Configuration in a Collection
+
+Collections configure linked sources per referenced source:
+
+- **Setting location:** Collection → Settings → "Linked Sources" section
+- **Per-source row:** Source name | Linked version (dropdown: released versions, plus HEAD if `allow_head_as_linked_source = true` on the source)
+- **Default:** No linked source configured; behavior is the standard locked source version resolution
+
+### Effect on Reference Resolution
+
+| Collection's linked source config | Reference type | Resolves to |
+|---|---|---|
+| Not configured | Unversioned | Locked source version (default) |
+| Linked to released version v2026-04 | Unversioned | v2026-04 |
+| Linked to HEAD (source must allow it) | Unversioned | Source HEAD at expansion time |
+| Any | Repo-versioned | The pinned repo version (linked source does not affect these) |
+
+### Snapshot at Version Creation
+
+When a collection version is created, `resolved_repo_versions` on the auto-expansion captures the exact source version used at that moment. For HEAD-linked sources, the HEAD version at creation time becomes the expansion's locked version — the linked source configuration is a HEAD-only setting and does not travel into released versions.
+
+### UI Indicators
+
+- Collection header shows a "Linked Source" chip per configured source (e.g., `CIEL: HEAD` or `CIEL: v2026-04`)
+- If the linked source is HEAD and the source has unreleased changes since the last expansion, a "Needs Refresh" indicator appears on affected expansions
+
+### M44 Scope
+
+M44 delivers the foundation: the source-level opt-in setting, the collection-level linked source configuration, and the resolution behavior change. The full **linked source test workflow** — a guided "try this new version, see impact, commit or cancel" UI (from #2347) — is post-M44. The "test without committing" use case in M44 is covered by the **Create Similar Expansion** capability: the user creates a custom expansion with the new source version pinned, reviews the diff, and decides before committing to a rebuild.
 
 ---
 

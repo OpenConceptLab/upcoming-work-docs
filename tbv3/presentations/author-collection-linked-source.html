@@ -475,8 +475,8 @@
         </tr>
         <tr>
           <td>Authorization basis</td>
-          <td><span class="pill">Namespace</span> (org/user)</td>
-          <td>Resolution must be consistent across all users of the same collection.</td>
+          <td><span class="pill">Permission</span> to access HEAD of the source</td>
+          <td>Resolution must be consistent across all users of the same collection. Namespace is the most common way permission is granted, but it is not the gate — users with HEAD access to a source in another org can use the HEAD-link. The URL registry handles cross-org canonical URL resolution.</td>
         </tr>
         <tr>
           <td>Does the reference text change?</td>
@@ -763,11 +763,12 @@
           </td>
         </tr>
         <tr>
-          <td>Multi-org namespaces</td>
+          <td><s>Multi-org namespaces</s> <span class="pill green">Resolved</span></td>
           <td>
-            If a source and collection live in different orgs (e.g., MSF + MSF OCB), namespace-based
-            authorization won't automatically grant HEAD access. The URL registry can map cross-org canonical
-            URLs. Needs validation with MSF as a reference implementation.
+            Authorization is permission-based, not namespace-based — a user with HEAD access to a source in
+            another org (e.g., MSF OCB) can HEAD-link it from their collection. The URL registry already
+            handles cross-org canonical URL resolution. Namespace is the common case, not the gate.
+            (Decided 2026-05-13 squad call.)
           </td>
         </tr>
       </tbody>

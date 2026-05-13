@@ -4,7 +4,7 @@
 > - Separate documentation (immediate, solid, actionable) from planning (fluid, ambitious, on hold). Features may be MVP-for-v3 or aspirational — document accordingly.
 > - After refining this documentation, supplement the human walkthrough of OCLv3 with some way for Claude to visualize OCLv3 on its own.
 
-_Last updated: 2026-03-27 (cascade spec, in-list reference summary, expansion comparison, concept.md cleanup, inline To Do audit, oclweb3 implementation comparison)_
+_Last updated: 2026-05-13 (ADR-007 resolved — linked source HEAD-resolution opt-in; author-collection-with-linked-source.md workflow added; cascade spec, in-list reference summary, expansion comparison, concept.md cleanup, inline To Do audit, oclweb3 implementation comparison)_
 
 ---
 
@@ -38,8 +38,8 @@ These items have been explicitly called out as needing focused design time — n
 
 ### Open Architectural / Design Decisions
 
-- [ ] **`DECIDE`** `03_workflows/build-concept-dictionary.md` + `02_capabilities/manage-references.md` — **HEAD references / Linked Sources:** OCL currently only allows adding concepts from released source versions. Collection managers who also own the source need a way to reference HEAD content. Decision so far: not MVP, carve out space for it. Two sub-questions remain:
-  - [ ] **`DECIDE`** — **Own vs. not-own scope for HEAD-resolution:** Does HEAD-resolution during collection updates apply only to sources the user owns, or also to sources they do not own (e.g., CIEL)? Needed before the Update Collection workflow can be fully specced. (Noted as open in `manage-references.md`.)
+- [x] **`DECIDE`** `02_capabilities/manage-references.md` — **HEAD references / Linked Sources:** **Resolved 2026-05-13 (ADR-007).** HEAD-resolution is allowed for any source (not limited to owned sources) if the source has `allow_head_as_linked_source = true` in its settings. Full spec in `02_capabilities/manage-references.md` § Linked Source. M44 delivers the source setting + collection config + resolution behavior; the full linked source test workflow UI (#2347) is post-M44.
+  - [x] **`DECIDE`** — **Own vs. not-own scope for HEAD-resolution:** **Resolved.** Ownership-agnostic; gated on source-level opt-in `allow_head_as_linked_source`. See ADR-007.
 
 - [x] **`DECIDE`** `02_capabilities/configure-repository.md` — **Dropdown config source:** **Resolved post-v3.** Dropdown Configuration UI and Concept Templates are deferred. v3 uses OCL global sources for dropdowns. See `tbv3-deferred-features.md`.
 
@@ -107,7 +107,7 @@ All four surface files need a reconciliation pass against current v3 designs. Jo
 
 - [ ] **`WRITE`** `01_objects/concept.md` — **Hierarchy attributes:** Add `parent_concept_url` and any related hierarchy attributes to the concept schema once the hierarchy model is confirmed.
 
-- [ ] **`WRITE`** `05_decisions/adrs.md` — **New ADRs:** Jon to review all existing ADRs for accuracy and add new records for: Linked Sources design, Canonical URL registry approach, and collection-level validation schema. (Flagged at the top of `adrs.md`.)
+- [ ] **`WRITE`** `05_decisions/adrs.md` — **New ADRs:** Jon to review all existing ADRs for accuracy and add new records for: Canonical URL registry approach and collection-level validation schema. (Linked Sources design resolved as ADR-007.)
 
 ---
 
@@ -172,11 +172,11 @@ These were flagged inline but are already adequately addressed elsewhere:
 | Priority | Open | Resolved / Deferred |
 |---|---|---|
 | Dedicated Sessions | 5 | 1 |
-| P1 | 6 | 8 |
+| P1 | 5 | 9 |
 | P2 | 10 | 27 |
 | P3 | 4 | 3 |
 | Dismissed | — | 3 |
-| **Total active** | **22** | **42** |
+| **Total active** | **21** | **43** |
 
 | Action Type | Open |
 |---|---|

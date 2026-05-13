@@ -20,6 +20,30 @@ This workflow directly implements:
 
 ---
 
+## M44 Scope
+
+This is the primary workflow deliverable for Milestone 44 ("CIEL Implementers — Collection Maintenance E2E Workflow"). The table below maps the M44 showcase story steps to their scope status.
+
+| Showcase step | M44? | Notes |
+|---|---|---|
+| Receive in-app notification when CIEL releases a new version | ✅ M44 | #2348 — notification bell + notification center + collection banner |
+| Review what changed (added/retired/modified concepts, browsable diff) | ✅ M44 | #2349 — version comparison view |
+| Test new version without committing (Create Similar Expansion) | ✅ M44 | "Create Similar" on the HEAD auto-expansion with new CIEL version pinned; #2501 — in-progress indicator while expansion builds |
+| View impact on the collection (before/after expansion comparison) | ✅ M44 | Expansion comparison; #2493 — expansion selector on Concepts/Mappings tabs |
+| Accept update → rebuild expansion against new version | ✅ M44 | #2349 — "Accept Update" rebuilds auto-expansion |
+| Review post-rebuild diff and confirm | ✅ M44 | #2349 |
+| Create new collection version to publish | ✅ M44 | Existing version creation flow |
+| Test new version via linked source (HEAD or pre-release access) | ⬜ Post-M44 | Full linked source test workflow from #2347; foundation (source setting + collection config) ships M44 |
+| Rollback after applying an update | ⬜ Deferred | Depends on #2284 (Restore/Revert), which is deferred |
+| Per-concept accept/reject during update | ⬜ Deferred | See `tbv3-deferred-features.md` |
+| Downstream notification to dependent collection owners | ⬜ Deferred | Requires reverse-dependency graph |
+| Scheduled / batched dependency updates | ⬜ Deferred | Post-M44 |
+| Update history / audit log | ⬜ Deferred | Post-M44 |
+
+**M44 narrative:** The user receives a notification, reviews the diff between CIEL versions, creates a test expansion to verify impact (using "Create Similar" with the new CIEL version), and — when satisfied — triggers a rebuild of their auto-expansion and publishes a new collection version. This covers the core decision-making loop without requiring the full test-workflow UI or rollback capability.
+
+---
+
 ## Roles
 
 - **Primary actor**: Terminology Implementer (collection owner)

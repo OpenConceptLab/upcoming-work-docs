@@ -216,3 +216,14 @@ Version locking (see `05_decisions/adrs.md` ADR-003 for full rationale) ensures 
 | Set default expansion | Owner access to collection |
 | Delete expansion | Owner access to collection |
 | Dismiss dependency notification | Owner access to collection |
+
+---
+
+## Restore/Revert Collection HEAD (Deferred)
+
+> **Status: Deferred (2026-05-13).** The Restore/Revert capability (#2284) — which would allow a collection owner to reset HEAD references to match a previous version's state — is not in scope for M44 or v3. Two design decisions must be resolved before implementation:
+>
+> 1. **Version history behavior:** Option A — newer versions remain in history; HEAD is silently updated to match the target version's state. Option B — a new version is created that is an explicit copy of the target, preserving a clear audit trail.
+> 2. **Expansion handling:** Option A — references are re-evaluated at restore time against current source content. Option B — the target version's expansion is copied as-is, preserving the exact resolved content from that point in time.
+>
+> When the team is ready to prioritize this feature, resolve both decisions first and use this file's spec sections as the implementation anchor.

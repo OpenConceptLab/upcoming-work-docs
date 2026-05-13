@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Collection Maintenance — M44 MVP Workflow | OCL</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.0/dist/reveal.css">
+  <style>
+    :root {
+      --ocl-blue: #1565C0;
+      --ocl-teal: #00695C;
+      --ocl-amber: #E65100;
+      --ocl-green: #2E7D32;
+      --ocl-gray: #546E7A;
+      --m44-color: #2E7D32;
+      --post-m44-color: #1565C0;
+      --deferred-color: #757575;
+    }
+
+    .reveal-viewport { background: #F5F7FA; }
+
+    .reveal {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 17px;
+      color: #263238;
+    }
+
+    .reveal .slides section {
+      padding: 20px 36px;
+      text-align: left;
+      height: 100%;
+      box-sizing: border-box;
+    }
+
+    /* Title slide */
+    .slide-title {
+      background: linear-gradient(135deg, #1565C0 0%, #00695C 100%) !important;
+      display: flex !important;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center !important;
+    }
+    .slide-title h1 { font-size: 2em; font-weight: 800; color: white !important; margin-bottom: 0.2em; }
+    .slide-title .sub1 { font-size: 1em; color: rgba(255,255,255,0.9); margin-bottom: 0.3em; }
+    .slide-title .sub2 { font-size: 0.85em; color: rgba(255,255,255,0.75); }
+    .slide-title .meta { font-size: 0.7em; color: rgba(255,255,255,0.55); margin-top: 1.5em; }
+
+    /* Slide header bar */
+    .slide-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #E0E0E0;
+      flex-shrink: 0;
+    }
+    .step-badge {
+      width: 32px; height: 32px; border-radius: 50%;
+      background: var(--ocl-blue); color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1em; flex-shrink: 0;
+    }
+    .slide-h { font-size: 1.2em; font-weight: 700; color: #263238; }
+
+    /* Badges */
+    .badge {
+      display: inline-block; padding: 2px 9px; border-radius: 10px;
+      font-size: 0.65em; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;
+    }
+    .badge-m44    { background: #E8F5E9; color: var(--m44-color);       border: 1px solid #A5D6A7; }
+    .badge-post   { background: #E3F2FD; color: var(--post-m44-color);  border: 1px solid #90CAF9; }
+    .badge-defer  { background: #EEEEEE; color: var(--deferred-color);  border: 1px solid #BDBDBD; }
+    .badge-q      { background: #FFF3E0; color: var(--ocl-amber);       border: 1px solid #FFCC80; }
+    .ml-auto { margin-left: auto; }
+
+    .ticket {
+      display: inline-block; background: #E8EAF6; border: 1px solid #9FA8DA;
+      color: #283593; border-radius: 4px; padding: 1px 7px;
+      font-size: 0.68em; font-family: monospace;
+    }
+
+    /* Two-column layout */
+    .two-col {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+      height: calc(100% - 62px);
+    }
+    .col { display: flex; flex-direction: column; gap: 10px; }
+
+    /* Label pills */
+    .lbl {
+      display: inline-block; border-radius: 4px; padding: 2px 8px;
+      font-size: 0.68em; font-weight: 700; letter-spacing: 0.05em;
+      margin-bottom: 4px;
+    }
+    .lbl-user   { background: #E8F5E9; color: #1B5E20; }
+    .lbl-system { background: #E3F2FD; color: #0D47A1; }
+    .lbl-decide { background: #FFF3E0; color: #BF360C; }
+
+    /* Detail list */
+    .dl { list-style: none; padding: 0; margin: 0; }
+    .dl li {
+      padding: 3px 0 3px 18px; position: relative;
+      font-size: 0.83em; line-height: 1.4;
+    }
+    .dl li:before { content: '→'; position: absolute; left: 0; color: var(--ocl-teal); font-weight: 700; }
+
+    /* Callout boxes */
+    .box { border-radius: 0 6px 6px 0; padding: 9px 13px; font-size: 0.8em; line-height: 1.4; }
+    .box-info   { background: #E3F2FD; border-left: 4px solid #1976D2; color: #0D47A1; }
+    .box-q      { background: #FFF3E0; border-left: 4px solid #E65100; color: #BF360C; }
+    .box-defer  { background: #EEEEEE; border-left: 4px solid #9E9E9E; color: #546E7A; }
+    .box-ok     { background: #E8F5E9; border-left: 4px solid #43A047; color: #1B5E20; }
+
+    /* UI Mockup frame */
+    .mockup {
+      background: #FAFAFA; border: 1px solid #E0E0E0;
+      border-radius: 8px; overflow: hidden; font-size: 0.76em;
+    }
+    .mockup-bar {
+      background: #E8EAF6; border-bottom: 1px solid #C5CAE9;
+      padding: 5px 11px; font-size: 0.88em; color: #283593; font-weight: 600;
+      display: flex; align-items: center; gap: 6px;
+    }
+    .mockup-body { padding: 10px 12px; }
+
+    .notif {
+      background: white; border-radius: 5px; padding: 8px 11px;
+      border-left: 4px solid #1976D2; box-shadow: 0 1px 4px rgba(0,0,0,0.07);
+      margin-bottom: 7px;
+    }
+    .src-chip {
+      display: inline-block; background: #1976D2; color: white;
+      border-radius: 4px; padding: 1px 7px; font-size: 0.85em; font-weight: 600; margin-right: 5px;
+    }
+    .cta { color: #1976D2; font-weight: 600; text-decoration: underline; cursor: pointer; }
+
+    .stat-row { display: flex; gap: 10px; margin: 8px 0; }
+    .stat-box {
+      flex: 1; border-radius: 5px; padding: 6px; text-align: center;
+    }
+    .stat-box .n { font-size: 1.4em; font-weight: 800; }
+    .stat-box .l { font-size: 0.78em; color: #546E7A; }
+    .stat-box.added   { background: #E8F5E9; }  .stat-box.added .n   { color: #2E7D32; }
+    .stat-box.removed { background: #FFEBEE; }  .stat-box.removed .n { color: #C62828; }
+    .stat-box.changed { background: #FFF3E0; }  .stat-box.changed .n { color: #E65100; }
+
+    .exp-row {
+      background: white; border: 1px solid #E0E0E0; border-radius: 5px;
+      padding: 8px 10px; margin-bottom: 5px; display: flex; align-items: center; gap: 8px;
+    }
+    .exp-row .name { font-weight: 600; font-size: 0.9em; }
+    .exp-row .meta { font-size: 0.78em; color: #78909C; }
+    .exp-badge-def  { background: #E8F5E9; color: #2E7D32; border: 1px solid #A5D6A7; border-radius: 3px; padding: 1px 6px; font-size: 0.72em; font-weight: 600; }
+    .exp-badge-test { background: #E3F2FD; color: #1565C0; border: 1px solid #90CAF9; border-radius: 3px; padding: 1px 6px; font-size: 0.72em; font-weight: 600; }
+    .building { background: #FFF8E1; color: #F57F17; border-radius: 3px; padding: 2px 7px; font-size: 0.72em; font-weight: 600; animation: pulse 1.5s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.55} }
+
+    .btn { display: inline-block; border-radius: 4px; padding: 4px 11px; font-size: 0.8em; font-weight: 600; cursor: pointer; }
+    .btn-primary   { background: #1565C0; color: white; }
+    .btn-secondary { background: white; color: #1565C0; border: 1px solid #1565C0; }
+
+    /* Flow diagram */
+    .flow { display: flex; align-items: center; justify-content: center; gap: 0; padding: 14px 0; }
+    .fstep { display: flex; flex-direction: column; align-items: center; gap: 5px; min-width: 105px; max-width: 130px; }
+    .fnum {
+      width: 36px; height: 36px; border-radius: 50%; color: white;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 800; font-size: 1em; box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+    }
+    .fnum.m44   { background: var(--m44-color); }
+    .fnum.post  { background: var(--post-m44-color); }
+    .fnum.defer { background: var(--deferred-color); }
+    .flabel { font-size: 0.72em; font-weight: 600; text-align: center; color: #37474F; line-height: 1.2; }
+    .fsub   { font-size: 0.6em; color: #90A4AE; text-align: center; }
+    .farrow { color: #B0BEC5; font-size: 1.3em; margin: 0 2px; flex-shrink: 0; }
+
+    /* Table */
+    .stbl { width: 100%; border-collapse: collapse; font-size: 0.8em; }
+    .stbl th { background: #ECEFF1; padding: 7px 11px; text-align: left; font-weight: 700; color: #455A64; border-bottom: 2px solid #CFD8DC; font-size: 0.82em; text-transform: uppercase; letter-spacing: 0.04em; }
+    .stbl td { padding: 7px 11px; border-bottom: 1px solid #ECEFF1; vertical-align: top; }
+    .stbl tr:last-child td { border-bottom: none; }
+
+    /* Legend row */
+    .legend { display: flex; gap: 16px; flex-wrap: wrap; margin: 8px 0; }
+    .legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.76em; }
+    .dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+
+    /* Persona */
+    .persona { background: white; border-radius: 8px; padding: 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); text-align: center; }
+    .persona-icon { font-size: 2.8em; margin-bottom: 6px; }
+    .persona-name { font-weight: 700; color: var(--ocl-blue); margin-bottom: 5px; }
+    .persona-detail { font-size: 0.78em; color: #546E7A; line-height: 1.45; }
+
+    /* Trigger block */
+    .trigger { background: white; border-radius: 8px; padding: 14px 18px; box-shadow: 0 2px 8px rgba(0,0,0,0.07); }
+    .trigger h3 { font-size: 0.95em; font-weight: 700; color: var(--ocl-teal); margin-bottom: 8px; }
+    .tstat-row { display: flex; gap: 18px; flex-wrap: wrap; margin: 8px 0; }
+    .tstat .n  { font-size: 1.7em; font-weight: 800; color: var(--ocl-blue); }
+    .tstat .l  { font-size: 0.78em; color: #78909C; }
+
+    /* Diff colors in mockup */
+    .diff-add { color: #2E7D32; }
+    .diff-rem { color: #C62828; }
+    .diff-mod { color: #E65100; }
+    .diff-neu { color: #546E7A; }
+
+    /* Progress section block */
+    .prog-row { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 10px; font-size: 0.82em; }
+    .prog-label { border-radius: 4px; padding: 2px 8px; font-size: 0.82em; font-weight: 600; white-space: nowrap; color: white; }
+
+    /* Reveal overrides */
+    .reveal h1,.reveal h2,.reveal h3,.reveal h4 { text-align: left; text-transform: none; letter-spacing: 0; color: #263238; }
+    .reveal p { margin: 0.3em 0; }
+    .reveal .progress { background: rgba(0,0,0,0.1); color: var(--ocl-blue); height: 3px; }
+    .reveal .controls { color: var(--ocl-blue); }
+
+    /* ── COMMENT PANEL ── */
+    #comment-toggle {
+      position: fixed; bottom: 18px; right: 18px; z-index: 2000;
+      background: var(--ocl-blue); color: white; border: none;
+      border-radius: 22px; padding: 7px 15px; cursor: pointer;
+      font-size: 13px; font-weight: 600; font-family: inherit;
+      box-shadow: 0 3px 10px rgba(0,0,0,0.25);
+      display: flex; align-items: center; gap: 6px; transition: background 0.15s;
+    }
+    #comment-toggle:hover { background: #1976D2; }
+
+    #cnt-badge {
+      background: #EF5350; color: white; border-radius: 9px;
+      padding: 1px 6px; font-size: 11px; font-weight: 700; min-width: 17px; text-align: center;
+    }
+    #cnt-badge.hidden { display: none; }
+
+    #comment-panel {
+      position: fixed; bottom: 0; right: 0; width: 340px; max-height: 62vh;
+      background: white; box-shadow: -3px -3px 20px rgba(0,0,0,0.14);
+      border-radius: 12px 0 0 0; z-index: 1999;
+      display: none; flex-direction: column; overflow: hidden;
+      font-family: 'Segoe UI', system-ui, sans-serif;
+    }
+    #comment-panel.open { display: flex; }
+
+    #cpanel-head {
+      background: var(--ocl-blue); color: white;
+      padding: 9px 14px; font-weight: 700; font-size: 13px;
+      display: flex; justify-content: space-between; align-items: center; flex-shrink: 0;
+    }
+    #cpanel-head .acts { display: flex; gap: 6px; }
+    #cpanel-head button {
+      background: rgba(255,255,255,0.18); border: none; color: white;
+      border-radius: 4px; padding: 2px 8px; cursor: pointer; font-size: 12px; font-family: inherit;
+    }
+    #cpanel-head button:hover { background: rgba(255,255,255,0.32); }
+
+    #comment-list { flex: 1; overflow-y: auto; padding: 10px; display: flex; flex-direction: column; gap: 7px; }
+
+    .cmt {
+      background: #FFFDE7; border-radius: 5px; padding: 9px 11px;
+      font-size: 13px; border: 1px solid #FFF176; position: relative;
+    }
+    .cmt .cmt-author { font-weight: 700; color: #E65100; margin-bottom: 2px; font-size: 12px; }
+    .cmt .cmt-text   { color: #333; line-height: 1.4; }
+    .cmt .cmt-time   { font-size: 11px; color: #9E9E9E; margin-top: 3px; }
+    .cmt .cmt-del {
+      position: absolute; top: 5px; right: 7px;
+      background: none; border: none; color: #BDBDBD; cursor: pointer; font-size: 13px; padding: 0;
+    }
+    .cmt .cmt-del:hover { color: #EF5350; }
+
+    #no-cmt { text-align: center; color: #9E9E9E; font-size: 13px; padding: 18px; font-style: italic; }
+
+    #cmt-form {
+      padding: 9px 11px; border-top: 1px solid #EEEEEE;
+      flex-shrink: 0; display: flex; flex-direction: column; gap: 5px;
+    }
+    #cmt-form input, #cmt-form textarea {
+      border: 1px solid #E0E0E0; border-radius: 5px; padding: 6px 9px;
+      font-size: 13px; font-family: inherit; resize: none; outline: none;
+    }
+    #cmt-form input:focus, #cmt-form textarea:focus { border-color: var(--ocl-blue); }
+    #cmt-form .cmt-row { display: flex; gap: 6px; }
+    #cmt-form .cmt-submit {
+      background: var(--ocl-blue); color: white; border: none; border-radius: 5px;
+      padding: 6px 14px; cursor: pointer; font-family: inherit; font-size: 13px; font-weight: 600;
+    }
+    #cmt-form .cmt-submit:hover { background: #1976D2; }
+  </style>
+</head>
+<body>
+
+<div class="reveal">
+  <div class="slides">
+
+    <!-- ───────────── SLIDE 1: TITLE ───────────── -->
+    <section class="slide-title">
+      <h1>Collection Maintenance Workflow</h1>
+      <div class="sub1">M44 MVP &nbsp;·&nbsp; Post-M44 &nbsp;·&nbsp; Deferred</div>
+      <div class="sub2">How a CIEL Implementer responds to a new CIEL release</div>
+      <div class="meta">OCL Internal &nbsp;·&nbsp; May 2026 &nbsp;|&nbsp; Press <kbd style="background:rgba(255,255,255,0.2);border-radius:3px;padding:1px 5px;">N</kbd> to add notes on any slide</div>
+    </section>
+
+    <!-- ───────────── SLIDE 2: THE STORY ───────────── -->
+    <section>
+      <div class="slide-header">
+        <div class="slide-h">The Story</div>
+      </div>
+      <div class="two-col">
+        <div class="col">
+          <div class="persona">
+            <div class="persona-icon">👩‍⚕️</div>
+            <div class="persona-name">The CIEL Implementer</div>
+            <div class="persona-detail">
+              Manages the <strong>HIV Treatment Protocols</strong> collection<br><br>
+              Built on <strong>CIEL</strong> — source of truth for a downstream clinical system<br><br>
+              Goal: stay current with CIEL releases without breaking production or silently importing unwanted changes
+            </div>
+          </div>
+          <div class="legend" style="margin-top:4px;">
+            <div class="legend-item"><div class="dot" style="background:var(--m44-color)"></div>M44 — in scope</div>
+            <div class="legend-item"><div class="dot" style="background:var(--post-m44-color)"></div>Post-M44 — foundation this sprint</div>
+            <div class="legend-item"><div class="dot" style="background:var(--deferred-color)"></div>Deferred</div>
+          </div>
+        </div>
+        <div class="col">
+          <div class="trigger">
+            <h3>⚡ Trigger: CIEL releases v2026-04</h3>
+            <div class="tstat-row">
+              <div class="tstat"><div class="n">142</div><div class="l">new concepts</div></div>
+              <div class="tstat"><div class="n">7</div><div class="l">retired</div></div>
+              <div class="tstat"><div class="n">23</div><div class="l">modified</div></div>
+            </div>
+            <div style="font-size:0.8em;color:#78909C;line-height:1.4;">
+              Of the 7 retired: 3 are concepts referenced in this collection.<br>
+              Of the 23 modified: all are name/synonym changes — no class or datatype changes.
+            </div>
+          </div>
+          <div class="box box-info">
+            <strong>Today's question:</strong> What does the implementer see, in what order, and what decisions do they need to make? Walk through it step by step and decide what feels right.
+          </div>
+          <div class="box box-q">
+            <strong>Key question for this deck:</strong> For each step — is the M44 path good enough for the showcase, or does it need more polish?
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────── SLIDE 3: OVERVIEW FLOW ───────────── -->
+    <section>
+      <div class="slide-header">
+        <div class="slide-h">M44 MVP — The 6-Step Update Workflow</div>
+        <span class="badge badge-m44 ml-auto">All steps in M44</span>
+      </div>
+
+      <div class="flow">
+        <div class="fstep"><div class="fnum m44">1</div><div class="flabel">Receive<br>Notification</div><div class="fsub">#2348</div></div>
+        <div class="farrow">→</div>
+        <div class="fstep"><div class="fnum m44">2</div><div class="flabel">Review<br>Changes</div><div class="fsub">#2349</div></div>
+        <div class="farrow">→</div>
+        <div class="fstep"><div class="fnum m44">3</div><div class="flabel">Test Without<br>Committing</div><div class="fsub">Create Similar + #2501</div></div>
+        <div class="farrow">→</div>
+        <div class="fstep"><div class="fnum m44">4</div><div class="flabel">View<br>Impact</div><div class="fsub">#2493</div></div>
+        <div class="farrow">→</div>
+        <div class="fstep"><div class="fnum m44">5</div><div class="flabel">Accept &<br>Rebuild</div><div class="fsub">#2349</div></div>
+        <div class="farrow">→</div>
+        <div class="fstep"><div class="fnum m44">6</div><div class="flabel">Create New<br>Version</div><div class="fsub">existing</div></div>
+      </div>
+
+      <div style="background:white;border-radius:8px;padding:14px 18px;box-shadow:0 2px 7px rgba(0,0,0,0.06);margin-bottom:10px;">
+        <div style="font-size:0.75em;font-weight:700;color:#78909C;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">What this replaces</div>
+        <div style="font-size:0.8em;color:#90A4AE;display:flex;gap:16px;flex-wrap:wrap;">
+          <span>❌ Manually monitor CIEL releases</span>
+          <span>❌ Apply updates without knowing what changed</span>
+          <span>❌ No visibility into impact on your collection</span>
+          <span>❌ No safe "test before commit" path</span>
+        </div>
+      </div>
+
+      <div style="background:white;border-radius:8px;padding:12px 18px;box-shadow:0 2px 7px rgba(0,0,0,0.06);">
+        <div style="font-size:0.75em;font-weight:700;color:#78909C;margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em;">Deferred — not in M44</div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <span class="badge badge-defer">Rollback after update</span>
+          <span class="badge badge-defer">Per-concept accept/reject</span>
+          <span class="badge badge-defer">Downstream notifications</span>
+          <span class="badge badge-defer">Scheduled / batched updates</span>
+          <span class="badge badge-post">Guided linked source test workflow (Post-M44)</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────── SLIDE 4: STEP 1 ───────────── -->
+    <section>
+      <div class="slide-header">
+        <div class="step-badge">1</div>
+        <div class="slide-h">Receive Notification</div>
+        <span class="badge badge-m44 ml-auto">M44</span>
+        <span class="ticket">#2348</span>
+      </div>
+      <div class="two-col">
+        <div class="col">
+          <span class="lbl lbl-user">User sees</span>
+          <ul class="dl">
+            <li>Notification bell badge in header</li>
+            <li>Notification center: source chip, new version ID, affected concept count</li>
+            <li>Yellow banner on the collection page with "Review updates →" CTA</li>
+          </ul>
+          <span class="lbl lbl-system" style="margin-top:6px;">System does</span>
+          <ul class="dl">
+            <li>Detects CIEL released a new version</li>
+            <li>Identifies which collections reference CIEL</li>
+            <li>Compares new vs. locked version using smart checksums (not raw version numbers)</li>
+            <li>Fires notification only if there are changes affecting this collection's references</li>
+            <li>Marks affected expansions as "Needs Refresh"</li>
+          </ul>
+          <div class="box box-q" style="margin-top:6px;">
+            <strong>Open:</strong> What's the right level of detail in the notification? Added/retired counts only? Impact score? A preview of the 3 most-affected concepts?
+          </div>
+        </div>
+        <div class="col">
+          <div class="mockup">
+            <div class="mockup-bar">🔔 Notifications <span style="background:#EF5350;color:white;border-radius:9px;padding:1px 7px;font-size:.82em;margin-left:4px;">1</span></div>
+            <div class="mockup-body">
+              <div class="notif">
+                <div><span class="src-chip">CIEL</span> <strong>CIEL released v2026-04</strong></div>
+                <div style="margin-top:4px;font-size:.88em;color:#546E7A;">23 concepts in your collection are affected (7 retired, 23 modified)</div>
+                <div style="margin-top:6px;"><span class="cta">Review updates →</span> <span style="color:#9E9E9E;font-size:.82em;margin-left:8px;">2 hours ago</span></div>
+              </div>
+            </div>
+          </div>
+          <div class="mockup" style="margin-top:8px;">
+            <div class="mockup-bar">🏥 HIV Treatment Protocols &nbsp;·&nbsp; HEAD</div>
+            <div class="mockup-body">
+              <div style="background:#FFF3E0;border:1px solid #FFCC80;border-radius:5px;padding:8px 11px;font-size:.88em;">
+                ⚠️ <strong>CIEL</strong> released a new version. 23 references in your collection may be affected. <span class="cta">Review updates →</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────── SLIDE 5: STEP 2 ───────────── -->
+    <section>
+      <div class="slide-header">
+        <div class="step-badge">2</div>
+        <div class="slide-h">Review What Changed in CIEL</div>
+        <span class="badge badge-m44 ml-auto">M44</span>
+        <span class="ticket">#2349</span>
+      </div>
+      <div class="two-col">
+        <div class="col">
+          <span class="lbl lbl-user">User sees</span>
+          <ul class="dl">
+            <li>Version comparison: <strong>v2026-01</strong> (current) vs <strong>v2026-04</strong> (new)</li>
+            <li>Summary stats: concepts added / retired / modified</li>
+            <li>Browsable diff list scoped to concepts <em>in this collection</em></li>
+            <li>Retired concepts flagged ⚠️ — user decides whether to keep or remove</li>
+          </ul>
+          <span class="lbl lbl-decide" style="margin-top:6px;">User decides</span>
+          <ul class="dl">
+            <li><strong>Accept update</strong> → go to Step 3 (test) or directly to Step 5</li>
+            <li><strong>Keep current version</strong> → dismiss; notification persists</li>
+            <li><strong>Manual reference edits first</strong> → exit to References tab; come back here</li>
+          </ul>
+          <div class="box box-q" style="margin-top:6px;">
+            <strong>Open:</strong> Step 2 shows CIEL-version-level diff. Step 5 shows collection-expansion diff. Is this split clear? Or should Step 2 already show only changes affecting this collection?
+          </div>
+        </div>
+        <div class="col">
+          <div class="mockup">
+            <div class="mockup-bar">CIEL v2026-01 → v2026-04</div>
+            <div class="mockup-body">
+              <div class="stat-row">
+                <div class="stat-box added"><div class="n">+142</div><div class="l">Added</div></div>
+                <div class="stat-box removed"><div class="n">-7</div><div class="l">Retired</div></div>
+                <div class="stat-box changed"><div class="n">~23</div><div class="l">Modified</div></div>
+              </div>
+              <div style="font-size:.78em;font-weight:700;color:#78909C;margin:6px 0 4px;text-transform:uppercase;letter-spacing:.04em;">Affecting your collection</div>
+              <div style="font-size:.82em;">
+                <div style="padding:3px 0;" class="diff-rem">⚠ 116128 · Malaria, unspecified — <em>retired</em></div>
+                <div style="padding:3px 0;" class="diff-rem">⚠ 5622 · Other — <em>retired</em></div>
+                <div style="padding:3px 0;" class="diff-rem">⚠ 1065 · Yes — <em>retired</em></div>
+                <div style="padding:3px 0;" class="diff-mod">~ 5089 · Weight — <em>name updated</em></div>
+                <div style="padding:3px 0;" class="diff-neu">… 19 more</div>
+              </div>
+              <div style="margin-top:10px;display:flex;gap:7px;">
+                <span class="btn btn-primary">Accept Update</span>
+                <span class="btn btn-secondary">Keep Current</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────── SLIDE 6: STEP 3 ───────────── -->
+    <section>
+      <div class="slide-header">
+        <div class="step-badge">3</div>
+        <div class="slide-h">Test Without Committing</div>
+        <span class="badge badge-m44 ml-auto">M44</span>
+        <span class="ticket">#2501</span>
+      </div>
+      <div class="two-col">
+        <div class="col">
+          <span class="lbl lbl-user">User does</span>
+          <ul class="dl">
+            <li>Uses <strong>"Create Similar"</strong> on the HEAD auto-expansion</li>
+            <li>In the expansion form, overrides CIEL version → <strong>v2026-04</strong></li>
+            <li>Does <em>not</em> set as default — this is a test expansion</li>
+            <li>Watches the in-progress indicator on the new expansion row <em>(#2501)</em></li>
+          </ul>
+          <span class="lbl lbl-system" style="margin-top:6px;">What this creates</span>
+          <ul class="dl">
+            <li>A new expansion alongside the current auto-expansion</li>
+            <li>Same references, different CIEL version locked in</li>
+            <li>Collection's canonical version is <strong>unchanged</strong> until Step 5</li>
+          </ul>
+          <div class="box box-info" style="margin-top:6px;">
+            <strong>M44 note:</strong> This is a manual "Create Similar" in M44. The Post-M44 linked source test workflow provides a guided "Try New Version" button that automates this step.
+          </div>
+          <div class="box box-q" style="margin-top:6px;">
+            <strong>Open:</strong> Is "Create Similar" discoverable enough for the showcase? Or do we need even a thin wrapper ("Test with new version") that pre-fills the form?
+          </div>
+        </div>
+        <div class="col">
+          <div class="mockup">
+            <div class="mockup-bar">Versions + Expansions &nbsp;·&nbsp; HEAD</div>
+            <div class="mockup-body">
+              <div style="font-size:.75em;font-weight:700;color:#78909C;margin-bottom:5px;text-transform:uppercase;letter-spacing:.04em;">Expansions</div>
+              <div class="exp-row">
+                <div style="flex:1"><div class="name">auto-expansion</div><div class="meta">CIEL v2026-01 · 4,218 concepts</div></div>
+                <span class="exp-badge-def">Default</span>
+              </div>
+              <div class="exp-row" style="border-color:#90CAF9;">
+                <div style="flex:1"><div class="name">test-v2026-04</div><div class="meta">CIEL v2026-04 · building…</div></div>
+                <span class="building">⟳ Building…</span>
+              </div>
+              <div style="margin-top:8px;text-align:center;">
+                <span class="btn btn-secondary" style="font-size:.78em;">+ Create Similar Expansion</span>
+              </div>
+            </div>
+          </div>
+          <div class="mockup" style="margin-top:8px;">
+            <div class="mockup-bar">New Expansion — Source Version Override</div>
+            <div class="mockup-body" style="font-size:.82em;">
+              <div style="margin-bottom:6px;font-weight:600;">Source Version Overrides</div>
+              <div style="background:#E3F2FD;border-radius:4px;padding:5px 10px;display:flex;justify-content:space-between;align-items:center;">
+                <span>CIEL</span><span style="font-weight:600;color:#1565C0;">v2026-04 ▼</span>
+              </div>
+              <div style="margin-top:7px;color:#78909C;font-size:.9em;">☐ &nbsp;Set as default</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────── SLIDE 7: STEP 4 ───────────── -->
+    <section>
+      <div class="slide-header">
+        <div class="step-badge">4</div>
+        <div class="slide-h">View Impact on Your Collection</div>
+        <span class="badge badge-m44 ml-auto">M44</span>
+        <span class="ticket">#2493</span>
+      </div>
+      <div class="two-col">
+        <div class="col">
+          <span class="lbl lbl-user">User sees</span>
+          <ul class="dl">
+            <li>Expansion comparison: <strong>auto-expansion</strong> (CIEL v2026-01) vs <strong>test-v2026-04</strong></li>
+            <li>Counts scoped to <em>this collection</em>: added, removed, modified</li>
+            <li>Uses expansion selector on Concepts/Mappings tab <em>(#2493)</em> to browse and compare</li>
+          </ul>
+          <span class="lbl lbl-user" style="margin-top:6px;">User decides</span>
+          <ul class="dl">
+            <li>Looks good → proceed to Step 5 (Accept)</li>
+            <li>Concerns → return to References tab to adjust, then re-test</li>
+            <li>Not ready → discard test expansion, keep current version</li>
+          </ul>
+          <div class="box box-q" style="margin-top:6px;">
+            <strong>Open:</strong> Is the expansion comparison the primary view here, or is the Concepts tab with expansion selector sufficient for M44? Does the comparison need to show <em>what changed</em> or just the counts?
+          </div>
+        </div>
+        <div class="col">
+          <div class="mockup">
+            <div class="mockup-bar">Compare Expansions</div>
+            <div class="mockup-body">
+              <div style="display:grid;grid-template-columns:1fr auto 1fr;gap:6px;align-items:center;margin-bottom:8px;font-size:.8em;">
+                <div style="background:#ECEFF1;padding:5px 8px;border-radius:4px;text-align:center;">auto-expansion<br><span style="font-size:.9em;color:#546E7A;">CIEL v2026-01</span></div>
+                <div style="color:#9E9E9E;font-weight:600;">vs</div>
+                <div style="background:#E3F2FD;padding:5px 8px;border-radius:4px;text-align:center;">test-v2026-04<br><span style="font-size:.9em;color:#1565C0;">CIEL v2026-04</span></div>
+              </div>
+              <div class="stat-row">
+                <div class="stat-box added"><div class="n">+18</div><div class="l">Added</div></div>
+                <div class="stat-box removed"><div class="n">-3</div><div class="l">Removed</div></div>
+                <div class="stat-box changed"><div class="n">~23</div><div class="l">Modified</div></div>
+              </div>
+              <div style="font-size:.8em;margin-top:5px;">
+                <div class="diff-rem" style="padding:3px 0;">- Malaria, unspecified (116128)</div>
+                <div class="diff-rem" style="padding:3px 0;">- Other (5622)</div>
+                <div class="diff-rem" style="padding:3px 0;">- Yes (1065)</div>
+                <div class="diff-add" style="padding:3px 0;">+ ARV Regimen A1</div>
+                <div class="diff-neu" style="padding:3px 0;">… 17 more additions</div>
+              </div>
+            </div>
+          </div>
+          <div class="mockup" style="margin-top:8px;">
+            <div class="mockup-bar">🏥 HIV Treatment Protocols — Concepts Tab</div>
+            <div class="mockup-body" style="font-size:.82em;">
+              <div style="display:flex;align-items:center;gap:8px;">
+                <span style="color:#546E7A;">Viewing expansion:</span>
+                <span style="background:#E3F2FD;color:#1565C0;border:1px solid #90CAF9;border-radius:4px;padding:2px 9px;font-weight:600;">test-v2026-04 ▼</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────── SLIDE 8: STEP 5 ───────────── -->
+    <section>
+      <div class="slide-header">
+        <div class="step-badge">5</div>
+        <div class="slide-h">Accept Update — Rebuild Auto-Expansion</div>
+        <span class="badge badge-m44 ml-auto">M44</span>
+        <span class="ticket">#2349</span>
+      </div>
+      <div class="two-col">
+        <div class="col">
+          <span class="lbl lbl-user">User does</span>
+          <ul class="dl">
+            <li>Clicks <strong>"Accept Update"</strong> from notification or review view</li>
+            <li>Confirms rebuild in dialog</li>
+            <li>Watches in-progress indicator on expansion row <em>(#2501)</em></li>
+          </ul>
+          <span class="lbl lbl-system" style="margin-top:6px;">System does</span>
+          <ul class="dl">
+            <li>Queues rebuild of HEAD auto-expansion against CIEL v2026-04</li>
+            <li>Runs <strong>alongside</strong> current expansion — non-destructive</li>
+            <li>Updates locked source version on the auto-expansion</li>
+            <li>On complete: shows post-rebuild diff for final review</li>
+          </ul>
+          <div class="box box-q" style="margin-top:6px;">
+            <strong>Open — Retired concepts:</strong> When CIEL retires a concept that's in this collection, does it stay in the expansion (marked Retired) or get removed? Needs input from Andy (governance) + Burke (OpenMRS export impact).
+          </div>
+          <div class="box box-defer" style="margin-top:6px;">
+            <strong>Deferred — Rollback (#2284):</strong> No rollback path in M44. If users want a safety net, they should create a collection version <em>before</em> accepting the update.
+          </div>
+        </div>
+        <div class="col">
+          <div class="mockup">
+            <div class="mockup-bar">Accept Update — Confirm</div>
+            <div class="mockup-body" style="font-size:.85em;">
+              <p>This will rebuild your auto-expansion pointing to <strong>CIEL v2026-04</strong>.</p>
+              <p style="color:#546E7A;margin-top:4px;">The current expansion will be preserved for comparison.</p>
+              <div style="margin-top:10px;display:flex;gap:7px;">
+                <span class="btn btn-primary">Rebuild</span>
+                <span class="btn btn-secondary">Cancel</span>
+              </div>
+            </div>
+          </div>
+          <div class="mockup" style="margin-top:8px;">
+            <div class="mockup-bar">Versions + Expansions &nbsp;·&nbsp; HEAD (rebuilding)</div>
+            <div class="mockup-body">
+              <div class="exp-row" style="border-color:#90CAF9;">
+                <div style="flex:1"><div class="name">auto-expansion</div><div class="meta">CIEL v2026-04 · evaluating…</div></div>
+                <span class="building">⟳ Building…</span>
+              </div>
+              <div class="exp-row" style="opacity:.55;">
+                <div style="flex:1"><div class="name">auto-expansion (prev)</div><div class="meta">CIEL v2026-01 · 4,218 concepts</div></div>
+                <span style="font-size:.72em;color:#9E9E9E;">Prev</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────── SLIDE 9: STEP 6 ───────────── -->
+    <section>
+      <div class="slide-header">
+        <div class="step-badge">6</div>
+        <div class="slide-h">Publish — Create New Collection Version</div>
+        <span class="badge badge-m44 ml-auto">M44</span>
+      </div>
+      <div class="two-col">
+        <div class="col">
+          <span class="lbl lbl-user">User does</span>
+          <ul class="dl">
+            <li>Reviews post-rebuild diff: "+18 added, −3 removed, ~23 modified"</li>
+            <li>If satisfied: clicks <strong>"New Version"</strong></li>
+            <li>Enters version ID (e.g., <code style="background:#F5F5F5;border-radius:3px;padding:1px 5px;">v2026-04</code>) and release notes</li>
+            <li>Releases the version</li>
+          </ul>
+          <span class="lbl lbl-system" style="margin-top:6px;">What happens</span>
+          <ul class="dl">
+            <li>Auto-expansion is snapshotted into the new version</li>
+            <li>CIEL v2026-04 recorded as locked source version</li>
+            <li>Old version (CIEL v2026-01) remains immutable and accessible</li>
+            <li>Dependency notification dismissed</li>
+          </ul>
+          <div class="box box-defer" style="margin-top:6px;">
+            <strong>Deferred — Downstream notifications:</strong> When this version publishes, owners of collections that depend on this collection should be notified. Requires reverse-dependency graph. Not in M44.
+          </div>
+        </div>
+        <div class="col">
+          <div class="mockup">
+            <div class="mockup-bar">Post-Rebuild Diff — Review Before Publishing</div>
+            <div class="mockup-body">
+              <div class="stat-row">
+                <div class="stat-box added"><div class="n">+18</div><div class="l">Added</div></div>
+                <div class="stat-box removed"><div class="n">-3</div><div class="l">Removed</div></div>
+                <div class="stat-box changed"><div class="n">~23</div><div class="l">Modified</div></div>
+              </div>
+              <div class="box box-ok" style="margin-top:7px;font-size:.82em;">
+                ✅ All modifications are name/synonym changes only — low clinical impact.
+              </div>
+              <div style="margin-top:10px;display:flex;gap:7px;">
+                <span class="btn btn-primary">Create New Version</span>
+                <span class="btn btn-secondary">Back</span>
+              </div>
+            </div>
+          </div>
+          <div class="mockup" style="margin-top:8px;">
+            <div class="mockup-bar">New Collection Version</div>
+            <div class="mockup-body" style="font-size:.83em;">
+              <div style="margin-bottom:5px;font-weight:600;">Version ID</div>
+              <div style="background:#F5F5F5;border:1px solid #E0E0E0;border-radius:4px;padding:4px 9px;">v2026-04</div>
+              <div style="margin:5px 0;font-weight:600;">Description</div>
+              <div style="background:#F5F5F5;border:1px solid #E0E0E0;border-radius:4px;padding:4px 9px;color:#78909C;font-size:.9em;">Updated to CIEL v2026-04. +18 new concepts; handled 3 retirements.</div>
+              <div style="margin-top:8px;"><span class="btn btn-primary">Create Version</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────── SLIDE 10: POST-M44 LINKED SOURCE ───────────── -->
+    <section>
+      <div class="slide-header">
+        <div class="slide-h">Post-M44: Linked Source Test Workflow</div>
+        <span class="badge badge-post ml-auto">Post-M44</span>
+        <span class="ticket">#2347</span>
+      </div>
+      <div class="two-col">
+        <div class="col">
+          <div class="box box-info" style="margin-bottom:10px;">
+            <strong>M44 delivers the foundation.</strong> The source-level opt-in setting, collection linked source config, and resolution behavior all ship in M44. The <em>guided workflow UI</em> — the "Try New Version" wizard — is post-M44.
+          </div>
+          <span class="lbl lbl-user">What M44 delivers</span>
+          <ul class="dl">
+            <li>Authorization gate: user must have HEAD access to the source (existing OCL source-level permissions — no separate opt-in flag needed)</li>
+            <li>Collection → Settings → Linked Sources table with HEAD-link flag per source relationship</li>
+            <li>Resolution: when HEAD-link flag is set, unversioned refs resolve against HEAD of that source while working in collection HEAD</li>
+            <li>UI: "Linked Source" chip in collection header</li>
+          </ul>
+          <span class="lbl lbl-user" style="margin-top:6px;">What Post-M44 adds</span>
+          <ul class="dl">
+            <li>Guided "Try New Version" wizard (replaces manual Create Similar)</li>
+            <li>Impact preview before committing</li>
+            <li>"Commit" or "Cancel" the upgrade in one guided flow</li>
+            <li>Transition path: linked source → locked repo version at release time</li>
+          </ul>
+        </div>
+        <div class="col">
+          <div style="background:white;border-radius:8px;padding:16px;box-shadow:0 2px 7px rgba(0,0,0,0.06);">
+            <div style="font-weight:700;color:var(--post-m44-color);margin-bottom:12px;font-size:.9em;">M44 → Post-M44 Progression for Step 3</div>
+            <div class="prog-row">
+              <span class="prog-label" style="background:var(--m44-color);">M44</span>
+              <div>User manually uses "Create Similar" to test a new source version. Works — but requires knowing the feature exists and navigating to the right panel.</div>
+            </div>
+            <div class="prog-row">
+              <span class="prog-label" style="background:var(--post-m44-color);">Post-M44</span>
+              <div>Guided "Try New Version" button in the update workflow. Auto-creates the test expansion, shows impact, and offers "Commit" or "Cancel" in one flow. No detour required.</div>
+            </div>
+          </div>
+          <div class="box box-info" style="margin-top:10px;">
+            <strong>ADR-007 (updated 2026-05-13):</strong> HEAD-resolution is not limited to same-namespace sources. Authorization is permission-based — any user with HEAD access to a source may HEAD-link it from their collection, regardless of org. Cross-org canonical URL resolution is handled by the existing URL registry.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────────── SLIDE 11: DEFERRED ───────────── -->
+    <section>
+      <div class="slide-header">
+        <div class="slide-h">Deferred Features</div>
+        <span class="badge badge-defer ml-auto">Not in M44</span>
+      </div>
+      <table class="stbl">
+        <thead>
+          <tr>
+            <th style="width:20%;">Feature</th>
+            <th style="width:28%;">What it enables</th>
+            <th style="width:28%;">Why deferred</th>
+            <th style="width:24%;">When to revisit</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Rollback / Restore HEAD</strong><br><span class="ticket">#2284</span></td>
+            <td>Revert to a previous version's state after a bad update</td>
+            <td>Two open design decisions unresolved (version history behavior + expansion handling)</td>
+            <td>Dedicated design session; resolve Option A vs B first</td>
+          </tr>
+          <tr>
+            <td><strong>Per-Concept Accept/Reject</strong></td>
+            <td>Cherry-pick which new CIEL concepts to include during update</td>
+            <td>High complexity; binary accept/update is the safer default for most users</td>
+            <td>After M44 ships; validate user need</td>
+          </tr>
+          <tr>
+            <td><strong>Downstream Notifications</strong></td>
+            <td>Alert dependent collection owners when this collection publishes a new version</td>
+            <td>Requires reverse-dependency graph</td>
+            <td>When dependency graph is built</td>
+          </tr>
+          <tr>
+            <td><strong>Scheduled / Batched Updates</strong></td>
+            <td>Auto-apply updates on a schedule; batch multiple source updates at once</td>
+            <td>Safety risks; manual workflow should be proven first</td>
+            <td>After manual workflow is stable and widely used</td>
+          </tr>
+          <tr>
+            <td><strong>Update History</strong></td>
+            <td>Full audit log of every dependency update applied</td>
+            <td>Nice-to-have; partially served by version history today</td>
+            <td>After core workflow ships</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ───────────── SLIDE 12: OPEN QUESTIONS ───────────── -->
+    <section>
+      <div class="slide-header">
+        <div class="slide-h">Open Questions for Discussion</div>
+        <span class="badge badge-q ml-auto">Discussion</span>
+      </div>
+      <div class="two-col">
+        <div class="col">
+          <div class="box box-q" style="margin-bottom:8px;">
+            <strong>1. Step 2 vs Step 5 diff granularity</strong><br>
+            Step 2 shows CIEL-version-level changes. Step 5 shows collection-expansion changes. Is this the right split? Should Step 2 already be scoped to concepts <em>in this collection only</em>?
+          </div>
+          <div class="box box-q" style="margin-bottom:8px;">
+            <strong>2. Retired concepts — what's the default?</strong><br>
+            When CIEL retires a concept that's referenced in the collection, does the expansion keep it (marked Retired) or remove it? Needs input from Andy (governance) + Burke (OpenMRS export impact).
+          </div>
+          <div class="box box-q">
+            <strong>3. Reference type filter chips (#2502)</strong><br>
+            Some filter chips on the References tab partially work. Before fixing: what's the canonical chip list, and what does each one filter on? Needs a spec before we can validate the bug fix.
+          </div>
+        </div>
+        <div class="col">
+          <div class="box box-q" style="margin-bottom:8px;">
+            <strong>4. Is "Create Similar" enough for Step 3?</strong><br>
+            For the M44 showcase, "Create Similar" is the test path. Is it discoverable enough, or do we need a thin wrapper (e.g., "Test with new version" button) that pre-fills the form?
+          </div>
+          <div class="box box-q" style="margin-bottom:8px;">
+            <strong>5. Collection banner — dismissibility</strong><br>
+            The yellow banner notifying of a pending dependency update — permanently dismissible? Session-only? Or only cleared by completing the update workflow?
+          </div>
+          <div class="box box-info">
+            <strong>Use the Notes panel</strong> (button in the bottom-right corner, or press <kbd style="background:#E3F2FD;border-radius:3px;padding:1px 5px;">N</kbd>) to record decisions as you discuss. Notes are saved in this browser and can be exported as JSON to share with the team.
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </div><!-- /slides -->
+</div><!-- /reveal -->
+
+<!-- ── COMMENT/NOTES SYSTEM ── -->
+<button id="comment-toggle" title="Toggle notes panel (or press N)">
+  💬 Notes <span id="cnt-badge" class="hidden">0</span>
+</button>
+
+<div id="comment-panel">
+  <div id="cpanel-head">
+    <span id="cpanel-title">Notes — Slide 1</span>
+    <div class="acts">
+      <button onclick="exportNotes()">Export JSON</button>
+      <button onclick="importNotes()">Import JSON</button>
+      <button onclick="togglePanel()">✕</button>
+    </div>
+  </div>
+  <div id="comment-list"></div>
+  <div id="cmt-form">
+    <input type="text" id="cmt-author" placeholder="Your name" maxlength="40">
+    <textarea id="cmt-text" rows="2" placeholder="Add a note for this slide…"></textarea>
+    <div class="cmt-row">
+      <button class="cmt-submit" onclick="submitNote()">Add Note</button>
+      <span style="font-size:11px;color:#9E9E9E;align-self:center;margin-left:4px;">Enter to submit</span>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.0/dist/reveal.js"></script>
+<script>
+  Reveal.initialize({
+    hash: true,
+    slideNumber: 'c/t',
+    transition: 'slide',
+    transitionSpeed: 'fast',
+    center: false,
+    width: 1200,
+    height: 700,
+    margin: 0.02,
+    minScale: 0.4,
+    maxScale: 1.5,
+    controls: true,
+    progress: true,
+    keyboard: { 78: () => togglePanel() }  // N key
+  });
+
+  // ── Notes system ──
+  const STORE = 'ocl-m44-notes-v1';
+
+  function getNotes()  { try { return JSON.parse(localStorage.getItem(STORE) || '{}'); } catch(e) { return {}; } }
+  function saveNotes(d){ localStorage.setItem(STORE, JSON.stringify(d)); }
+
+  function slideKey()  { const i = Reveal.getIndices(); return `${i.h}-${i.v||0}`; }
+  function slideTitle(){
+    const el = Reveal.getCurrentSlide().querySelector('.slide-h,.slide-title h1');
+    return el ? el.textContent.trim() : `Slide ${Reveal.getIndices().h+1}`;
+  }
+
+  function renderNotes(key) {
+    const notes = getNotes();
+    const list  = notes[key] || [];
+    const el    = document.getElementById('comment-list');
+    if (!list.length) { el.innerHTML = '<div id="no-cmt">No notes for this slide yet.</div>'; return; }
+    el.innerHTML = list.map((n,i) =>
+      `<div class="cmt">
+        <button class="cmt-del" onclick="deleteNote('${key}',${i})" title="Delete">✕</button>
+        <div class="cmt-author">${esc(n.author)}</div>
+        <div class="cmt-text">${esc(n.text)}</div>
+        <div class="cmt-time">${new Date(n.ts).toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})} · ${new Date(n.ts).toLocaleDateString()}</div>
+      </div>`
+    ).join('');
+  }
+
+  function updateBadge() {
+    const notes = getNotes();
+    const total = Object.values(notes).reduce((s,a)=>s+a.length, 0);
+    const b = document.getElementById('cnt-badge');
+    if (total > 0) { b.textContent = total; b.classList.remove('hidden'); }
+    else b.classList.add('hidden');
+  }
+
+  function submitNote() {
+    const author = document.getElementById('cmt-author').value.trim() || 'Anonymous';
+    const text   = document.getElementById('cmt-text').value.trim();
+    if (!text) return;
+    const key   = slideKey();
+    const notes = getNotes();
+    if (!notes[key]) notes[key] = [];
+    notes[key].push({ author, text, ts: Date.now() });
+    saveNotes(notes);
+    document.getElementById('cmt-text').value = '';
+    renderNotes(key);
+    updateBadge();
+  }
+
+  function deleteNote(key, idx) {
+    const notes = getNotes();
+    if (notes[key]) { notes[key].splice(idx,1); if (!notes[key].length) delete notes[key]; }
+    saveNotes(notes);
+    renderNotes(key);
+    updateBadge();
+  }
+
+  function togglePanel() {
+    const p = document.getElementById('comment-panel');
+    p.classList.toggle('open');
+    if (p.classList.contains('open')) {
+      const key = slideKey();
+      document.getElementById('cpanel-title').textContent = `Notes — ${slideTitle()}`;
+      renderNotes(key);
+      document.getElementById('cmt-text').focus();
+    }
+  }
+
+  function exportNotes() {
+    const blob = new Blob([JSON.stringify(getNotes(),null,2)], {type:'application/json'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href = url; a.download = `ocl-m44-notes-${new Date().toISOString().slice(0,10)}.json`;
+    a.click(); URL.revokeObjectURL(url);
+  }
+
+  function importNotes() {
+    const inp = document.createElement('input');
+    inp.type = 'file'; inp.accept = '.json';
+    inp.onchange = e => {
+      const f = e.target.files[0]; if (!f) return;
+      const r = new FileReader();
+      r.onload = ev => {
+        try {
+          const imported = JSON.parse(ev.target.result);
+          const current  = getNotes();
+          for (const k in imported) {
+            current[k] = [...(current[k]||[]), ...imported[k]];
+          }
+          saveNotes(current);
+          renderNotes(slideKey()); updateBadge();
+          const total = Object.values(imported).reduce((s,a)=>s+a.length,0);
+          alert(`Imported ${total} note(s).`);
+        } catch { alert('Could not read file — make sure it is a valid notes JSON export.'); }
+      };
+      r.readAsText(f);
+    };
+    inp.click();
+  }
+
+  function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  Reveal.on('slidechanged', () => {
+    const key = slideKey();
+    document.getElementById('cpanel-title').textContent = `Notes — ${slideTitle()}`;
+    renderNotes(key);
+    updateBadge();
+  });
+
+  document.getElementById('cmt-text').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submitNote(); }
+  });
+
+  document.getElementById('comment-toggle').addEventListener('click', togglePanel);
+  updateBadge();
+</script>
+</body>
+</html>

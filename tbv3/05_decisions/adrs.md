@@ -1,6 +1,6 @@
 # Architecture Decision Records
 
-> **Note:** Jon to review all ADRs and add additional records for open architectural questions surfaced during requirements planning (e.g., Canonical URLs, Linked Sources). This is an ongoing document.
+> **Note:** Jon to review all ADRs and add additional records for open architectural questions surfaced during requirements planning (e.g., Canonical URLs, collection-level validation schema). This is an ongoing document.
 
 ---
 
@@ -138,3 +138,26 @@ Implement Concept Proposals as a first-class API resource with CRUDS operations.
 - TBv3 becomes the primary proposal management interface for source admins
 - Mapper retains its submission UI but routes to the shared backend
 - Notification system must handle proposal status changes across origins
+
+---
+
+## ADR-007: Linked Source HEAD-Resolution Opt-In
+
+**Status:** Accepted (2026-05-13)
+
+**Context:**
+Collections can designate a "linked source" to control which version of a dependency source their unversioned references resolve to. An open question was whether HEAD-resolution (allowing a collection to expand against unreleased source content) should be limited to sources the user owns, or could work across any source.
+
+The ownership-based model creates friction for legitimate cross-organization use cases (e.g., an implementer accessing CIEL HEAD during CIEL's development cycle) while providing incomplete protection — a source owner can always create a test release instead of enabling HEAD access.
+
+**Decision:**
+HEAD-resolution is not gated on collection-owner relationship to the source. Any collection may configure HEAD as its linked source version for a given source, **provided the source has enabled `allow_head_as_linked_source: true`** in the source's repository settings.
+
+Source owners control the opt-in. The setting defaults to `false` (HEAD not available as a linked source target). This places the decision with the appropriate party — the source owner who can evaluate whether their HEAD content is stable enough to be consumed by external collections.
+
+**Consequences:**
+- No ownership check needed in the resolution logic — only the source-level flag
+- Source owners can enable HEAD access for trusted external integrations without platform-level configuration
+- Platform admins are not required to approve cross-organization HEAD access
+- For sources that never enable the opt-in, behavior is identical to today: only released versions are available as linked source targets
+- This model extends cleanly to future premium/partner map source integrations without additional permission layers
