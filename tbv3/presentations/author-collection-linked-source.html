@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Authoring a Collection with a Linked Source — OCL Explainer</title>
+<style>
+  :root {
+    --brand: #2563EB;
+    --brand-light: #EFF6FF;
+    --brand-mid: #BFDBFE;
+    --warn: #D97706;
+    --warn-light: #FFFBEB;
+    --warn-border: #FCD34D;
+    --green: #059669;
+    --green-light: #ECFDF5;
+    --gray-50: #F9FAFB;
+    --gray-100: #F3F4F6;
+    --gray-200: #E5E7EB;
+    --gray-400: #9CA3AF;
+    --gray-600: #4B5563;
+    --gray-800: #1F2937;
+    --gray-900: #111827;
+    --radius: 8px;
+    --font-sans: system-ui, -apple-system, sans-serif;
+    --font-mono: 'Cascadia Code', 'Fira Mono', 'Consolas', monospace;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-sans);
+    background: var(--gray-50);
+    color: var(--gray-800);
+    line-height: 1.6;
+    padding: 0 0 80px;
+  }
+
+  /* ── Header ───────────────────────────────────────────────── */
+  header {
+    background: var(--brand);
+    color: #fff;
+    padding: 36px 48px 32px;
+  }
+  header .eyebrow {
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    opacity: 0.75;
+    margin-bottom: 8px;
+  }
+  header h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 10px;
+  }
+  header .subtitle {
+    font-size: 0.95rem;
+    opacity: 0.85;
+    max-width: 680px;
+  }
+
+  /* ── Layout ───────────────────────────────────────────────── */
+  .page {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 32px;
+  }
+
+  /* ── Section headers ──────────────────────────────────────── */
+  .section {
+    margin-top: 48px;
+  }
+  .section-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--brand);
+    margin-bottom: 10px;
+  }
+  .section-label .num {
+    background: var(--brand);
+    color: #fff;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.65rem;
+    flex-shrink: 0;
+  }
+  h2 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: var(--gray-900);
+    margin-bottom: 14px;
+  }
+  h3 {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--gray-800);
+    margin: 24px 0 10px;
+  }
+
+  /* ── Cards ────────────────────────────────────────────────── */
+  .card {
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 16px;
+  }
+  .card p, .card li { font-size: 0.92rem; color: var(--gray-600); }
+  .card ul { padding-left: 20px; margin-top: 6px; }
+  .card li { margin-bottom: 4px; }
+
+  /* ── Callout boxes ────────────────────────────────────────── */
+  .callout {
+    border-left: 4px solid var(--brand);
+    background: var(--brand-light);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    padding: 16px 20px;
+    margin: 16px 0;
+    font-size: 0.9rem;
+    color: var(--gray-800);
+  }
+  .callout.warn {
+    border-color: var(--warn);
+    background: var(--warn-light);
+  }
+  .callout.green {
+    border-color: var(--green);
+    background: var(--green-light);
+  }
+  .callout strong { display: block; margin-bottom: 4px; }
+
+  /* ── Diagram box ──────────────────────────────────────────── */
+  .diagram {
+    background: var(--gray-900);
+    color: #e2e8f0;
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    line-height: 1.7;
+    border-radius: var(--radius);
+    padding: 20px 24px;
+    overflow-x: auto;
+    margin: 14px 0;
+    white-space: pre;
+  }
+  .diagram .hl-green  { color: #86efac; }
+  .diagram .hl-blue   { color: #93c5fd; }
+  .diagram .hl-yellow { color: #fde68a; }
+  .diagram .hl-gray   { color: #94a3b8; }
+
+  /* ── Decision table ───────────────────────────────────────── */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    margin-top: 10px;
+  }
+  th {
+    background: var(--gray-100);
+    color: var(--gray-800);
+    font-weight: 600;
+    text-align: left;
+    padding: 10px 14px;
+    border-bottom: 2px solid var(--gray-200);
+  }
+  td {
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--gray-200);
+    color: var(--gray-600);
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  td code, th code {
+    font-family: var(--font-mono);
+    font-size: 0.82rem;
+    background: var(--gray-100);
+    padding: 1px 5px;
+    border-radius: 3px;
+  }
+
+  /* ── Step list ────────────────────────────────────────────── */
+  .steps { counter-reset: step; list-style: none; padding: 0; }
+  .steps li {
+    counter-increment: step;
+    display: flex;
+    gap: 14px;
+    align-items: flex-start;
+    margin-bottom: 14px;
+    font-size: 0.9rem;
+  }
+  .steps li::before {
+    content: counter(step);
+    background: var(--brand);
+    color: #fff;
+    border-radius: 50%;
+    min-width: 26px;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+
+  /* ── Tag pills ────────────────────────────────────────────── */
+  .pill {
+    display: inline-block;
+    background: var(--brand-mid);
+    color: var(--brand);
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 20px;
+    margin-right: 6px;
+  }
+  .pill.gray {
+    background: var(--gray-100);
+    color: var(--gray-600);
+  }
+  .pill.warn {
+    background: var(--warn-light);
+    color: var(--warn);
+  }
+  .pill.green {
+    background: var(--green-light);
+    color: var(--green);
+  }
+
+  /* ── Notes zone ───────────────────────────────────────────── */
+  .notes-zone {
+    border: 1.5px dashed var(--gray-400);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin: 18px 0 0;
+    background: #fff;
+    min-height: 72px;
+  }
+  .notes-zone .notes-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    margin-bottom: 8px;
+  }
+  .notes-zone textarea {
+    width: 100%;
+    border: none;
+    outline: none;
+    resize: vertical;
+    font-family: var(--font-sans);
+    font-size: 0.875rem;
+    color: var(--gray-800);
+    background: transparent;
+    min-height: 48px;
+    line-height: 1.5;
+  }
+
+  /* ── Issue table styling ──────────────────────────────────── */
+  .issue-row td:first-child {
+    font-weight: 600;
+    color: var(--gray-800);
+    white-space: nowrap;
+    font-size: 0.82rem;
+  }
+
+  /* ── Divider ──────────────────────────────────────────────── */
+  hr {
+    border: none;
+    border-top: 1px solid var(--gray-200);
+    margin: 40px 0;
+  }
+
+  /* ── Print / share ────────────────────────────────────────── */
+  @media print {
+    .notes-zone { border: 1px solid #ccc; }
+    .notes-zone textarea { display: none; }
+    .notes-zone::after { content: " "; display: block; min-height: 64px; }
+    header { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+
+  /* ── Progress bar (decorative) ────────────────────────────── */
+  .toc {
+    background: #fff;
+    border: 1px solid var(--gray-200);
+    border-radius: var(--radius);
+    padding: 18px 24px;
+    margin: 32px 0 0;
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+  .toc-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--gray-400);
+    margin-right: 8px;
+  }
+  .toc a {
+    font-size: 0.8rem;
+    color: var(--brand);
+    text-decoration: none;
+    padding: 2px 8px;
+    border-radius: 4px;
+    border: 1px solid var(--brand-mid);
+    background: var(--brand-light);
+  }
+  .toc a:hover { background: var(--brand-mid); }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="page">
+    <div class="eyebrow">OCL Terminology Builder v3 · Workflow Explainer</div>
+    <h1>Authoring a Collection with a Linked (HEAD) Source</h1>
+    <div class="subtitle">
+      How the HEAD-link flag lets implementers see new source content in their collection
+      immediately during authoring — and transitions cleanly to a released version on publish.
+    </div>
+  </div>
+</header>
+
+<div class="page">
+
+  <!-- Table of contents -->
+  <nav class="toc">
+    <span class="toc-label">Jump to</span>
+    <a href="#problem">The Problem</a>
+    <a href="#head-link">The HEAD-Link</a>
+    <a href="#authoring">Phase 1: Authoring</a>
+    <a href="#releasing">Phase 2: Releasing</a>
+    <a href="#warning">Unreleased Warning</a>
+    <a href="#decisions">Design Decisions</a>
+    <a href="#open-issues">Open Issues</a>
+  </nav>
+
+  <!-- ── 1. The Problem ───────────────────────────────────────── -->
+  <section class="section" id="problem">
+    <div class="section-label"><span class="num">1</span> Context &amp; Problem</div>
+    <h2>Why does this exist?</h2>
+
+    <div class="card">
+      <p>
+        A Terminology Implementer owns both a <strong>source</strong> and a <strong>collection</strong> — for
+        example, the PIH source and the PIH dictionary collection. They add new concepts to the source and add
+        references to those concepts in the collection at the same time.
+      </p>
+      <p style="margin-top:10px;">
+        <strong>The problem:</strong> New concepts added to a source's HEAD are invisible in the collection
+        until the source is versioned and released. This breaks the authoring loop — you can't see your work.
+      </p>
+    </div>
+
+    <div class="callout warn">
+      <strong>Without HEAD-link:</strong>
+      Create concept in source → must release source → only then visible in collection.
+      Each round-trip costs a full release cycle.
+    </div>
+
+    <div class="callout green">
+      <strong>With HEAD-link:</strong>
+      Create concept in source → immediately visible in collection HEAD. Release only when you're ready to publish.
+    </div>
+
+    <div class="notes-zone">
+      <div class="notes-label">Notes</div>
+      <textarea placeholder="Add notes here…"></textarea>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── 2. Core Concept ─────────────────────────────────────── -->
+  <section class="section" id="head-link">
+    <div class="section-label"><span class="num">2</span> Core Concept</div>
+    <h2>What is the HEAD-link flag?</h2>
+
+    <div class="card">
+      <p>
+        A <strong>HEAD-link</strong> is a flag on the collection's relationship to a specific source. It says:
+      </p>
+      <div class="callout" style="margin:14px 0 0;">
+        "While I am working in <em>HEAD</em> of this collection, resolve references to this source against
+        <em>HEAD</em> of that source."
+      </div>
+      <p style="margin-top:14px;">
+        This is <strong>not a new entity</strong>. It is a property of the existing collection-to-source linkage.
+        It uses the existing resolve reference operation — just with an additional mode for authoring.
+      </p>
+    </div>
+
+    <h3>Design decisions at a glance</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Decision</th>
+          <th>Choice</th>
+          <th>Rationale</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Where is the flag configured?</td>
+          <td><span class="pill">Collection level</span> per source relationship</td>
+          <td>The collection controls how it resolves; the source doesn't know or care.</td>
+        </tr>
+        <tr>
+          <td>Authorization basis</td>
+          <td><span class="pill">Namespace</span> (org/user)</td>
+          <td>Resolution must be consistent across all users of the same collection.</td>
+        </tr>
+        <tr>
+          <td>Does the reference text change?</td>
+          <td><span class="pill gray">No</span></td>
+          <td>The reference expression stays the same; only resolution behavior differs.</td>
+        </tr>
+        <tr>
+          <td>What other sources are affected?</td>
+          <td><span class="pill gray">Only the HEAD-linked source</span></td>
+          <td>External sources (e.g., CIEL) stay pinned to their locked released version.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="notes-zone">
+      <div class="notes-label">Notes</div>
+      <textarea placeholder="Add notes here…"></textarea>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── 3. Authoring Phase ──────────────────────────────────── -->
+  <section class="section" id="authoring">
+    <div class="section-label"><span class="num">3</span> Phase 1</div>
+    <h2>Authoring — working in HEAD</h2>
+
+    <div class="card">
+      <p>
+        The user adds new content to their source and collection simultaneously. The HEAD-link ensures that
+        new source content is immediately visible in the collection without requiring a release cycle.
+      </p>
+    </div>
+
+    <div class="diagram"><span class="hl-yellow">AUTHORING PHASE — working in HEAD of both source and collection</span>
+═══════════════════════════════════════════════════════════════════
+
+  <span class="hl-blue">PIH Collection [HEAD]</span>
+  ┌──────────────────────────────────────────────────────────────┐
+  │  ref: /PIH/sources/PIH/concepts/123/   ─────────────────┐   │
+  │  ref: /PIH/sources/PIH/concepts/124/   ─────────────────┤   │
+  │  ref: /CIEL/sources/CIEL/concepts/5089/ ───────────────┐ │   │
+  └──────────────────────────────────────────────────────────────┘
+               │ <span class="hl-green">HEAD-link flag active</span>                    │   │
+               ▼                                          │   │
+  <span class="hl-blue">PIH Source [HEAD]</span>  ◄────────────────────────────────────────┘
+  ┌────────────────────────┐
+  │ concept/123  <span class="hl-green">← new!</span>   │   <span class="hl-green">resolved immediately ✓</span>
+  │ concept/124  <span class="hl-green">← new!</span>   │   user sees these in collection
+  └────────────────────────┘
+                                                          │
+                                                          ▼
+                                           <span class="hl-gray">CIEL [v2026-01]  ← locked, unchanged</span>
+                                           ┌──────────────────────┐
+                                           │ concept/5089         │
+                                           └──────────────────────┘</div>
+
+    <h3>What the user experiences</h3>
+    <ol class="steps">
+      <li>User creates a new concept in PIH Source → concept lands in PIH Source HEAD.</li>
+      <li>System adds a reference to the collection HEAD (or user adds it manually).</li>
+      <li>Auto-expansion resolves the reference against PIH Source HEAD via the HEAD-link.</li>
+      <li>User navigates to the collection → sees the new concept <strong>immediately</strong>.</li>
+      <li>Repeat for each new concept — no release required to see the work.</li>
+    </ol>
+
+    <div class="callout" style="margin-top:16px;">
+      <strong>Under the hood:</strong>
+      Resolve reference is called with a flag to use HEAD of the linked source. The reference expression
+      (e.g., <code>/PIH/sources/PIH/concepts/123/</code>) is unversioned — the same expression will appear
+      in the released version. CIEL is unaffected.
+    </div>
+
+    <div class="notes-zone">
+      <div class="notes-label">Notes</div>
+      <textarea placeholder="Add notes here…"></textarea>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── 4. Release Phase ────────────────────────────────────── -->
+  <section class="section" id="releasing">
+    <div class="section-label"><span class="num">4</span> Phase 2</div>
+    <h2>Releasing — batch release of source then collection</h2>
+
+    <div class="card">
+      <p>When the user is ready to publish, two things must happen in order:</p>
+      <ol style="padding-left:20px; margin-top:8px; font-size:0.92rem; color:var(--gray-600);">
+        <li style="margin-bottom:4px;"><strong>Release the source</strong> — unpublished HEAD content must be versioned first.</li>
+        <li><strong>Release the collection</strong> — the HEAD-link switches from HEAD to the newly released source version.</li>
+      </ol>
+    </div>
+
+    <div class="diagram"><span class="hl-yellow">RELEASE PHASE — batch release of source then collection</span>
+═══════════════════════════════════════════════════════════════════
+
+<span class="hl-blue">STEP 1: Release PIH Source</span>
+
+  PIH Source [HEAD]
+  ┌────────────────────┐
+  │ concept/123        │  ──publish──►  <span class="hl-green">PIH Source [v19.3]</span>
+  │ concept/124        │                ┌────────────────────┐
+  └────────────────────┘                │ concept/123  <span class="hl-green">✓</span>     │
+                                        │ concept/124  <span class="hl-green">✓</span>     │
+                                        └────────────────────┘
+
+<span class="hl-blue">STEP 2: Release Collection</span>
+
+  PIH Collection [HEAD]  ──publish──►  <span class="hl-green">PIH Collection [v3.0]</span>
+
+  <span class="hl-yellow">The HEAD-link switches on release:</span>
+  ┌──────────────────────────────────────────────────────────────┐
+  │  BEFORE  (HEAD):   resolve PIH refs → PIH Source HEAD        │
+  │  AFTER   (v3.0):   resolve PIH refs → PIH Source v19.3  <span class="hl-green">✓</span>   │
+  └──────────────────────────────────────────────────────────────┘
+
+<span class="hl-green">RESULT: PIH Collection v3.0</span>
+  ┌──────────────────────────────────────────────────────────────┐
+  │  ref: /PIH/sources/PIH/concepts/123/  →  PIH v19.3  <span class="hl-green">✓</span>       │
+  │  ref: /PIH/sources/PIH/concepts/124/  →  PIH v19.3  <span class="hl-green">✓</span>       │
+  │  ref: /CIEL/sources/CIEL/concepts/5089/ → CIEL v2026-01 <span class="hl-green">✓</span>   │
+  └──────────────────────────────────────────────────────────────┘
+  All references resolve. HEAD-link is <span class="hl-gray">no longer active</span> in v3.0.</div>
+
+    <h3>Happy path steps</h3>
+    <ol class="steps">
+      <li>User decides to publish a new version of the dictionary.</li>
+      <li>System checks whether the HEAD-linked source has any unreleased content referenced by the collection.</li>
+      <li>If yes: user is prompted to release PIH Source first (see warning below).</li>
+      <li>User releases PIH Source (e.g., as v19.3).</li>
+      <li>User releases the collection — system re-evaluates references and locks to PIH Source v19.3.</li>
+      <li>Collection version is published. All references resolve cleanly.</li>
+    </ol>
+
+    <div class="notes-zone">
+      <div class="notes-label">Notes</div>
+      <textarea placeholder="Add notes here…"></textarea>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── 5. Warning ─────────────────────────────────────────── -->
+  <section class="section" id="warning">
+    <div class="section-label"><span class="num">5</span> Edge Case</div>
+    <h2>Unreleased content warning</h2>
+
+    <div class="card">
+      <p>
+        If the user tries to release the <strong>collection before releasing the source</strong>, the system
+        surfaces a warning — not a hard block. The user can proceed, but references pointing to unreleased
+        source content will return no result in the published collection version.
+      </p>
+    </div>
+
+    <div class="callout warn">
+      <strong>⚠️ Heads up (sample UI message):</strong>
+      Your collection references content in PIH Source that has not been published yet (<em>N</em> concepts in HEAD).
+      If you release the collection now, those references will not resolve in the published version.<br><br>
+      <strong>Recommended:</strong> Release PIH Source first, then return to release the collection.<br><br>
+      <span class="pill warn">Release PIH Source first →</span>&nbsp;
+      <span class="pill gray">Continue anyway</span>
+    </div>
+
+    <div class="notes-zone">
+      <div class="notes-label">Notes</div>
+      <textarea placeholder="Add notes here…"></textarea>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── 6. Locking behavior ────────────────────────────────── -->
+  <section class="section" id="decisions">
+    <div class="section-label"><span class="num">6</span> Reference</div>
+    <h2>What stays locked during authoring</h2>
+
+    <div class="card">
+      <p>
+        HEAD-link is <strong>opt-in, per source</strong>, at the collection level. Only the source explicitly
+        configured as HEAD-linked gets the HEAD resolution behavior. All other sources stay pinned.
+      </p>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Source</th>
+          <th>Relationship type</th>
+          <th>During authoring HEAD</th>
+          <th>On release</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>PIH Source</strong> (own source)</td>
+          <td><span class="pill green">HEAD-linked</span></td>
+          <td>Resolves to PIH Source HEAD</td>
+          <td>Transitions to latest released PIH Source version</td>
+        </tr>
+        <tr>
+          <td><strong>CIEL</strong></td>
+          <td><span class="pill gray">Locked to v2026-01</span></td>
+          <td>Resolves to CIEL v2026-01 (unchanged)</td>
+          <td>Stays at v2026-01 unless explicitly updated</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>What already exists vs. what needs to be built</h3>
+
+    <table style="margin-top:10px;">
+      <thead>
+        <tr>
+          <th>Status</th>
+          <th>Item</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="pill green">Exists</span></td>
+          <td>Resolve reference supports a HEAD parameter and falls back to HEAD when no release exists</td>
+        </tr>
+        <tr>
+          <td><span class="pill green">Exists</span></td>
+          <td>Source version locking on collection release</td>
+        </tr>
+        <tr>
+          <td><span class="pill green">Exists</span></td>
+          <td>Namespace-based URL registry for multi-org resolution</td>
+        </tr>
+        <tr>
+          <td><span class="pill warn">Needs build</span></td>
+          <td>UI to configure a source relationship as HEAD-linked (collection settings)</td>
+        </tr>
+        <tr>
+          <td><span class="pill warn">Needs build</span></td>
+          <td>Business logic in auto-expansion to pass the HEAD flag for HEAD-linked sources</td>
+        </tr>
+        <tr>
+          <td><span class="pill warn">Needs build</span></td>
+          <td>Re-evaluation on collection release (currently copies HEAD auto-expansion; must re-evaluate instead)</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="notes-zone">
+      <div class="notes-label">Notes</div>
+      <textarea placeholder="Add notes here…"></textarea>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── 7. Open Issues ─────────────────────────────────────── -->
+  <section class="section" id="open-issues">
+    <div class="section-label"><span class="num">7</span> Open Issues</div>
+    <h2>Known open questions</h2>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Issue</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody class="issue-row">
+        <tr>
+          <td>Auto-expansion re-evaluation on release</td>
+          <td>
+            OCL currently copies the HEAD auto-expansion when creating a released version. For the HEAD-link
+            transition to work, the release step must <em>re-evaluate</em> references and lock to the released
+            source version. This is a behavior change in the current release flow.
+          </td>
+        </tr>
+        <tr>
+          <td>Dirty reference detection</td>
+          <td>
+            If a concept in the source HEAD is edited or deleted, the collection HEAD does not automatically
+            refresh. Re-running all references on every source change is too slow at scale. MVP may require
+            manual refresh; a smarter invalidation mechanism (e.g., source-level change timestamps vs.
+            expansion timestamps) is needed longer-term.
+          </td>
+        </tr>
+        <tr>
+          <td>Multi-org namespaces</td>
+          <td>
+            If a source and collection live in different orgs (e.g., MSF + MSF OCB), namespace-based
+            authorization won't automatically grant HEAD access. The URL registry can map cross-org canonical
+            URLs. Needs validation with MSF as a reference implementation.
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="notes-zone">
+      <div class="notes-label">Notes</div>
+      <textarea placeholder="Add notes here…"></textarea>
+    </div>
+  </section>
+
+  <hr>
+
+  <!-- ── General notes ──────────────────────────────────────── -->
+  <section class="section">
+    <div class="section-label">General Notes</div>
+    <h2>Session notes</h2>
+    <div class="notes-zone" style="min-height:160px;">
+      <div class="notes-label">Notes</div>
+      <textarea placeholder="Capture questions, decisions, action items…" style="min-height:140px;"></textarea>
+    </div>
+  </section>
+
+</div><!-- /page -->
+
+</body>
+</html>
