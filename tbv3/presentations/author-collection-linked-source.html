@@ -323,6 +323,56 @@
     background: var(--brand-light);
   }
   .toc a:hover { background: var(--brand-mid); }
+
+  /* ── Floating toolbar ─────────────────────────────────────── */
+  #notes-toolbar {
+    position: fixed;
+    bottom: 20px;
+    right: 24px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--gray-900);
+    color: #e2e8f0;
+    border-radius: 28px;
+    padding: 8px 14px 8px 16px;
+    font-size: 0.78rem;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.25);
+    z-index: 100;
+    transition: opacity 0.2s;
+  }
+  #notes-toolbar .save-status {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    opacity: 0.6;
+    font-size: 0.75rem;
+    min-width: 96px;
+    transition: opacity 0.3s;
+  }
+  #notes-toolbar .save-status.dirty { opacity: 1; color: #fde68a; }
+  #notes-toolbar .save-status.saved { opacity: 1; color: #86efac; }
+  #notes-toolbar .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+  #notes-toolbar button {
+    background: rgba(255,255,255,0.1);
+    border: 1px solid rgba(255,255,255,0.15);
+    color: #e2e8f0;
+    font-size: 0.75rem;
+    font-family: var(--font-sans);
+    padding: 4px 10px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  #notes-toolbar button:hover { background: rgba(255,255,255,0.2); }
+  #notes-toolbar button.danger:hover { background: #ef4444; border-color: #ef4444; }
+
+  @media print { #notes-toolbar { display: none; } }
 </style>
 </head>
 <body>
@@ -742,6 +792,124 @@
   </section>
 
 </div><!-- /page -->
+
+<!-- Floating notes toolbar -->
+<div id="notes-toolbar">
+  <span class="save-status" id="save-status">
+    <span class="dot"></span>
+    <span id="save-label">Notes ready</span>
+  </span>
+  <button id="btn-export" title="Download all notes as Markdown">Export notes</button>
+  <button id="btn-clear" class="danger" title="Erase all saved notes">Clear all</button>
+</div>
+
+<script>
+(function () {
+  var STORE_KEY = 'ocl-explainer-linked-source';
+  var saveTimer = null;
+  var statusTimer = null;
+
+  // ── Key derivation ────────────────────────────────────────────
+  function keyFor(textarea) {
+    var el = textarea;
+    while (el) {
+      if (el.tagName === 'SECTION' && el.id) return el.id;
+      el = el.parentElement;
+    }
+    return 'general';
+  }
+
+  // ── Persistence ───────────────────────────────────────────────
+  function load() {
+    try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; }
+    catch (_) { return {}; }
+  }
+
+  function save(data) {
+    try { localStorage.setItem(STORE_KEY, JSON.stringify(data)); }
+    catch (_) {}
+  }
+
+  // ── Status indicator ──────────────────────────────────────────
+  var statusEl = document.getElementById('save-status');
+  var labelEl  = document.getElementById('save-label');
+
+  function setStatus(state, text) {
+    statusEl.className = 'save-status ' + state;
+    labelEl.textContent = text;
+  }
+
+  // ── Init: populate textareas from storage ─────────────────────
+  var data = load();
+  var textareas = document.querySelectorAll('.notes-zone textarea');
+  textareas.forEach(function (ta) {
+    var k = keyFor(ta);
+    if (data[k]) ta.value = data[k];
+  });
+
+  var hasSaved = Object.keys(data).some(function(k){ return data[k].trim(); });
+  setStatus(hasSaved ? 'saved' : '', hasSaved ? 'Notes loaded' : 'Notes ready');
+
+  // ── Auto-save on input ────────────────────────────────────────
+  textareas.forEach(function (ta) {
+    ta.addEventListener('input', function () {
+      clearTimeout(saveTimer);
+      clearTimeout(statusTimer);
+      setStatus('dirty', 'Unsaved changes');
+
+      saveTimer = setTimeout(function () {
+        var current = load();
+        textareas.forEach(function (t) {
+          current[keyFor(t)] = t.value;
+        });
+        save(current);
+        setStatus('saved', 'Saved');
+        statusTimer = setTimeout(function () {
+          setStatus('', 'Auto-saved');
+        }, 2500);
+      }, 800);
+    });
+  });
+
+  // ── Export ────────────────────────────────────────────────────
+  var sectionTitles = {
+    'problem':     '1. Context & Problem',
+    'head-link':   '2. Core Concept — The HEAD-Link',
+    'authoring':   '3. Phase 1: Authoring',
+    'releasing':   '4. Phase 2: Releasing',
+    'warning':     '5. Unreleased Content Warning',
+    'decisions':   '6. Design Decisions & Locking',
+    'open-issues': '7. Open Issues',
+    'general':     'General Session Notes'
+  };
+
+  document.getElementById('btn-export').addEventListener('click', function () {
+    var current = load();
+    var lines = ['# OCL Explainer Notes — Authoring a Collection with a Linked Source', ''];
+    var order = ['problem','head-link','authoring','releasing','warning','decisions','open-issues','general'];
+    order.forEach(function (k) {
+      var text = (current[k] || '').trim();
+      lines.push('## ' + (sectionTitles[k] || k));
+      lines.push(text || '_(no notes)_');
+      lines.push('');
+    });
+    var blob = new Blob([lines.join('\n')], { type: 'text/markdown' });
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'ocl-linked-source-notes.md';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  });
+
+  // ── Clear all ─────────────────────────────────────────────────
+  document.getElementById('btn-clear').addEventListener('click', function () {
+    if (!confirm('Erase all saved notes for this page? This cannot be undone.')) return;
+    localStorage.removeItem(STORE_KEY);
+    textareas.forEach(function (ta) { ta.value = ''; });
+    setStatus('', 'Notes cleared');
+  });
+})();
+</script>
 
 </body>
 </html>
