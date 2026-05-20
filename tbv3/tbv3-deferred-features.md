@@ -261,6 +261,19 @@ OCL's own default sources for each field type also need to be documented.
 
 ## Linked Sources
 
+## Organization
+
+### Organization Landing Page Branding (Custom Banner / Background Image)
+**Origin:** Andy Kanter feedback, 2026-05-20
+
+OCL V2 lets organizations configure a custom banner image and background for their organization landing page. Andy uses this for the CL organization — `CLterminology.org` redirects directly to the OCL org page, making it CL's only public-facing website. The org page must be visually attractive; he's less concerned about branding within the source content pages themselves.
+
+**Deferred rationale:** No design or code work has been done on org branding in TBv3. Core org page navigation and content functionality takes priority for MVP. Branding can be added after launch.
+
+**When to revisit:** Before the V2 → V3 full cutover, since the org page serves as CL's canonical public URL.
+
+---
+
 ### HEAD-Resolution Scope: Own vs. Not-Own Sources
 **Origin:** `02_capabilities/manage-references.md`, `03_workflows/build-concept-dictionary.md`
 
